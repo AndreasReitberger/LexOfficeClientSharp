@@ -1,0 +1,99 @@
+﻿Public API - https://www.lexoffice.de/public-api-lizenz-nutzungsbedingungen/
+1. Lizenz
+Gegenstand dieser Vereinbarung ist die Nutzung der lexoffice Schnittstelle für Anwendungsprogrammierung und seiner dazugehörigen Dokumentation (im Folgenden API genannt). Der Lizenznehmer erklärt sein Einverständnis zu diesen Lizenzbedingungen, in dem er die API verwendet oder herunterlädt.
+
+Der Lizenzgeber behält sich das Recht vor, diese API-Bedingungen oder die Dokumente, die durch Verweis in diese API-Bedingungen aufgenommen werden, jederzeit zu aktualisieren und zu ändern. Die jeweils aktuelle Fassung dieser API-Bedingungen ist unter https://www.lexoffice.de/public-api-lizenz-nutzungsbedingungen/ veröffentlicht. Der Lizenzgeber kann diese API-Bedingungen durch Veröffentlichung einer neuen Fassung ändern. Die Verwendung der API, also der Betrieb der API durch Übergabe von Daten an lexoffice, nach einer solchen Änderung stellt die Annahme dieser Änderungen dar.
+
+Der Lizenznehmer erhält ein nicht ausschließliches, nicht-übertragbares und widerrufliches Recht die API zu nutzen. Der Lizenznehmer darf die API nutzen, um eigene Software / Online-Dienste (API Applications) zu entwickeln, die mit lexoffice verbunden werden können.
+
+Dem Lizenznehmer ist es nicht gestattet:
+
+die API zu kopieren, zu übertragen, zu verkaufen, eine Unterlizenz erteilen oder auf andere Weise die API einem Dritten zur Verfügung zu stellen. Dies gilt sowohl für kommerzielle als auch für nicht-kommerzielle Zwecke;
+die API so zu verwenden, dass hierdurch die Nutzung von lexoffice dem Lizenznehmer oder einem Dritten ermöglicht wird, die nicht unter die jeweiligen Lizenz- oder Nutzungsbedingungen fällt.
+die API anders als im gesetzlich zulässigen Umfang zu verändern, anzupassen, zu verbinden, zu modifizieren, zu übersetzen, zu dekompilieren, zu zerlegen oder abgeleitete Werke des gesamten oder eines Teils der API oder lexoffice, ohne die vorherige schriftliche Zustimmung des Lizenzgebers herzustellen. Urheberrechts- oder Markenhinweise oder andere schutzrechtlichen Hinweise zu entfernen, die in der API oder lexoffice enthalten sind.
+Der Lizenznehmer erkennt an, dass das Eigentum an den Rechten, an geistigem Eigentum in und an der API und lexoffice, einschließlich aller Kopien, beim Lizenzgeber liegt.
+
+Der Lizenzgeber hat das Recht die API jederzeit zu aktualisieren, zu ändern, auszusetzen oder die API jederzeit zu unterbrechen. Der Lizenzgeber kann nach seinem Ermessen diese Vereinbarung und die Nutzung der API jederzeit kündigen. Sollte der Lizenzgeber sich entscheiden die Nutzung der API zu kündigen, wird er dies dem Lizenznehmer mit einer Frist von  90 Tagen vorab ankündigen.
+
+Der Lizenzgeber wird die API ständig weiterentwickeln und aktualisieren, um vorhandene Funktionen zu verbessern (oder zu entfernen) und zusätzliche Funktionen falls nötig zu ergänzen. Der Lizenznehmer ist selbst dafür verantwortlich seine API Application bei Bedarf zu pflegen und zu aktualisieren.
+
+ 
+
+2. Rechte und Pflichten des Lizenznehmers
+
+Der Lizenznehmer kann eine eigene API Application entwickeln und an seinen lexoffice-Account unter folgenden Bedingungen anbinden. Er hat vor der Weitergabe an Dritte und auch später im laufenden Betrieb sicherzustellen, dass
+
+seine API Application stets ausreichend getestet ist und jeweils dem jeweils aktuellen Stand
+der Technik entspricht.
+
+der Lizenznehmer keine Marken, Handelsnamen, Abzeichen, Logo, Symbol oder Slogan (ob eingetragen oder nicht), die dem Lizenzgeber oder einem anderen Unternehmen der Haufe Gruppe jetzt oder zukünftig gehören ohne die vorherige Zustimmung des Lizenzgebers verwendet oder Dritten die Verwendung ermöglicht.
+Der Lizenznehmer hält den Lizenzgeber schadlos in Bezug auf sämtliche Verluste, Haftungen und Kosten (einschließlich angemessener Anwaltskosten), die aufgrund von Forderungen, Prozessen oder Klagen entstehen, die sich auf einen Verstoß (oder mutmaßlichen Verstoß) des Lizenznehmers gegen diesen Vertrag oder einen Teil davon stützen oder sich anderweitig auf seine Website(s), API-Application oder die Nutzung der API beziehen. Der Lizenznehmer ist allein verantwortlich für die Verteidigung gegen Klagen unter Hinzuziehung eines gemeinsam vereinbarten Rechtsbeistands, vorbehaltlich des Rechts des Lizenzgebers, sich mit einem Rechtsbeistand seiner Wahl zu beteiligen. Ohne die vorherige schriftliche Zustimmung des Lizenzgebers, die nach alleinigem Ermessen des Lizenzgebers erteilt wird, macht der Lizenznehmer keine Klagen öffentlich bekannt und stimmt keinen Vergleichen zu, die der Lizenzgeber irgendwelche Verpflichtungen oder Haftungen auferlegen. Gleiches gilt für die Inanspruchnahme des Lizenzgebers durch Dritte wegen Urheberrechtsverletzungen der API Application.
+
+Der Lizenznehmer verzichtet hiermit im größtmöglichen gesetzlich zulässigen Umfang auf sämtliche Ansprüche gegenüber dem Lizenzgeber und dessen Tochtergesellschaften, verbundenen Unternehmen, leitenden Angestellten, Vertretern, Lizenzgebern, Co-Branding-Partnern oder sonstigen Partnern und Mitarbeitern des Lizenzgebers und entbindet diese von jeglicher Haftung für Ansprüche, Schäden (tatsächlich entstandene Schäden und/oder Folgeschäden), Kosten und Auslagen (einschließlich Prozesskosten und Anwaltskosten) jeglicher Art, die in irgendeiner Weise aus oder in Verbindung mit seiner API-Application und der API entstehen.
+
+ 
+
+Datenschutz, Verbotene Handlungen und Plattformverwendung
+Dem Lizenznehmer ist es untersagt API-Schlüssel anderer Lizenznehmer zu erbitten. Sollte der Lizenzgeber feststellen, dass ein API-Schlüssel kompromittiert wurde, behält er sich das Recht vor, den Schlüssel zurückzusetzen oder zu widerrufen.
+
+Der Lizenznehmer verpflichtet sich, die Veröffentlichung von privaten oder vertraulichen Informationen nicht zu erleichtern oder zu fördern.
+
+Die API Application des Lizenznehmers muss ihren Zweck, ihre Funktionen, Zugriffsberechtigungen oder andere Anforderungen eindeutig identifizieren. Der Lizenznehmer darf außerhalb der bereitgestellten API keine persönlichen oder vertraulichen Informationen von Kunden anfordern oder erhalten (z.B. Passwort), noch Änderungen am System des Benutzers vornehmen, die nicht direkt für die Funktion der API Application erforderlich sind.
+
+Der Lizenzgeber behält sich das Recht vor, die Zahl der akzeptierten „Anrufe“ der API zu begrenzen (rate limiting), sofern er der Ansicht ist, dass die Zahl der Anrufe von einer API Application sich negativ auf den lexoffice Service auswirkt.
+
+ 
+
+3. Entwicklungen des Lizenzgebers
+
+Der Lizenznehmer erklärt sich damit einverstanden, dass der Lizenzgeber eigene Anwendungen, Inhalte und andere Produkte oder Dienstleistungen erstellen kann, die mit der API Application des Lizenznehmers in Konkurrenz stehen oder ähnlich sind. Nichts in diesen Lizenzbedingungen kann als eine Einschränkung oder Verhinderung des Lizenzgebers ausgelegt werden solche Anwendungen, Inhalte und andere Produkte oder Dienstleistungen zu erstellen oder zu nutzen. Der Lizenznehmer erklärt sich weiterhin damit einverstanden, dass in diesen Fällen keine Verpflichtung des Lizenzgebers ihm gegenüber, weder finanziell noch anderweitig entsteht.
+
+Der Lizenzgeber kann für Zuordnungszwecke persönliche Informationen über Entwickler, Anfragen von Nutzern oder potenziellen Nutzern zur Handhabung oder für andere Zwecke anzeigen, sofern er es für notwendig erachtet.
+
+ 
+
+4. Gebühren
+
+Die API wird derzeit kostenlos zur Verfügung gestellt. Der Lizenzgeber behält sich aber das Recht vor für die Verwendung der API in Zukunft Gebühren zu berechnen. Die Berechnung von Gebühren wird der Lizenzgeber gegebenenfalls mit einer Frist von 90 Tagen ankündigen.
+
+ 
+
+5. Gewährleistungsausschluss
+
+Die API wird ohne Mängelgewähr, d.h. in ihrem jeweiligen Zustand und nach Verfügbarkeit ohne irgendeine ausdrückliche oder konkludente Gewährleistung bereitgestellt. Der Lizenzgeber schließt ausdrücklich sämtliche Gewährleistungen und Garantien aus, einschließlich der stillschweigenden Garantie in Bezug auf den gewöhnlichen Gebrauch, die Eignung für einen bestimmten Zweck, Verfügbarkeit, Sicherheit, Eigentumsrechte und die Nichtverletzung Rechte Dritter.
+
+Der Lizenzgeber garantiert nicht, dass die API frei von Ungenauigkeiten, Fehlern, Bugs oder Unterbrechungen ist oder dass sie zuverlässig, einwandfrei, vollständig oder anderweitig valid ist. Der Lizenzgeber garantiert nicht, dass
+
+die API die Anforderungen des Lizenznehmers erfüllt,
+lexoffice ohne Unterbrechung verfügbar ist,
+die Ergebnisse aus der Nutzung von lexoffice richtig oder zuverlässig sind,
+die Qualität der Produkte, Dienstleistungen, Informationen oder anderen Materialien,
+die der Lizenznehmer über die API erhält, dessen Erwartungen erfüllt und Fehler in der API korrigiert werden.
+
+Die Nutzung der API erfolgt nach eigenem Ermessen und auf eigenes Risiko. Der Lizenznehmer ist allein für alle Schäden verantwortlich, die aus der Verwendung der API hervorgehen, einschließlich Schäden an seinem System oder Datenverlust.
+
+ 
+
+Haftungsbeschränkung
+Der Lizenzgeber schließt jegliche Haftung soweit zulässig für indirekte oder beiläufig entstandene Schäden, Folgeschäden, entgangene Gewinne, bezifferbare Vermögensschäden aus, die aus oder in Verbindung mit der Verwendung der API entstehen, unabhängig davon, ob diese Schäden auf eine Vertragsverletzung, eine Garantieverletzung oder eine unerlaubte Handlung (insbesondere Fahrlässigkeit und Produkthaftung) zurückzuführen sind, oder für sonstige finanzielle Verluste. Dabei ist es unerheblich, ob der Lizenzgeber auf die Möglichkeit solcher Schäden hingewiesen wurde oder nicht.
+
+Diese Haftungsbeschränkung gilt nicht für Vorsatz oder grobe Fahrlässigkeit oder auf Schäden, die auf seiner Verletzung von Leben, Körper oder Gesundheit beruhen.
+
+ 
+
+Laufzeit/Kündigung
+Diese Lizenzbedingungen werden mit der ersten Verwendung der API wirksam und sind bis zu ihrer Kündigung durch eine der Parteien gültig. Der Lizenzgeber kann  den Lizenzvertrag mit einer Frist von  90 Tagen schriftlich, wobei E-Mail genügt, kündigen. Der Lizenzgeber kann diese Vereinbarung jederzeit kündigen, wenn der Lizenznehmer eine Bestimmung dieser Lizenzbedingungen verletzt.
+
+ 
+
+6. Schlussbestimmungen
+
+Sollte eine der Lizenzbedingungen unwirksam sein, sind die Parteien verpflichtet, diese unverzüglich im Wege der ergänzenden Vereinbarung durch eine solche Abrede zu ersetzen, die dem wirtschaftlichen Ergebnis der unwirksamen Bestimmung am nächsten kommt. Im Zweifel gilt die unwirksame Bestimmung durch eine solche Abrede als ersetzt. Die Wirksamkeit der Lizenzbedingungen im Übrigen bleibt unberührt.
+
+Nebenabreden wurden nicht getroffen. Änderungen und Ergänzungen zu diesen Bestimmungen bedürfen zu ihrer Rechtswirksamkeit der Textform. Dabei ist die elektronische Form (E-Mail) ausreichend. Dies gilt auch für die Änderung des Textformerfordernisses.
+
+Die Anwendbarkeit etwaiger Allgemeiner Geschäftsbedingungen des Lizenznehmers ist ausdrücklich ausgeschlossen.
+
+Es kommt ausschließlich deutsches Recht unter Ausschluss des UN-Kaufrechts (CISG) zur Anwendung. Gerichtsstand für alle Streitigkeiten ist Freiburg im Breisgau.
+
+Stand Mai 2019
