@@ -2,7 +2,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace LexOfficeSharpApi
+namespace AndreasReitberger.API.LexOffice
 {
     public partial class LexQuotation
     {

@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace LexOfficeSharpApi
+namespace AndreasReitberger.API.LexOffice
 {
     public partial class LexQuotationItem
     {

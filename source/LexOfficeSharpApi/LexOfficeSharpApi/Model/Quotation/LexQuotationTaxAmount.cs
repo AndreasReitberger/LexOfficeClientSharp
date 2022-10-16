@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
 
-namespace LexOfficeSharpApi
+namespace AndreasReitberger.API.LexOffice
 {
     public partial class LexQuotationTaxAmount
     {

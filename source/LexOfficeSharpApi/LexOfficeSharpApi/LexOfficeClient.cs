@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Net;
 using System.Net.Http;
 using System.Security;
 using System.Text.RegularExpressions;
@@ -12,24 +13,24 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Xml.Serialization;
 
-namespace LexOfficeSharpApi
+namespace AndreasReitberger.API.LexOffice
 {
     // https://docs.microsoft.com/en-us/dotnet/standard/library-guidance/cross-platform-targeting
     // https://developers.lexoffice.io/docs/#lexoffice-api-documentation/?cid=1766
-    public class LexOfficeSharpApiHandler : BaseModel
+    public class LexOfficeClient : BaseModel
     {
 
         #region Instance
-        static LexOfficeSharpApiHandler _instance = null;
+        static LexOfficeClient _instance = null;
         static readonly object Lock = new object();
-        public static LexOfficeSharpApiHandler Instance
+        public static LexOfficeClient Instance
         {
             get
             {
                 lock (Lock)
                 {
                     if (_instance == null)
-                        _instance = new LexOfficeSharpApiHandler();
+                        _instance = new LexOfficeClient();
                 }
                 return _instance;
             }
@@ -76,22 +77,26 @@ namespace LexOfficeSharpApi
         #region Static
         public static string HandlerName = "LexOffice";
         public static string HandlerLicenseUri = "https://www.lexoffice.de/public-api-lizenz-nutzungsbedingungen/";
-        static readonly HttpClient client = new HttpClient();
+        [Obsolete("Use httpClient instead")]
+        static readonly HttpClient client = new();
         #endregion
 
         #region Variable
+        RestClient restClient;
+        HttpClient httpClient;
+
         const string _appBaseUrl = "https://api.lexoffice.io/";
         const string _apiVersion = "v1";
         #endregion
 
         #region Properties
-        //public SecureString AccessToken { get; set; }
+
+        #region General
 
         [JsonProperty(nameof(AccessToken))]
         [XmlAttribute(nameof(AccessToken))]
         SecureString _accessToken = null;
-        [JsonIgnore]
-        [XmlIgnore]
+        [JsonIgnore, XmlIgnore]
         public SecureString AccessToken
         {
             get => _accessToken;
@@ -107,8 +112,7 @@ namespace LexOfficeSharpApi
         [JsonProperty(nameof(IsConnecting))]
         [XmlAttribute(nameof(IsConnecting))]
         bool _isConnecting = false;
-        [JsonIgnore]
-        [XmlIgnore]
+        [JsonIgnore, XmlIgnore]
         public bool IsConnecting
         {
             get => _isConnecting;
@@ -123,8 +127,7 @@ namespace LexOfficeSharpApi
         [JsonProperty(nameof(IsOnline))]
         [XmlAttribute(nameof(IsOnline))]
         bool _isOnline = false;
-        [JsonIgnore]
-        [XmlIgnore]
+        [JsonIgnore, XmlIgnore]
         public bool IsOnline
         {
             get => _isOnline;
@@ -139,8 +142,7 @@ namespace LexOfficeSharpApi
         [JsonProperty(nameof(IsAccessTokenValid))]
         [XmlAttribute(nameof(IsAccessTokenValid))]
         bool _isAccessTokenValid = false;
-        [JsonIgnore]
-        [XmlIgnore]
+        [JsonIgnore, XmlIgnore]
         public bool IsAccessTokenValid
         {
             get => _isAccessTokenValid;
@@ -151,6 +153,133 @@ namespace LexOfficeSharpApi
                 OnPropertyChanged();
             }
         }
+
+        [JsonProperty(nameof(DefaultTimeout))]
+        int _defaultTimeout = 10000;
+        [JsonIgnore, XmlIgnore]
+        public int DefaultTimeout
+        {
+            get => _defaultTimeout;
+            set
+            {
+                if (_defaultTimeout != value)
+                {
+                    _defaultTimeout = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+        #endregion
+
+        #region Proxy
+        [JsonProperty(nameof(EnableProxy))]
+        [XmlAttribute(nameof(EnableProxy))]
+        bool _enableProxy = false;
+        [JsonIgnore, XmlIgnore]
+        public bool EnableProxy
+        {
+            get => _enableProxy;
+            set
+            {
+                if (_enableProxy == value) return;
+                _enableProxy = value;
+                OnPropertyChanged();
+                UpdateRestClientInstance();
+            }
+        }
+
+        [JsonProperty(nameof(ProxyUseDefaultCredentials))]
+        [XmlAttribute(nameof(ProxyUseDefaultCredentials))]
+        bool _proxyUseDefaultCredentials = true;
+        [JsonIgnore, XmlIgnore]
+        public bool ProxyUseDefaultCredentials
+        {
+            get => _proxyUseDefaultCredentials;
+            set
+            {
+                if (_proxyUseDefaultCredentials == value) return;
+                _proxyUseDefaultCredentials = value;
+                OnPropertyChanged();
+                UpdateRestClientInstance();
+            }
+        }
+
+        [JsonProperty(nameof(SecureProxyConnection))]
+        [XmlAttribute(nameof(SecureProxyConnection))]
+        bool _secureProxyConnection = true;
+        [JsonIgnore, XmlIgnore]
+        public bool SecureProxyConnection
+        {
+            get => _secureProxyConnection;
+            private set
+            {
+                if (_secureProxyConnection == value) return;
+                _secureProxyConnection = value;
+                OnPropertyChanged();
+            }
+        }
+
+        [JsonProperty(nameof(ProxyAddress))]
+        [XmlAttribute(nameof(ProxyAddress))]
+        string _proxyAddress = string.Empty;
+        [JsonIgnore, XmlIgnore]
+        public string ProxyAddress
+        {
+            get => _proxyAddress;
+            private set
+            {
+                if (_proxyAddress == value) return;
+                _proxyAddress = value;
+                OnPropertyChanged();
+            }
+        }
+
+        [JsonProperty(nameof(ProxyPort))]
+        [XmlAttribute(nameof(ProxyPort))]
+        int _proxyPort = 443;
+        [JsonIgnore, XmlIgnore]
+        public int ProxyPort
+        {
+            get => _proxyPort;
+            private set
+            {
+                if (_proxyPort == value) return;
+                _proxyPort = value;
+                OnPropertyChanged();
+            }
+        }
+
+        [JsonProperty(nameof(ProxyUser))]
+        [XmlAttribute(nameof(ProxyUser))]
+        string _proxyUser = string.Empty;
+        [JsonIgnore, XmlIgnore]
+        public string ProxyUser
+        {
+            get => _proxyUser;
+            private set
+            {
+                if (_proxyUser == value) return;
+                _proxyUser = value;
+                OnPropertyChanged();
+            }
+        }
+
+        [JsonProperty(nameof(ProxyPassword))]
+        [XmlAttribute(nameof(ProxyPassword))]
+        SecureString _proxyPassword;
+        [JsonIgnore, XmlIgnore]
+        public SecureString ProxyPassword
+        {
+            get => _proxyPassword;
+            private set
+            {
+                if (_proxyPassword == value) return;
+                _proxyPassword = value;
+                OnPropertyChanged();
+            }
+        }
+        #endregion
+
         #endregion
 
         #region EventHandlers
@@ -166,11 +295,11 @@ namespace LexOfficeSharpApi
         #endregion
 
         #region Constructor
-        public LexOfficeSharpApiHandler()
+        public LexOfficeClient()
         {
             IsInitialized = false;
         }
-        public LexOfficeSharpApiHandler(SecureString accessToken)
+        public LexOfficeClient(SecureString accessToken)
         {
             AccessToken = accessToken;
             IsInitialized = true;
@@ -179,20 +308,57 @@ namespace LexOfficeSharpApi
         #endregion
 
         #region Methods
-        async Task<string> BaseApiCallAsync(string command, Method method = Method.Get)
+        void UpdateRestClientInstance()
+        {
+            if (string.IsNullOrEmpty(_appBaseUrl) || string.IsNullOrEmpty(_apiVersion))
+            {
+                return;
+            }
+            if (EnableProxy && !string.IsNullOrEmpty(ProxyAddress))
+            {
+                RestClientOptions options = new($"{_appBaseUrl}{_apiVersion}/")
+                {
+                    ThrowOnAnyError = true,
+                    Timeout = 10000,
+                };
+                HttpClientHandler httpHandler = new()
+                {
+                    UseProxy = true,
+                    Proxy = GetCurrentProxy(),
+                    AllowAutoRedirect = true,
+                };
+
+                httpClient = new(handler: httpHandler, disposeHandler: true);
+                restClient = new(httpClient: httpClient, options: options);
+            }
+            else
+            {
+                httpClient = null;
+                restClient = new(baseUrl: $"{_appBaseUrl}{_apiVersion}/");
+            }
+        }
+
+        async Task<string> BaseApiCallAsync(string command, Method method = Method.Get, CancellationTokenSource cts = default)
         {
             string result = string.Empty;
+            if (cts == default)
+            {
+                cts = new(DefaultTimeout);
+            }
+            if (restClient == null)
+            {
+                UpdateRestClientInstance();
+            }
 
-            var client = new RestClient($"{_appBaseUrl}{_apiVersion}/");
-
-            var request = new RestRequest(command, method);
-            request.AddHeader("Authorization", $"Bearer {SecureStringHelper.ConvertToString(AccessToken)}");
+            RestRequest request = new(command, method);
             request.RequestFormat = DataFormat.Json;
-            request.Timeout = 2500;
+            request.AddHeader("Authorization", $"Bearer {SecureStringHelper.ConvertToString(AccessToken)}");
 
-            var respone = await client.ExecuteAsync(request);
-            if(respone.StatusCode == System.Net.HttpStatusCode.OK)
+            RestResponse respone = await restClient.ExecuteAsync(request, cts.Token).ConfigureAwait(false);
+            if (respone.StatusCode == HttpStatusCode.OK && respone.ResponseStatus == ResponseStatus.Completed)
+            {
                 result = respone.Content;
+            }
 
             return result;
         }
@@ -213,6 +379,32 @@ namespace LexOfficeSharpApi
         #endregion
 
         #region Public Methods
+
+        #region Proxy
+        Uri GetProxyUri()
+        {
+            return ProxyAddress.StartsWith("http://") || ProxyAddress.StartsWith("https://") ? new Uri($"{ProxyAddress}:{ProxyPort}") : new Uri($"{(SecureProxyConnection ? "https" : "http")}://{ProxyAddress}:{ProxyPort}");
+        }
+
+        WebProxy GetCurrentProxy()
+        {
+            WebProxy proxy = new()
+            {
+                Address = GetProxyUri(),
+                BypassProxyOnLocal = false,
+                UseDefaultCredentials = ProxyUseDefaultCredentials,
+            };
+            if (ProxyUseDefaultCredentials && !string.IsNullOrEmpty(ProxyUser))
+            {
+                proxy.Credentials = new NetworkCredential(ProxyUser, ProxyPassword);
+            }
+            else
+            {
+                proxy.UseDefaultCredentials = ProxyUseDefaultCredentials;
+            }
+            return proxy;
+        }
+        #endregion
 
         #region SetAccessToken
         public void SetAccessToken(SecureString Token)
@@ -236,7 +428,7 @@ namespace LexOfficeSharpApi
 
                 try
                 {
-                    HttpResponseMessage response = await client.GetAsync(uriString, cts.Token).ConfigureAwait(false);
+                    HttpResponseMessage response = await httpClient.GetAsync(uriString, cts.Token).ConfigureAwait(false);
                     response.EnsureSuccessStatusCode();
                     if (response != null)
                     {
@@ -269,7 +461,7 @@ namespace LexOfficeSharpApi
         #region Contacts
         public async Task<ObservableCollection<LexContact>> GetContactsAsync(LexContactType type, int page = 0, int size = 25, int coolDown = 20)
         {
-            ObservableCollection<LexContact> result = new ObservableCollection<LexContact>();
+            ObservableCollection<LexContact> result = new();
 
             string cmd = string.Format("contacts{0}",
                 type == LexContactType.Customer ? "?customer=true" : "?vendor=true"              
