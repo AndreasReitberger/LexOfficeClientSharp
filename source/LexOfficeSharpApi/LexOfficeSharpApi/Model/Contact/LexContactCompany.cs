@@ -1,7 +1,7 @@
 ﻿using Newtonsoft.Json;
 using System.Collections.Generic;
 
-namespace LexOfficeSharpApi
+namespace AndreasReitberger.API.LexOffice
 {
     public partial class LexContactCompany
     {

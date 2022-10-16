@@ -1,7 +1,7 @@
 ﻿using Newtonsoft.Json;
 using System;
 
-namespace LexOfficeSharpApi
+namespace AndreasReitberger.API.LexOffice
 {
     public partial class LexQuotationFiles
     {

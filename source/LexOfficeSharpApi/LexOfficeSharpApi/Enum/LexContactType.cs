@@ -1,4 +1,4 @@
-﻿namespace LexOfficeSharpApi
+﻿namespace AndreasReitberger.API.LexOffice
 {
     public enum LexContactType
     {
