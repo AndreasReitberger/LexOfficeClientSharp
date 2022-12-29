@@ -1,7 +1,6 @@
-using AndreasReitberger.Utilities;
-using LexOfficeSharpApi;
+using AndreasReitberger.API.LexOffice;
+using AndreasReitberger.Core.Utilities;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System;
 using System.Security;
 using System.Threading.Tasks;
 
@@ -12,12 +11,12 @@ namespace LexOfficeSharpApiTest
     {
         // https://docs.microsoft.com/en-us/dotnet/core/tutorials/testing-library-with-visual-studio
 
-        private const string tokenString = "1bede9c0-603b-4883-a6ce-9f4676d906c5";
+        private const string tokenString = "YOUR_TOKEN";
         [TestMethod]
         public async Task TestGetInvoices()
         {
             SecureString token = SecureStringHelper.ConvertToSecureString(tokenString);
-            LexOfficeSharpApiHandler handler = new LexOfficeSharpApiHandler(token);
+            LexOfficeClient handler = new LexOfficeClient(token);
 
             var invoicesList = await handler.GetInvoiceListAsync(LexVoucherStatus.open);
             var invoices = await handler.GetInvoicesAsync(invoicesList);
