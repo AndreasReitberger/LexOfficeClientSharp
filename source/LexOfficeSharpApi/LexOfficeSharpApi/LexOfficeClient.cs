@@ -319,7 +319,7 @@ namespace AndreasReitberger.API.LexOffice
                 RestClientOptions options = new($"{_appBaseUrl}{_apiVersion}/")
                 {
                     ThrowOnAnyError = true,
-                    Timeout = 10000,
+                    MaxTimeout = 10000,
                 };
                 HttpClientHandler httpHandler = new()
                 {

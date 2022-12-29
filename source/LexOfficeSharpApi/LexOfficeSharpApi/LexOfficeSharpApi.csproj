@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-	<TargetFrameworks>netstandard2.1;net472;net5;net6</TargetFrameworks>
+	<TargetFrameworks>netstandard2.1;net472;net6;net7</TargetFrameworks>
     <Authors>Andreas Reitberger</Authors>
     <Company>Andreas Reitberger</Company>
     <PackageTags>LexOffice, API, Public, Sharp</PackageTags>
@@ -50,15 +50,18 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
-    <PackageReference Include="RCoreSharp" Version="1.0.8" />
-    <PackageReference Include="RestSharp" Version="108.0.2" />
-    <PackageReference Include="System.Net.Http" Version="4.3.4" />
-    <None Include="..\..\..\README.md" Pack="true" PackagePath="\" />
+    <Compile Remove="Utilities\**" />
+    <EmbeddedResource Remove="Utilities\**" />
+    <None Remove="Utilities\**" />
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Utilities\" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.2" />
+    <PackageReference Include="RCoreSharp" Version="1.0.8" />
+    <PackageReference Include="RestSharp" Version="108.0.3" />
+    <PackageReference Include="System.Net.Http" Version="4.3.4" />
+    <PackageReference Include="System.Text.Json" Version="7.0.1" />
+    <None Include="..\..\..\README.md" Pack="true" PackagePath="\" />
   </ItemGroup>
 
 </Project>
