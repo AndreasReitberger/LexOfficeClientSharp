@@ -1,16 +1,14 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-	<TargetFrameworks>netstandard2.1;net472;net6;net7</TargetFrameworks>
+	<TargetFrameworks>netstandard2.1;net48;net6</TargetFrameworks>
     <Authors>Andreas Reitberger</Authors>
     <Company>Andreas Reitberger</Company>
     <PackageTags>LexOffice, API, Public, Sharp</PackageTags>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>1.0.6-preview</Version>
+    <Version>1.0.6</Version>
     <Copyright>Andreas Reitberger</Copyright>
     <Description>A simple library to make REST-API calls to the LexOffice public API.</Description>
-    <AssemblyVersion>1.0.6</AssemblyVersion>
-    <FileVersion>1.0.6</FileVersion>
     <LangVersion>10.0</LangVersion>
     <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
     <PackageReadmeFile>README.md</PackageReadmeFile>
