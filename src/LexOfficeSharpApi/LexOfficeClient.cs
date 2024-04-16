@@ -68,17 +68,21 @@ namespace AndreasReitberger.API.LexOffice
         #region General
 
         [ObservableProperty]
+        [property: JsonIgnore, XmlIgnore]
         SecureString? accessToken = null;
         partial void OnAccessTokenChanged(SecureString? value) => VerifyAccessToken();
 
         [ObservableProperty]
+        [property: JsonIgnore, XmlIgnore]
         bool isConnecting = false;
         [JsonIgnore, XmlIgnore]
 
         [ObservableProperty]
+        [property: JsonIgnore, XmlIgnore]
         bool isOnline = false;
 
         [ObservableProperty]
+        [property: JsonIgnore, XmlIgnore]
         bool isAccessTokenValid = false;
 
         [ObservableProperty]
@@ -113,6 +117,7 @@ namespace AndreasReitberger.API.LexOffice
         partial void OnProxyUserChanged(string value) => UpdateRestClientInstance();
 
         [ObservableProperty]
+        [property: JsonIgnore, XmlIgnore]
         SecureString? proxyPassword;
         partial void OnProxyPasswordChanged(SecureString? value) => UpdateRestClientInstance();
 
