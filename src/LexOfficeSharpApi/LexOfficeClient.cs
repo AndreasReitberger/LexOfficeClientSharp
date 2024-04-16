@@ -1,4 +1,5 @@
 ﻿using AndreasReitberger.Core.Utilities;
+using CommunityToolkit.Mvvm.ComponentModel;
 using Newtonsoft.Json;
 using RestSharp;
 using System;
@@ -15,26 +16,23 @@ using System.Xml.Serialization;
 
 namespace AndreasReitberger.API.LexOffice
 {
-    // https://docs.microsoft.com/en-us/dotnet/standard/library-guidance/cross-platform-targeting
     // https://developers.lexoffice.io/docs/#lexoffice-api-documentation/?cid=1766
-    public class LexOfficeClient : BaseModel
+    public partial class LexOfficeClient : ObservableObject
     {
 
         #region Instance
-        static LexOfficeClient _instance = null;
-        static readonly object Lock = new object();
+        static LexOfficeClient? _instance = null;
+        static readonly object Lock = new();
         public static LexOfficeClient Instance
         {
             get
             {
                 lock (Lock)
                 {
-                    if (_instance == null)
-                        _instance = new LexOfficeClient();
+                    _instance ??= new LexOfficeClient();
                 }
                 return _instance;
             }
-
             set
             {
                 if (_instance == value) return;
@@ -43,47 +41,24 @@ namespace AndreasReitberger.API.LexOffice
                     _instance = value;
                 }
             }
-
         }
 
-        bool _isActive = false;
-        public bool IsActive
-        {
-            get => _isActive;
-            set
-            {
-                if (_isActive == value)
-                    return;
-                _isActive = value;
-                OnPropertyChanged();
-            }
-        }
+        [ObservableProperty]
+        bool isActive = false;
 
-        bool _isInitialized = false;
-        public bool IsInitialized
-        {
-            get => _isInitialized;
-            set
-            {
-                if (_isInitialized == value)
-                    return;
-                _isInitialized = value;
-                OnPropertyChanged();
-            }
-        }
+        [ObservableProperty]
+        bool isInitialized = false;
 
         #endregion
 
         #region Static
         public static string HandlerName = "LexOffice";
         public static string HandlerLicenseUri = "https://www.lexoffice.de/public-api-lizenz-nutzungsbedingungen/";
-        [Obsolete("Use httpClient instead")]
-        static readonly HttpClient client = new();
         #endregion
 
         #region Variable
-        RestClient restClient;
-        HttpClient httpClient;
+        RestClient? restClient;
+        HttpClient? httpClient;
 
         const string _appBaseUrl = "https://api.lexoffice.io/";
         const string _apiVersion = "v1";
@@ -93,197 +68,61 @@ namespace AndreasReitberger.API.LexOffice
 
         #region General
 
-        [JsonProperty(nameof(AccessToken))]
-        [XmlAttribute(nameof(AccessToken))]
-        SecureString _accessToken = null;
-        [JsonIgnore, XmlIgnore]
-        public SecureString AccessToken
-        {
-            get => _accessToken;
-            set
-            {
-                if (_accessToken == value) return;
-                _accessToken = value;
-                VerifyAccessToken();
-                OnPropertyChanged();
-            }
-        }
+        [ObservableProperty]
+        SecureString? accessToken = null;
+        partial void OnAccessTokenChanged(SecureString? value) => VerifyAccessToken();
 
-        [JsonProperty(nameof(IsConnecting))]
-        [XmlAttribute(nameof(IsConnecting))]
-        bool _isConnecting = false;
+        [ObservableProperty]
+        bool isConnecting = false;
         [JsonIgnore, XmlIgnore]
-        public bool IsConnecting
-        {
-            get => _isConnecting;
-            set
-            {
-                if (_isConnecting == value) return;
-                _isConnecting = value;
-                OnPropertyChanged();
-            }
-        }
 
-        [JsonProperty(nameof(IsOnline))]
-        [XmlAttribute(nameof(IsOnline))]
-        bool _isOnline = false;
-        [JsonIgnore, XmlIgnore]
-        public bool IsOnline
-        {
-            get => _isOnline;
-            set
-            {
-                if (_isOnline == value) return;
-                _isOnline = value;
-                OnPropertyChanged();
-            }
-        }
+        [ObservableProperty]
+        bool isOnline = false;
 
-        [JsonProperty(nameof(IsAccessTokenValid))]
-        [XmlAttribute(nameof(IsAccessTokenValid))]
-        bool _isAccessTokenValid = false;
-        [JsonIgnore, XmlIgnore]
-        public bool IsAccessTokenValid
-        {
-            get => _isAccessTokenValid;
-            set
-            {
-                if (_isAccessTokenValid == value) return;
-                _isAccessTokenValid = value;
-                OnPropertyChanged();
-            }
-        }
+        [ObservableProperty]
+        bool isAccessTokenValid = false;
 
-        [JsonProperty(nameof(DefaultTimeout))]
-        int _defaultTimeout = 10000;
-        [JsonIgnore, XmlIgnore]
-        public int DefaultTimeout
-        {
-            get => _defaultTimeout;
-            set
-            {
-                if (_defaultTimeout != value)
-                {
-                    _defaultTimeout = value;
-                    OnPropertyChanged();
-                }
-            }
-        }
+        [ObservableProperty]
+        int defaultTimeout = 10000;
+
         #endregion
 
         #region Proxy
-        [JsonProperty(nameof(EnableProxy))]
-        [XmlAttribute(nameof(EnableProxy))]
-        bool _enableProxy = false;
-        [JsonIgnore, XmlIgnore]
-        public bool EnableProxy
-        {
-            get => _enableProxy;
-            set
-            {
-                if (_enableProxy == value) return;
-                _enableProxy = value;
-                OnPropertyChanged();
-                UpdateRestClientInstance();
-            }
-        }
 
-        [JsonProperty(nameof(ProxyUseDefaultCredentials))]
-        [XmlAttribute(nameof(ProxyUseDefaultCredentials))]
-        bool _proxyUseDefaultCredentials = true;
-        [JsonIgnore, XmlIgnore]
-        public bool ProxyUseDefaultCredentials
-        {
-            get => _proxyUseDefaultCredentials;
-            set
-            {
-                if (_proxyUseDefaultCredentials == value) return;
-                _proxyUseDefaultCredentials = value;
-                OnPropertyChanged();
-                UpdateRestClientInstance();
-            }
-        }
+        [ObservableProperty]
+        bool enableProxy = false;
+        partial void OnEnableProxyChanged(bool value) => UpdateRestClientInstance();
 
-        [JsonProperty(nameof(SecureProxyConnection))]
-        [XmlAttribute(nameof(SecureProxyConnection))]
-        bool _secureProxyConnection = true;
-        [JsonIgnore, XmlIgnore]
-        public bool SecureProxyConnection
-        {
-            get => _secureProxyConnection;
-            private set
-            {
-                if (_secureProxyConnection == value) return;
-                _secureProxyConnection = value;
-                OnPropertyChanged();
-            }
-        }
+        [ObservableProperty]
+        bool proxyUseDefaultCredentials = true;
+        partial void OnProxyUseDefaultCredentialsChanged(bool value) => UpdateRestClientInstance();
 
-        [JsonProperty(nameof(ProxyAddress))]
-        [XmlAttribute(nameof(ProxyAddress))]
-        string _proxyAddress = string.Empty;
-        [JsonIgnore, XmlIgnore]
-        public string ProxyAddress
-        {
-            get => _proxyAddress;
-            private set
-            {
-                if (_proxyAddress == value) return;
-                _proxyAddress = value;
-                OnPropertyChanged();
-            }
-        }
+        [ObservableProperty]
+        bool secureProxyConnection = true;
+        partial void OnSecureProxyConnectionChanged(bool value) => UpdateRestClientInstance();
 
-        [JsonProperty(nameof(ProxyPort))]
-        [XmlAttribute(nameof(ProxyPort))]
-        int _proxyPort = 443;
-        [JsonIgnore, XmlIgnore]
-        public int ProxyPort
-        {
-            get => _proxyPort;
-            private set
-            {
-                if (_proxyPort == value) return;
-                _proxyPort = value;
-                OnPropertyChanged();
-            }
-        }
+        [ObservableProperty]
+        string proxyAddress = string.Empty;
+        partial void OnProxyAddressChanged(string value) => UpdateRestClientInstance();
 
-        [JsonProperty(nameof(ProxyUser))]
-        [XmlAttribute(nameof(ProxyUser))]
-        string _proxyUser = string.Empty;
-        [JsonIgnore, XmlIgnore]
-        public string ProxyUser
-        {
-            get => _proxyUser;
-            private set
-            {
-                if (_proxyUser == value) return;
-                _proxyUser = value;
-                OnPropertyChanged();
-            }
-        }
+        [ObservableProperty]
+        int proxyPort = 443;
+        partial void OnProxyPortChanged(int value) => UpdateRestClientInstance();
 
-        [JsonProperty(nameof(ProxyPassword))]
-        [XmlAttribute(nameof(ProxyPassword))]
-        SecureString _proxyPassword;
-        [JsonIgnore, XmlIgnore]
-        public SecureString ProxyPassword
-        {
-            get => _proxyPassword;
-            private set
-            {
-                if (_proxyPassword == value) return;
-                _proxyPassword = value;
-                OnPropertyChanged();
-            }
-        }
+        [ObservableProperty]
+        string proxyUser = string.Empty;
+        partial void OnProxyUserChanged(string value) => UpdateRestClientInstance();
+
+        [ObservableProperty]
+        SecureString? proxyPassword;
+        partial void OnProxyPasswordChanged(SecureString? value) => UpdateRestClientInstance();
+
         #endregion
 
         #endregion
 
         #region EventHandlers
-        public event EventHandler Error;
+        public event EventHandler? Error;
         protected virtual void OnError()
         {
             Error?.Invoke(this, EventArgs.Empty);
@@ -338,28 +177,31 @@ namespace AndreasReitberger.API.LexOffice
             }
         }
 
-        async Task<string> BaseApiCallAsync(string command, Method method = Method.Get, CancellationTokenSource cts = default)
+        async Task<string?> BaseApiCallAsync(string command, Method method = Method.Get, CancellationTokenSource? cts = default)
         {
-            string result = string.Empty;
+            string? result = string.Empty;
             if (cts == default)
             {
                 cts = new(DefaultTimeout);
             }
-            if (restClient == null)
+            if (restClient is null)
             {
                 UpdateRestClientInstance();
             }
 
-            RestRequest request = new(command, method);
-            request.RequestFormat = DataFormat.Json;
-            request.AddHeader("Authorization", $"Bearer {SecureStringHelper.ConvertToString(AccessToken)}");
-
-            RestResponse respone = await restClient.ExecuteAsync(request, cts.Token).ConfigureAwait(false);
-            if (respone.StatusCode == HttpStatusCode.OK && respone.ResponseStatus == ResponseStatus.Completed)
+            RestRequest request = new(command, method)
             {
-                result = respone.Content;
+                RequestFormat = DataFormat.Json
+            };
+            request.AddHeader("Authorization", $"Bearer {SecureStringHelper.ConvertToString(AccessToken)}");
+            if (restClient is not null)
+            {
+                RestResponse? respone = await restClient.ExecuteAsync(request, cts.Token).ConfigureAwait(false);
+                if (respone.StatusCode == HttpStatusCode.OK && respone.ResponseStatus == ResponseStatus.Completed)
+                {
+                    result = respone?.Content;
+                }
             }
-
             return result;
         }
 
@@ -381,11 +223,9 @@ namespace AndreasReitberger.API.LexOffice
         #region Public Methods
 
         #region Proxy
-        Uri GetProxyUri()
-        {
-            return ProxyAddress.StartsWith("http://") || ProxyAddress.StartsWith("https://") ? new Uri($"{ProxyAddress}:{ProxyPort}") : new Uri($"{(SecureProxyConnection ? "https" : "http")}://{ProxyAddress}:{ProxyPort}");
-        }
-
+        Uri GetProxyUri() => 
+            ProxyAddress.StartsWith("http://") || ProxyAddress.StartsWith("https://") ? new Uri($"{ProxyAddress}:{ProxyPort}") : new Uri($"{(SecureProxyConnection ? "https" : "http")}://{ProxyAddress}:{ProxyPort}");
+        
         WebProxy GetCurrentProxy()
         {
             WebProxy proxy = new()
@@ -407,15 +247,15 @@ namespace AndreasReitberger.API.LexOffice
         #endregion
 
         #region SetAccessToken
-        public void SetAccessToken(SecureString Token)
+        public void SetAccessToken(SecureString token)
         {
-            AccessToken = Token;
+            AccessToken = token;
             IsInitialized = true;
         }
         #endregion
 
         #region OnlineCheck
-        public async Task CheckOnlineAsync(int Timeout = 10000)
+        public async Task CheckOnlineAsync(int timeout = 10000)
         {
             if (IsConnecting) return; // Avoid multiple calls
             IsConnecting = true;
@@ -423,16 +263,18 @@ namespace AndreasReitberger.API.LexOffice
             try
             {
                 // Cancel after timeout
-                var cts = new CancellationTokenSource(new TimeSpan(0, 0, 0, 0, Timeout));
+                CancellationTokenSource cts = new(new TimeSpan(0, 0, 0, 0, timeout));
                 string uriString = $"{_appBaseUrl}";
-
                 try
                 {
-                    HttpResponseMessage response = await httpClient.GetAsync(uriString, cts.Token).ConfigureAwait(false);
-                    response.EnsureSuccessStatusCode();
-                    if (response != null)
+                    if (httpClient is not null)
                     {
-                        isReachable = response.IsSuccessStatusCode;
+                        HttpResponseMessage? response = await httpClient.GetAsync(uriString, cts.Token).ConfigureAwait(false);
+                        response.EnsureSuccessStatusCode();
+                        if (response != null)
+                        {
+                            isReachable = response.IsSuccessStatusCode;
+                        }
                     }
                 }
                 catch (InvalidOperationException iexc)
@@ -461,36 +303,34 @@ namespace AndreasReitberger.API.LexOffice
         #region Contacts
         public async Task<ObservableCollection<LexContact>> GetContactsAsync(LexContactType type, int page = 0, int size = 25, int coolDown = 20)
         {
-            ObservableCollection<LexContact> result = new();
+            ObservableCollection<LexContact> result = [];
 
             string cmd = string.Format("contacts{0}",
                 type == LexContactType.Customer ? "?customer=true" : "?vendor=true"              
                 );
             cmd += $"&page={page}&size={size}";
 
-            var jsonString = await BaseApiCallAsync(cmd, Method.Get);
-            LexContactsList contacts = JsonConvert.DeserializeObject<LexContactsList>(jsonString);
+            string? jsonString = await BaseApiCallAsync(cmd, Method.Get) ?? string.Empty;
+            LexContactsList? contacts = JsonConvert.DeserializeObject<LexContactsList>(jsonString);
             if (contacts != null)
             {
                 result = new ObservableCollection<LexContact>(contacts.Content);
                 if (page < contacts.TotalPages)
                 {
-                    page++;   
-                    var append = await GetContactsAsync(type, page, size);
+                    page++;
+                    ObservableCollection<LexContact> append = await GetContactsAsync(type, page, size);
                     result = new ObservableCollection<LexContact>(result.Concat(append));
                     await Task.Delay(coolDown < 20 ? 20 : coolDown);
                     return result;
                 }
             }
-
             return result;
         }
 
-        public async Task<LexContact> GetContactAsync(Guid Id)
+        public async Task<LexContact?> GetContactAsync(Guid id)
         {
-            var jsonString = await BaseApiCallAsync(string.Format("contacts/{0}", Id.ToString()), Method.Get);
-            LexContact contact = JsonConvert.DeserializeObject<LexContact>(jsonString);
-
+            string? jsonString = await BaseApiCallAsync($"contacts/{id}", Method.Get) ?? string.Empty;
+            LexContact? contact = JsonConvert.DeserializeObject<LexContact>(jsonString);
             return contact;
         }
         #endregion
@@ -498,7 +338,7 @@ namespace AndreasReitberger.API.LexOffice
         #region Invoices
         public async Task<ObservableCollection<VoucherListContent>> GetInvoiceListAsync(LexVoucherStatus status, bool archived = false, int page = 0, int size = 25)
         {
-            ObservableCollection<VoucherListContent> result = new ObservableCollection<VoucherListContent>();
+            ObservableCollection<VoucherListContent> result = [];
 
             string type = LexVoucherType.invoice.ToString();
             string cmd = string.Format("voucherlist?{0}&{1}&{2}",
@@ -506,19 +346,17 @@ namespace AndreasReitberger.API.LexOffice
                 $"voucherStatus={status}",
                 $"archived={archived}"
                 );
-            cmd = cmd + $"&page={page}&size={size}";
+            cmd += $"&page={page}&size={size}";
 
-            var jsonString = await BaseApiCallAsync(cmd, Method.Get);
-
-            var list = JsonConvert.DeserializeObject<LexVoucherList>(jsonString);
-
-            if (list != null)
+            string? jsonString = await BaseApiCallAsync(cmd, Method.Get) ?? string.Empty;
+            LexVoucherList? list = JsonConvert.DeserializeObject<LexVoucherList>(jsonString);
+            if (list is not null)
             {
                 if (page < list.TotalPages - 1)
                 {
                     page++;
                     result = new ObservableCollection<VoucherListContent>(list.Content);
-                    var append = await GetInvoiceListAsync(status, archived, page, size);
+                    ObservableCollection<VoucherListContent> append = await GetInvoiceListAsync(status, archived, page, size);
                     result = new ObservableCollection<VoucherListContent>(result.Concat(append));
                     return result;
                 }
@@ -526,27 +364,27 @@ namespace AndreasReitberger.API.LexOffice
             return result;
         }
 
-        public async Task<ObservableCollection<LexQuotation>> GetInvoicesAsync(List<Guid> Ids)
+        public async Task<ObservableCollection<LexQuotation>> GetInvoicesAsync(List<Guid> ids)
         {
-            ObservableCollection<LexQuotation> result = new ObservableCollection<LexQuotation>();
-            foreach (Guid Id in Ids)
+            ObservableCollection<LexQuotation> result = [];
+            foreach (Guid Id in ids)
             {
-                var quote = await GetInVoiceAsync(Id);
-                if (quote != null)
+                LexQuotation? quote = await GetInVoiceAsync(Id);
+                if (quote is not null)
                     result.Add(quote);
             }
             return result;
         }
-        public async Task<ObservableCollection<LexQuotation>> GetInvoicesAsync(ObservableCollection<VoucherListContent> VoucherList)
+        public async Task<ObservableCollection<LexQuotation>> GetInvoicesAsync(ObservableCollection<VoucherListContent> voucherList)
         {
-            var ids = VoucherList.Select(id => id.Id).ToList();
+            List<Guid> ids = voucherList.Select(id => id.Id).ToList();
             return await GetInvoicesAsync(ids);
         }
 
-        public async Task<LexQuotation> GetInVoiceAsync(Guid Id)
+        public async Task<LexQuotation?> GetInVoiceAsync(Guid id)
         {
-            var jsonString = await BaseApiCallAsync(string.Format("invoices/{0}", Id.ToString()), Method.Get);
-            LexQuotation contact = JsonConvert.DeserializeObject<LexQuotation>(jsonString);
+            string? jsonString = await BaseApiCallAsync($"invoices/{id}", Method.Get) ?? string.Empty;
+            LexQuotation? contact = JsonConvert.DeserializeObject<LexQuotation>(jsonString);
             return contact;
         }
         #endregion
@@ -554,7 +392,7 @@ namespace AndreasReitberger.API.LexOffice
         #region Quotations
         public async Task<ObservableCollection<VoucherListContent>> GetQuotationListAsync(LexVoucherStatus status, bool archived = false, int page = 0, int size = 25)
         {
-            ObservableCollection<VoucherListContent> result = new ObservableCollection<VoucherListContent>();
+            ObservableCollection<VoucherListContent> result = [];
 
             string type = LexVoucherType.quotation.ToString();
             string cmd = string.Format("voucherlist?{0}&{1}&{2}",
@@ -562,19 +400,17 @@ namespace AndreasReitberger.API.LexOffice
                 $"voucherStatus={status}",
                 $"archived={archived}"
                 );
-            cmd = cmd + $"&page={page}&size={size}";
+            cmd += $"&page={page}&size={size}";
 
-            var jsonString = await BaseApiCallAsync(cmd, Method.Get);
-
-            var list = JsonConvert.DeserializeObject<LexVoucherList>(jsonString);
-
-            if (list != null)
+            string? jsonString = await BaseApiCallAsync(cmd, Method.Get) ?? string.Empty;
+            LexVoucherList? list = JsonConvert.DeserializeObject<LexVoucherList>(jsonString);
+            if (list is not null)
             {
                 if (page < list.TotalPages - 1)
                 {
                     page++;
                     result = new ObservableCollection<VoucherListContent>(list.Content);
-                    var append = await GetQuotationListAsync(status, archived, page, size);
+                    ObservableCollection<VoucherListContent> append = await GetQuotationListAsync(status, archived, page, size);
                     result = new ObservableCollection<VoucherListContent>(result.Concat(append));
                     return result;
                 }
@@ -582,27 +418,27 @@ namespace AndreasReitberger.API.LexOffice
             return result;
         }
 
-        public async Task<ObservableCollection<LexQuotation>> GetQuotationsAsync(List<Guid> Ids)
+        public async Task<ObservableCollection<LexQuotation>> GetQuotationsAsync(List<Guid> ids)
         {
-            ObservableCollection<LexQuotation> result = new ObservableCollection<LexQuotation>();
-            foreach (Guid Id in Ids)
+            ObservableCollection<LexQuotation> result = [];
+            foreach (Guid Id in ids)
             {
-                var quote = await GetQuotationAsync(Id);
-                if (quote != null)
+                LexQuotation? quote = await GetQuotationAsync(Id);
+                if (quote is not null)
                     result.Add(quote);
             }
             return result;
         }
-        public async Task<ObservableCollection<LexQuotation>> GetQuotationsAsync(ObservableCollection<VoucherListContent> VoucherList)
+        public async Task<ObservableCollection<LexQuotation>> GetQuotationsAsync(ObservableCollection<VoucherListContent> voucherList)
         {
-            var ids = VoucherList.Select(id => id.Id).ToList();
+            List<Guid> ids = voucherList.Select(id => id.Id).ToList();
             return await GetQuotationsAsync(ids);
         }
 
-        public async Task<LexQuotation> GetQuotationAsync(Guid Id)
+        public async Task<LexQuotation?> GetQuotationAsync(Guid id)
         {
-            var jsonString = await BaseApiCallAsync(string.Format("quotations/{0}", Id.ToString()), Method.Get);
-            LexQuotation contact = JsonConvert.DeserializeObject<LexQuotation>(jsonString);
+            string? jsonString = await BaseApiCallAsync($"quotations/{id}", Method.Get) ?? string.Empty;
+            LexQuotation? contact = JsonConvert.DeserializeObject<LexQuotation>(jsonString);
             return contact;
         }
         #endregion

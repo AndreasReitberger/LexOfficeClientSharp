@@ -1,41 +1,44 @@
-﻿using Newtonsoft.Json;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
+using Newtonsoft.Json;
 using System;
 
 namespace AndreasReitberger.API.LexOffice
 {
-    public partial class VoucherListContent
+    public partial class VoucherListContent : ObservableObject
     {
-        [JsonProperty("id")]
-        public Guid Id { get; set; }
+        #region Properties
+        [ObservableProperty]
+        Guid id;
 
-        [JsonProperty("voucherType")]
-        public string VoucherType { get; set; }
+        [ObservableProperty]
+        string voucherType = string.Empty;
 
-        [JsonProperty("voucherStatus")]
-        public string VoucherStatus { get; set; }
+        [ObservableProperty]
+        string voucherStatus = string.Empty;
 
-        [JsonProperty("voucherNumber")]
-        public string VoucherNumber { get; set; }
+        [ObservableProperty]
+        string voucherNumber = string.Empty;
 
-        [JsonProperty("voucherDate")]
-        public DateTimeOffset VoucherDate { get; set; }
+        [ObservableProperty]
+        DateTimeOffset voucherDate;
 
-        [JsonProperty("updatedDate")]
-        public DateTimeOffset UpdatedDate { get; set; }
+        [ObservableProperty]
+        DateTimeOffset updatedDate;
 
-        [JsonProperty("dueDate")]
-        public DateTimeOffset DueDate { get; set; }
+        [ObservableProperty]
+        DateTimeOffset dueDate;
 
-        [JsonProperty("contactName")]
-        public string ContactName { get; set; }
+        [ObservableProperty]
+        string contactName = string.Empty;
 
-        [JsonProperty("totalAmount")]
-        public double TotalAmount { get; set; }
+        [ObservableProperty]
+        double totalAmount;
 
-        [JsonProperty("currency")]
-        public string Currency { get; set; }
+        [ObservableProperty]
+        string currency = string.Empty;
 
-        [JsonProperty("archived")]
-        public bool Archived { get; set; }
+        [ObservableProperty]
+        bool archived;
+        #endregion
     }
 }

@@ -1,11 +1,15 @@
-﻿using Newtonsoft.Json;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
 using System;
 
 namespace AndreasReitberger.API.LexOffice
 {
-    public partial class LexQuotationFiles
+    public partial class LexQuotationFiles : ObservableObject
     {
-        [JsonProperty("documentFileId")]
-        public Guid DocumentFileId { get; set; }
+        #region Properties
+
+        [ObservableProperty]
+        Guid documentFileId;
+
+        #endregion
     }
 }

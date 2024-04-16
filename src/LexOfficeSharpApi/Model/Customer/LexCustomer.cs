@@ -1,10 +1,13 @@
-﻿using Newtonsoft.Json;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace AndreasReitberger.API.LexOffice
 {
-    public partial class LexCustomer
+    public partial class LexCustomer : ObservableObject
     {
-        [JsonProperty("number")]
-        public long Number { get; set; }
+        #region Properties
+
+        [ObservableProperty]
+        long number;
+        #endregion
     }
 }

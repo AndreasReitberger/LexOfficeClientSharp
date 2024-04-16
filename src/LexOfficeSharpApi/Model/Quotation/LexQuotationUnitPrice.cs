@@ -1,19 +1,21 @@
-﻿using Newtonsoft.Json;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace AndreasReitberger.API.LexOffice
 {
-    public partial class LexQuotationUnitPrice
+    public partial class LexQuotationUnitPrice : ObservableObject
     {
-        [JsonProperty("currency")]
-        public string Currency { get; set; }
+        #region Properties
+        [ObservableProperty]
+        string currency = string.Empty;
 
-        [JsonProperty("netAmount")]
-        public double NetAmount { get; set; }
+        [ObservableProperty]
+        double netAmount;
 
-        [JsonProperty("grossAmount")]
-        public double GrossAmount { get; set; }
+        [ObservableProperty]
+        double grossAmount;
 
-        [JsonProperty("taxRatePercentage")]
-        public long TaxRatePercentage { get; set; }
+        [ObservableProperty]
+        long taxRatePercentage;
+        #endregion
     }
 }
