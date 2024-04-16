@@ -301,10 +301,9 @@ namespace AndreasReitberger.API.LexOffice
         #endregion
 
         #region Contacts
-        public async Task<ObservableCollection<LexContact>> GetContactsAsync(LexContactType type, int page = 0, int size = 25, int coolDown = 20)
+        public async Task<List<LexContact>> GetContactsAsync(LexContactType type, int page = 0, int size = 25, int coolDown = 20)
         {
-            ObservableCollection<LexContact> result = [];
-
+            List<LexContact> result = [];
             string cmd = string.Format("contacts{0}",
                 type == LexContactType.Customer ? "?customer=true" : "?vendor=true"              
                 );
@@ -314,12 +313,12 @@ namespace AndreasReitberger.API.LexOffice
             LexContactsList? contacts = JsonConvert.DeserializeObject<LexContactsList>(jsonString);
             if (contacts != null)
             {
-                result = new ObservableCollection<LexContact>(contacts.Content);
+                result = new List<LexContact>(contacts.Content);
                 if (page < contacts.TotalPages)
                 {
                     page++;
-                    ObservableCollection<LexContact> append = await GetContactsAsync(type, page, size);
-                    result = new ObservableCollection<LexContact>(result.Concat(append));
+                    List<LexContact> append = await GetContactsAsync(type, page, size);
+                    result = new List<LexContact>(result.Concat(append));
                     await Task.Delay(coolDown < 20 ? 20 : coolDown);
                     return result;
                 }
@@ -336,10 +335,9 @@ namespace AndreasReitberger.API.LexOffice
         #endregion
 
         #region Invoices
-        public async Task<ObservableCollection<VoucherListContent>> GetInvoiceListAsync(LexVoucherStatus status, bool archived = false, int page = 0, int size = 25)
+        public async Task<List<VoucherListContent>> GetInvoiceListAsync(LexVoucherStatus status, bool archived = false, int page = 0, int size = 25)
         {
-            ObservableCollection<VoucherListContent> result = [];
-
+            List<VoucherListContent> result = [];
             string type = LexVoucherType.invoice.ToString();
             string cmd = string.Format("voucherlist?{0}&{1}&{2}",
                 $"voucherType={type}",
@@ -355,27 +353,28 @@ namespace AndreasReitberger.API.LexOffice
                 if (page < list.TotalPages - 1)
                 {
                     page++;
-                    result = new ObservableCollection<VoucherListContent>(list.Content);
-                    ObservableCollection<VoucherListContent> append = await GetInvoiceListAsync(status, archived, page, size);
-                    result = new ObservableCollection<VoucherListContent>(result.Concat(append));
+                    result = new List<VoucherListContent>(list.Content);
+                    List<VoucherListContent> append = await GetInvoiceListAsync(status, archived, page, size);
+                    result = new List<VoucherListContent>(result.Concat(append));
                     return result;
                 }
             }
             return result;
         }
 
-        public async Task<ObservableCollection<LexQuotation>> GetInvoicesAsync(List<Guid> ids)
+        public async Task<List<LexQuotation>> GetInvoicesAsync(List<Guid> ids)
         {
-            ObservableCollection<LexQuotation> result = [];
-            foreach (Guid Id in ids)
+            List<LexQuotation> result = [];
+            foreach (Guid id in ids)
             {
-                LexQuotation? quote = await GetInVoiceAsync(Id);
+                LexQuotation? quote = await GetInVoiceAsync(id);
                 if (quote is not null)
                     result.Add(quote);
             }
             return result;
         }
-        public async Task<ObservableCollection<LexQuotation>> GetInvoicesAsync(ObservableCollection<VoucherListContent> voucherList)
+
+        public async Task<List<LexQuotation>> GetInvoicesAsync(List<VoucherListContent> voucherList)
         {
             List<Guid> ids = voucherList.Select(id => id.Id).ToList();
             return await GetInvoicesAsync(ids);
@@ -390,10 +389,9 @@ namespace AndreasReitberger.API.LexOffice
         #endregion
 
         #region Quotations
-        public async Task<ObservableCollection<VoucherListContent>> GetQuotationListAsync(LexVoucherStatus status, bool archived = false, int page = 0, int size = 25)
+        public async Task<List<VoucherListContent>> GetQuotationListAsync(LexVoucherStatus status, bool archived = false, int page = 0, int size = 25)
         {
-            ObservableCollection<VoucherListContent> result = [];
-
+            List<VoucherListContent> result = [];
             string type = LexVoucherType.quotation.ToString();
             string cmd = string.Format("voucherlist?{0}&{1}&{2}",
                 $"voucherType={type}",
@@ -409,18 +407,18 @@ namespace AndreasReitberger.API.LexOffice
                 if (page < list.TotalPages - 1)
                 {
                     page++;
-                    result = new ObservableCollection<VoucherListContent>(list.Content);
-                    ObservableCollection<VoucherListContent> append = await GetQuotationListAsync(status, archived, page, size);
-                    result = new ObservableCollection<VoucherListContent>(result.Concat(append));
+                    result = new List<VoucherListContent>(list.Content);
+                    List<VoucherListContent> append = await GetQuotationListAsync(status, archived, page, size);
+                    result = new List<VoucherListContent>(result.Concat(append));
                     return result;
                 }
             }
             return result;
         }
 
-        public async Task<ObservableCollection<LexQuotation>> GetQuotationsAsync(List<Guid> ids)
+        public async Task<List<LexQuotation>> GetQuotationsAsync(List<Guid> ids)
         {
-            ObservableCollection<LexQuotation> result = [];
+            List<LexQuotation> result = [];
             foreach (Guid Id in ids)
             {
                 LexQuotation? quote = await GetQuotationAsync(Id);
@@ -429,7 +427,8 @@ namespace AndreasReitberger.API.LexOffice
             }
             return result;
         }
-        public async Task<ObservableCollection<LexQuotation>> GetQuotationsAsync(ObservableCollection<VoucherListContent> voucherList)
+
+        public async Task<List<LexQuotation>> GetQuotationsAsync(List<VoucherListContent> voucherList)
         {
             List<Guid> ids = voucherList.Select(id => id.Id).ToList();
             return await GetQuotationsAsync(ids);
