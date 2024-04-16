@@ -8,10 +8,32 @@ namespace LexOfficeSharpApi.Test.NUnit
     public class Tests
     {
         private const string tokenString = "YOUR_TOKEN";
+        private LexOfficeClient? client;
 
         [SetUp]
         public void Setup()
         {
+            client = new LexOfficeClient.LexOfficeConnectionBuilder()
+                .WithApiKey(tokenString)
+                .Build();
+        }
+
+        [Test]
+        public async Task TestWithBuilder()
+        {
+            try
+            {
+                if (client is null) throw new NullReferenceException($"The client was null!");
+
+                List<VoucherListContent> invoicesList = await client.GetInvoiceListAsync(LexVoucherStatus.open);
+                List<LexQuotation> invoices = await client.GetInvoicesAsync(invoicesList);
+
+                Assert.IsTrue(invoices != null && invoices.Count > 0);
+            }
+            catch (Exception ex)
+            {
+                Assert.Fail(ex.Message);
+            }
         }
 
         [Test]
@@ -22,8 +44,8 @@ namespace LexOfficeSharpApi.Test.NUnit
                 SecureString token = SecureStringHelper.ConvertToSecureString(tokenString);
                 LexOfficeClient handler = new(token);
 
-                ObservableCollection<VoucherListContent> invoicesList = await handler.GetInvoiceListAsync(LexVoucherStatus.open);
-                ObservableCollection<LexQuotation> invoices = await handler.GetInvoicesAsync(invoicesList);
+                List<VoucherListContent> invoicesList = await handler.GetInvoiceListAsync(LexVoucherStatus.open);
+                List<LexQuotation> invoices = await handler.GetInvoicesAsync(invoicesList);
 
                 Assert.IsTrue(invoices != null && invoices.Count > 0);
             }
