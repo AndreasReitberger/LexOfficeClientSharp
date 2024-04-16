@@ -1,10 +1,14 @@
-﻿using Newtonsoft.Json;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace AndreasReitberger.API.LexOffice
 {
-    public partial class LexQuotationTaxConditions
+    public partial class LexQuotationTaxConditions : ObservableObject
     {
-        [JsonProperty("taxType")]
-        public string TaxType { get; set; }
+        #region Properties
+
+        [ObservableProperty]
+        string taxType = string.Empty;
+
+        #endregion
     }
 }

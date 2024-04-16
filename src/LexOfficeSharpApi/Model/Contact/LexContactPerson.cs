@@ -1,25 +1,27 @@
-﻿using Newtonsoft.Json;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace AndreasReitberger.API.LexOffice
 {
-    public partial class LexContactPerson
+    public partial class LexContactPerson : ObservableObject
     {
-        [JsonProperty("salutation")]
-        public string Salutation { get; set; }
+        #region Properties
+        [ObservableProperty]
+        string salutation = string.Empty;
 
-        [JsonProperty("firstName")]
-        public string FirstName { get; set; }
+        [ObservableProperty]
+        string firstName = string.Empty;
 
-        [JsonProperty("lastName")]
-        public string LastName { get; set; }
+        [ObservableProperty]
+        string lastName = string.Empty;
 
-        [JsonProperty("primary", NullValueHandling = NullValueHandling.Ignore)]
-        public bool Primary { get; set; }
+        [ObservableProperty]
+        bool primary;
 
-        [JsonProperty("emailAddress", NullValueHandling = NullValueHandling.Ignore)]
-        public string EmailAddress { get; set; }
+        [ObservableProperty]
+        string emailAddress = string.Empty;
 
-        [JsonProperty("phoneNumber", NullValueHandling = NullValueHandling.Ignore)]
-        public string PhoneNumber { get; set; }
+        [ObservableProperty]
+        string phoneNumber = string.Empty;
+        #endregion
     }
 }

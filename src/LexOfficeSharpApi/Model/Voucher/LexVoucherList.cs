@@ -1,36 +1,37 @@
-﻿using Newtonsoft.Json;
-using System;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
 using System.Collections.Generic;
 
 namespace AndreasReitberger.API.LexOffice
 {
-    public partial class LexVoucherList
+    public partial class LexVoucherList : ObservableObject
     {
-        [JsonProperty("content")]
-        public List<VoucherListContent> Content { get; set; }
+        #region Properties
+        [ObservableProperty]
+        List<VoucherListContent> content = [];
 
-        [JsonProperty("first")]
-        public bool First { get; set; }
+        [ObservableProperty]
+        bool first;
 
-        [JsonProperty("last")]
-        public bool Last { get; set; }
+        [ObservableProperty]
+        bool last;
 
-        [JsonProperty("totalPages")]
-        public long TotalPages { get; set; }
+        [ObservableProperty]
+        long totalPages;
 
-        [JsonProperty("totalElements")]
-        public long TotalElements { get; set; }
+        [ObservableProperty]
+        long totalElements;
 
-        [JsonProperty("numberOfElements")]
-        public long NumberOfElements { get; set; }
+        [ObservableProperty]
+        long numberOfElements;
 
-        [JsonProperty("size")]
-        public long Size { get; set; }
+        [ObservableProperty]
+        long size;
 
-        [JsonProperty("number")]
-        public long Number { get; set; }
+        [ObservableProperty]
+        long number;
 
-        [JsonProperty("sort")]
-        public List<LexVoucherSort> Sort { get; set; }
+        [ObservableProperty]
+        List<LexVoucherSort> sort = [];
+        #endregion
     }
 }

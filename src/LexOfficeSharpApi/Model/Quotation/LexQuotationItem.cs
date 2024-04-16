@@ -1,46 +1,47 @@
-﻿using Newtonsoft.Json;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
 using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace AndreasReitberger.API.LexOffice
 {
-    public partial class LexQuotationItem
+    public partial class LexQuotationItem : ObservableObject
     {
-        [JsonProperty("id")]
-        public Guid Id { get; set; }
+        #region Properties
+        [ObservableProperty]
+        Guid id;
 
-        [JsonProperty("type")]
-        public string Type { get; set; }
+        [ObservableProperty]
+        string type = string.Empty;
 
-        [JsonProperty("name")]
-        public string Name { get; set; }
+        [ObservableProperty]
+        string name = string.Empty;
 
-        [JsonProperty("description")]
-        public string Description { get; set; }
+        [ObservableProperty]
+        string description = string.Empty;
 
-        [JsonProperty("quantity")]
-        public long Quantity { get; set; }
+        [ObservableProperty]
+        long quantity;
 
-        [JsonProperty("unitName")]
-        public string UnitName { get; set; }
+        [ObservableProperty]
+        string unitName = string.Empty;
 
-        [JsonProperty("unitPrice")]
-        public LexQuotationUnitPrice UnitPrice { get; set; }
+        [ObservableProperty]
+        LexQuotationUnitPrice? unitPrice;
 
-        [JsonProperty("discountPercentage")]
-        public long DiscountPercentage { get; set; }
+        [ObservableProperty]
+        long discountPercentage;
 
-        [JsonProperty("lineItemAmount")]
-        public double LineItemAmount { get; set; }
+        [ObservableProperty]
+        double lineItemAmount;
 
-        [JsonProperty("subItems", NullValueHandling = NullValueHandling.Ignore)]
-        public List<LexQuotationItem> SubItems { get; set; }
+        [ObservableProperty]
+        List<LexQuotationItem> subItems = [];
 
-        [JsonProperty("alternative")]
-        public bool Alternative { get; set; }
+        [ObservableProperty]
+        bool alternative;
 
-        [JsonProperty("optional")]
-        public bool Optional { get; set; }
+        [ObservableProperty]
+        bool optional;
+        #endregion
     }
 }
