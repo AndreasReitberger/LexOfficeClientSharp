@@ -1,42 +1,44 @@
-﻿using Newtonsoft.Json;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
 using System;
 using System.Collections.Generic;
 
 namespace AndreasReitberger.API.LexOffice
 {
-    public partial class LexContact
+    public partial class LexContact : ObservableObject
     {
-        [JsonProperty("id")]
-        public Guid Id { get; set; }
+        #region Properties
+        [ObservableProperty]
+        Guid id;
 
-        [JsonProperty("organizationId")]
-        public Guid OrganizationId { get; set; }
+        [ObservableProperty]
+        Guid organizationId;
 
-        [JsonProperty("version")]
-        public long Version { get; set; }
+        [ObservableProperty]
+        long version;
 
-        [JsonProperty("roles")]
-        public Dictionary<string, LexCustomerNumber> Roles { get; set; }
+        [ObservableProperty]
+        Dictionary<string, LexCustomerNumber> roles = [];
 
-        [JsonProperty("company", NullValueHandling = NullValueHandling.Ignore)]
-        public LexContactCompany Company { get; set; }
+        [ObservableProperty]
+        LexContactCompany? company;
 
-        [JsonProperty("person", NullValueHandling = NullValueHandling.Ignore)]
-        public LexContactPerson Person { get; set; }
+        [ObservableProperty]
+        LexContactPerson? person;
 
-        [JsonProperty("addresses")]
-        public Dictionary<string, List<LexContactAddress>> Addresses { get; set; }
+        [ObservableProperty]
+        Dictionary<string, List<LexContactAddress>> addresses = [];
 
-        [JsonProperty("emailAddresses")]
-        public Dictionary<string, List<string>> EmailAddresses { get; set; }
+        [ObservableProperty]
+        Dictionary<string, List<string>> emailAddresses = [];
 
-        [JsonProperty("phoneNumbers")]
-        public Dictionary<string, List<string>> PhoneNumbers { get; set; }
+        [ObservableProperty]
+        Dictionary<string, List<string>> phoneNumbers = [];
 
-        [JsonProperty("note", NullValueHandling = NullValueHandling.Ignore)]
-        public string Note { get; set; }
+        [ObservableProperty]
+        string note = string.Empty;
 
-        [JsonProperty("archived")]
-        public bool Archived { get; set; }
+        [ObservableProperty]
+        bool archived;
+        #endregion
     }
 }

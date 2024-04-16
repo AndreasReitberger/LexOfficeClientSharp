@@ -1,73 +1,75 @@
-﻿using Newtonsoft.Json;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
 using System;
 using System.Collections.Generic;
 
 namespace AndreasReitberger.API.LexOffice
 {
-    public partial class LexQuotation
+    public partial class LexQuotation : ObservableObject
     {
-        [JsonProperty("id")]
-        public Guid Id { get; set; }
+        #region Properties
+        [ObservableProperty]
+        Guid id;
 
-        [JsonProperty("organizationId")]
-        public Guid OrganizationId { get; set; }
+        [ObservableProperty]
+        Guid organizationId;
 
-        [JsonProperty("createdDate")]
-        public DateTimeOffset CreatedDate { get; set; }
+        [ObservableProperty]
+        DateTimeOffset createdDate;
 
-        [JsonProperty("updatedDate")]
-        public DateTimeOffset UpdatedDate { get; set; }
+        [ObservableProperty]
+        DateTimeOffset updatedDate;
 
-        [JsonProperty("version")]
-        public long Version { get; set; }
+        [ObservableProperty]
+        long version;
 
-        [JsonProperty("language")]
-        public string Language { get; set; }
+        [ObservableProperty]
+        string language = string.Empty;
 
-        [JsonProperty("archived")]
-        public bool Archived { get; set; }
+        [ObservableProperty]
+        bool archived;
 
-        [JsonProperty("voucherStatus")]
-        public string VoucherStatus { get; set; }
+        [ObservableProperty]
+        string voucherStatus = string.Empty;
 
-        [JsonProperty("voucherNumber")]
-        public string VoucherNumber { get; set; }
+        [ObservableProperty]
+        string voucherNumber = string.Empty;
 
-        [JsonProperty("voucherDate")]
-        public DateTimeOffset VoucherDate { get; set; }
+        [ObservableProperty]
+        DateTimeOffset voucherDate;
 
-        [JsonProperty("expirationDate")]
-        public DateTimeOffset ExpirationDate { get; set; }
+        [ObservableProperty]
+        DateTimeOffset expirationDate;
 
-        [JsonProperty("address")]
-        public LexContactAddress Address { get; set; }
+        [ObservableProperty]
+        LexContactAddress? address;
 
-        [JsonProperty("lineItems")]
-        public List<LexQuotationItem> LineItems { get; set; }
+        [ObservableProperty]
+        List<LexQuotationItem> lineItems = [];
 
-        [JsonProperty("totalPrice")]
-        public LexQuotationTotalPrice TotalPrice { get; set; }
+        [ObservableProperty]
+        LexQuotationTotalPrice? totalPrice;
 
-        [JsonProperty("taxAmounts")]
-        public List<LexQuotationTaxAmount> TaxAmounts { get; set; }
+        [ObservableProperty]
+        List<LexQuotationTaxAmount> taxAmounts = [];
 
-        [JsonProperty("taxConditions")]
-        public LexQuotationTaxConditions TaxConditions { get; set; }
-        //public Dictionary<string, string> TaxConditions { get; set; }
+        [ObservableProperty]
+        LexQuotationTaxConditions? taxConditions;
+        //Dictionary<string, string> taxConditions;
 
-        [JsonProperty("paymentConditions")]
-        public LexQuotationPaymentConditions PaymentConditions { get; set; }
+        [ObservableProperty]
+        LexQuotationPaymentConditions? paymentConditions;
 
-        [JsonProperty("introduction")]
-        public string Introduction { get; set; }
+        [ObservableProperty]
+        string introduction = string.Empty;
 
-        [JsonProperty("remark")]
-        public string Remark { get; set; }
+        [ObservableProperty]
+        string remark = string.Empty;
 
-        [JsonProperty("files")]
-        public LexQuotationFiles Files { get; set; }
+        [ObservableProperty]
+        LexQuotationFiles? files;
 
-        [JsonProperty("title")]
-        public string Title { get; set; }
-    } 
+        [ObservableProperty]
+        string title = string.Empty;
+        #endregion
+    }
 }

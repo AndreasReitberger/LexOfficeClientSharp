@@ -1,23 +1,25 @@
-﻿using Newtonsoft.Json;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
 using System.Collections.Generic;
 
 namespace AndreasReitberger.API.LexOffice
 {
-    public partial class LexContactCompany
+    public partial class LexContactCompany : ObservableObject
     {
-        [JsonProperty("name")]
-        public string Name { get; set; }
+        #region Properties
+        [ObservableProperty]
+        string name = string.Empty;
 
-        [JsonProperty("taxNumber")]
-        public string TaxNumber { get; set; }
+        [ObservableProperty]
+        string taxNumber = string.Empty;
 
-        [JsonProperty("vatRegistrationId")]
-        public string VatRegistrationId { get; set; }
+        [ObservableProperty]
+        string vatRegistrationId = string.Empty;
 
-        [JsonProperty("allowTaxFreeInvoices")]
-        public bool AllowTaxFreeInvoices { get; set; }
+        [ObservableProperty]
+        bool allowTaxFreeInvoices;
 
-        [JsonProperty("contactPersons")]
-        public List<LexContactPerson> ContactPersons { get; set; }
+        [ObservableProperty]
+        List<LexContactPerson> contactPersons = [];
+        #endregion
     }
 }

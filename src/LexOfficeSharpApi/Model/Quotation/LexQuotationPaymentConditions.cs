@@ -1,17 +1,19 @@
-﻿using Newtonsoft.Json;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
 using System.Collections.Generic;
 
 namespace AndreasReitberger.API.LexOffice
 {
-    public partial class LexQuotationPaymentConditions
+    public partial class LexQuotationPaymentConditions : ObservableObject
     {
-        [JsonProperty("paymentTermLabel")]
-        public string PaymentTermLabel { get; set; }
+        #region Properties
+        [ObservableProperty]
+        string paymentTermLabel = string.Empty;
 
-        [JsonProperty("paymentTermDuration")]
-        public long PaymentTermDuration { get; set; }
+        [ObservableProperty]
+        long paymentTermDuration;
 
-        [JsonProperty("paymentDiscountConditions")]
-        public Dictionary<string, long> PaymentDiscountConditions { get; set; }
+        [ObservableProperty]
+        Dictionary<string, long> paymentDiscountConditions = [];
+        #endregion
     }
 }

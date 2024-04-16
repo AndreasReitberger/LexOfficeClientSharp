@@ -1,22 +1,24 @@
-﻿using Newtonsoft.Json;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace AndreasReitberger.API.LexOffice
 {
-    public partial class LexVoucherSort
+    public partial class LexVoucherSort : ObservableObject
     {
-        [JsonProperty("property", NullValueHandling = NullValueHandling.Ignore)]
-        public string Property { get; set; }
+        #region Properties
+        [ObservableProperty]
+        string property = string.Empty;
 
-        [JsonProperty("direction", NullValueHandling = NullValueHandling.Ignore)]
-        public string Direction { get; set; }
+        [ObservableProperty]
+        string direction = string.Empty;
 
-        [JsonProperty("ignoreCase", NullValueHandling = NullValueHandling.Ignore)]
-        public bool? IgnoreCase { get; set; }
+        [ObservableProperty]
+        bool? ignoreCase;
 
-        [JsonProperty("nullHandling", NullValueHandling = NullValueHandling.Ignore)]
-        public string NullHandling { get; set; }
+        [ObservableProperty]
+        string nullHandling = string.Empty;
 
-        [JsonProperty("ascending", NullValueHandling = NullValueHandling.Ignore)]
-        public bool? Ascending { get; set; }
+        [ObservableProperty]
+        bool? ascending;
+        #endregion
     }
 }
