@@ -1,5 +1,6 @@
 using AndreasReitberger.API.LexOffice;
 using AndreasReitberger.Core.Utilities;
+using Newtonsoft.Json;
 using System.Collections.ObjectModel;
 using System.Security;
 
@@ -19,6 +20,16 @@ namespace LexOfficeSharpApi.Test.NUnit
         }
 
         [Test]
+        public void TestJsonSerialization()
+        {
+            string? json = JsonConvert.SerializeObject(client, Formatting.Indented);
+            Assert.That(!string.IsNullOrEmpty(json));
+
+            var client2 = JsonConvert.DeserializeObject<LexOfficeClient>(json);
+            Assert.That(client2 is not null);
+        }
+
+        [Test]
         public async Task TestWithBuilder()
         {
             try
@@ -28,7 +39,7 @@ namespace LexOfficeSharpApi.Test.NUnit
                 List<VoucherListContent> invoicesList = await client.GetInvoiceListAsync(LexVoucherStatus.open);
                 List<LexQuotation> invoices = await client.GetInvoicesAsync(invoicesList);
 
-                Assert.IsTrue(invoices != null && invoices.Count > 0);
+                Assert.That(invoices != null && invoices.Count > 0);
             }
             catch (Exception ex)
             {
@@ -47,7 +58,7 @@ namespace LexOfficeSharpApi.Test.NUnit
                 List<VoucherListContent> invoicesList = await handler.GetInvoiceListAsync(LexVoucherStatus.open);
                 List<LexQuotation> invoices = await handler.GetInvoicesAsync(invoicesList);
 
-                Assert.IsTrue(invoices != null && invoices.Count > 0);
+                Assert.That(invoices != null && invoices.Count > 0);
             }
             catch (Exception ex) 
             {           
