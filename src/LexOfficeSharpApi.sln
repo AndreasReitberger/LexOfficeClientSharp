@@ -5,7 +5,12 @@ VisualStudioVersion = 17.9.34728.123
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LexOfficeSharpApi", "LexOfficeSharpApi\LexOfficeSharpApi.csproj", "{928BD69F-6A5E-4E69-A118-661E788390D6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LexOfficeSharpApi.Test.NUnit", "LexOfficeSharpApi.Test.NUnit\LexOfficeSharpApi.Test.NUnit.csproj", "{4B5DBE1D-B2FB-4499-8E8C-C0733E00145B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LexOfficeSharpApi.Test.NUnit", "LexOfficeSharpApi.Test.NUnit\LexOfficeSharpApi.Test.NUnit.csproj", "{4B5DBE1D-B2FB-4499-8E8C-C0733E00145B}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{7733ECCC-62E3-44C5-9992-5EA119C66824}"
+	ProjectSection(SolutionItems) = preProject
+		..\common.props = ..\common.props
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
