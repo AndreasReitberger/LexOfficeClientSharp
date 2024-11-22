@@ -6,6 +6,9 @@ namespace AndreasReitberger.API.LexOffice
     {
         #region Properties
         [ObservableProperty]
+        string name = string.Empty;
+
+        [ObservableProperty]
         string supplement = string.Empty;
 
         [ObservableProperty]
