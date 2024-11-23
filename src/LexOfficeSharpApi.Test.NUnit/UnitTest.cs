@@ -1,8 +1,5 @@
 using AndreasReitberger.API.LexOffice;
-using AndreasReitberger.Core.Utilities;
 using Newtonsoft.Json;
-using System.Collections.ObjectModel;
-using System.Security;
 
 namespace LexOfficeSharpApi.Test.NUnit
 {
@@ -52,8 +49,7 @@ namespace LexOfficeSharpApi.Test.NUnit
         {
             try
             {
-                SecureString token = SecureStringHelper.ConvertToSecureString(tokenString);
-                LexOfficeClient handler = new(token);
+                LexOfficeClient handler = new(tokenString);
 
                 List<VoucherListContent> invoicesList = await handler.GetInvoiceListAsync(LexVoucherStatus.open);
                 List<LexQuotation> invoices = await handler.GetInvoicesAsync(invoicesList);
