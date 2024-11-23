@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 	<Import Project="..\..\common.props" />
   <PropertyGroup>
-	<TargetFrameworks>netstandard2.1;net48;net6;net7;net8</TargetFrameworks>
+	<TargetFrameworks>netstandard2.1;net48;net8;net9</TargetFrameworks>
     <PackageTags>LexOffice, API, Public, Sharp</PackageTags>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <Description>A simple library to make REST-API calls to the LexOffice public API.</Description>
@@ -21,7 +21,7 @@
     <PackageReference Include="RCoreSharp" Version="1.0.9" />
     <PackageReference Include="RestSharp" Version="112.1.0" />
     <PackageReference Include="System.Net.Http" Version="4.3.4" />
-    <PackageReference Include="System.Text.Json" Version="8.0.5" />
+    <PackageReference Include="System.Text.Json" Version="9.0.0" />
     <None Include="..\..\README.md" Pack="true" PackagePath="\" />
   </ItemGroup>
 
