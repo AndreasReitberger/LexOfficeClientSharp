@@ -1,7 +1,4 @@
-﻿using AndreasReitberger.Core.Utilities;
-using System.Security;
-
-namespace AndreasReitberger.API.LexOffice
+﻿namespace AndreasReitberger.API.LexOffice
 {
     public partial class LexOfficeClient
     {
@@ -18,15 +15,9 @@ namespace AndreasReitberger.API.LexOffice
                 return _client;
             }
 
-            public LexOfficeConnectionBuilder WithApiKey(SecureString apiKey)
-            {
-                _client.AccessToken = apiKey;
-                return this;
-            }
-
             public LexOfficeConnectionBuilder WithApiKey(string apiKey)
             {
-                _client.AccessToken = SecureStringHelper.ConvertToSecureString(apiKey);
+                _client.AccessToken = apiKey;
                 return this;
             }
 

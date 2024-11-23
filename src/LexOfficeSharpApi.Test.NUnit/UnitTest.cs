@@ -52,8 +52,7 @@ namespace LexOfficeSharpApi.Test.NUnit
         {
             try
             {
-                SecureString token = SecureStringHelper.ConvertToSecureString(tokenString);
-                LexOfficeClient handler = new(token);
+                LexOfficeClient handler = new(tokenString);
 
                 List<VoucherListContent> invoicesList = await handler.GetInvoiceListAsync(LexVoucherStatus.open);
                 List<LexQuotation> invoices = await handler.GetInvoicesAsync(invoicesList);
@@ -71,8 +70,7 @@ namespace LexOfficeSharpApi.Test.NUnit
         {
             try
             {
-                SecureString token = SecureStringHelper.ConvertToSecureString(tokenString);
-                LexOfficeClient handler = new(token);
+                LexOfficeClient handler = new(tokenString);
 
                 // Create a new invoice object
                 var invoice = new LexCreateInvoice()
@@ -80,8 +78,8 @@ namespace LexOfficeSharpApi.Test.NUnit
                     Address = new LexContactAddress()
                     {
                         Name = "Bike & Ride GmbH & Co. KG",
-                        Supplement = "Geb‰ude 10",
-                        Street = "Musterstraﬂe 42",
+                        Supplement = "Geb√§ude 10",
+                        Street = "Musterstra√üe 42",
                         City = "Freiburg",
                         Zip = "79112",
                         CountryCode = "DE",
@@ -122,7 +120,7 @@ namespace LexOfficeSharpApi.Test.NUnit
                     VoucherDate = DateTime.Now,
                 };
 
-                LexInvoiceResponse lexInvoiceResponse = await handler.AddInvoiceAsync(invoice, false);
+                LexInvoiceResponse? lexInvoiceResponse = await handler.AddInvoiceAsync(invoice, false);
 
                 Assert.That(lexInvoiceResponse != null);
             }
@@ -137,8 +135,7 @@ namespace LexOfficeSharpApi.Test.NUnit
         {
             try
             {
-                SecureString token = SecureStringHelper.ConvertToSecureString(tokenString);
-                LexOfficeClient handler = new(token);
+                LexOfficeClient handler = new(tokenString);
 
                 List<VoucherListContent> invoicesList = await handler.GetInvoiceListAsync(LexVoucherStatus.draft);
                 List<LexQuotation> invoices = await handler.GetInvoicesAsync(invoicesList);

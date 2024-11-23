@@ -9,7 +9,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
-using System.Security;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
@@ -64,7 +63,7 @@ namespace AndreasReitberger.API.LexOffice
         const string _appBaseUrl = "https://api.lexoffice.io/";
         const string _apiVersion = "v1";
 
-        JsonSerializerSettings jsonSerializerSettings = new JsonSerializerSettings
+        JsonSerializerSettings jsonSerializerSettings = new()
         {
             ContractResolver = new DefaultContractResolver
             {
@@ -81,8 +80,8 @@ namespace AndreasReitberger.API.LexOffice
 
         [ObservableProperty]
         [property: JsonIgnore, XmlIgnore]
-        SecureString? accessToken = null;
-        partial void OnAccessTokenChanged(SecureString? value) => VerifyAccessToken();
+        string? accessToken = null;
+        partial void OnAccessTokenChanged(string? value) => VerifyAccessToken();
 
         [ObservableProperty]
         [property: JsonIgnore, XmlIgnore]
@@ -130,8 +129,8 @@ namespace AndreasReitberger.API.LexOffice
 
         [ObservableProperty]
         [property: JsonIgnore, XmlIgnore]
-        SecureString? proxyPassword;
-        partial void OnProxyPasswordChanged(SecureString? value) => UpdateRestClientInstance();
+        string? proxyPassword;
+        partial void OnProxyPasswordChanged(string? value) => UpdateRestClientInstance();
 
         #endregion
 
@@ -154,7 +153,7 @@ namespace AndreasReitberger.API.LexOffice
         {
             IsInitialized = false;
         }
-        public LexOfficeClient(SecureString accessToken)
+        public LexOfficeClient(string accessToken)
         {
             AccessToken = accessToken;
             IsInitialized = true;
@@ -209,7 +208,7 @@ namespace AndreasReitberger.API.LexOffice
             {
                 RequestFormat = DataFormat.Json
             };
-            request.AddHeader("Authorization", $"Bearer {SecureStringHelper.ConvertToString(AccessToken)}");
+            request.AddHeader("Authorization", $"Bearer {AccessToken}");
             request.AddJsonBody(body);
             if (restClient is not null)
             {
@@ -226,8 +225,7 @@ namespace AndreasReitberger.API.LexOffice
         {
             try
             {
-                string cleaned = SecureStringHelper.ConvertToString(AccessToken);
-                IsAccessTokenValid = Regex.IsMatch(cleaned ?? string.Empty, RegexHelper.LexOfficeAccessToken) && !string.IsNullOrEmpty(cleaned);
+                IsAccessTokenValid = Regex.IsMatch(AccessToken ?? string.Empty, RegexHelper.LexOfficeAccessToken) && !string.IsNullOrEmpty(AccessToken);
             }
             catch(Exception exc)
             {
@@ -264,7 +262,7 @@ namespace AndreasReitberger.API.LexOffice
         #endregion
 
         #region SetAccessToken
-        public void SetAccessToken(SecureString token)
+        public void SetAccessToken(string token)
         {
             AccessToken = token;
             IsInitialized = true;

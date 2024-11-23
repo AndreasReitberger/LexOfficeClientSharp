@@ -13,7 +13,7 @@ namespace AndreasReitberger.API.LexOffice
         DateTimeOffset shippingEndDate;
 
         [ObservableProperty]
-        string shippingType;
+        string shippingType = string.Empty;
         #endregion
     }
 }
