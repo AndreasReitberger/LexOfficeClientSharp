@@ -70,8 +70,7 @@ namespace LexOfficeSharpApi.Test.NUnit
         {
             try
             {
-                SecureString token = SecureStringHelper.ConvertToSecureString(tokenString);
-                LexOfficeClient handler = new(token);
+                LexOfficeClient handler = new(tokenString);
 
                 // Create a new invoice object
                 var invoice = new LexCreateInvoice()
@@ -121,7 +120,7 @@ namespace LexOfficeSharpApi.Test.NUnit
                     VoucherDate = DateTime.Now,
                 };
 
-                LexInvoiceResponse lexInvoiceResponse = await handler.AddInvoiceAsync(invoice, false);
+                LexInvoiceResponse? lexInvoiceResponse = await handler.AddInvoiceAsync(invoice, false);
 
                 Assert.That(lexInvoiceResponse != null);
             }
@@ -136,8 +135,7 @@ namespace LexOfficeSharpApi.Test.NUnit
         {
             try
             {
-                SecureString token = SecureStringHelper.ConvertToSecureString(tokenString);
-                LexOfficeClient handler = new(token);
+                LexOfficeClient handler = new(tokenString);
 
                 List<VoucherListContent> invoicesList = await handler.GetInvoiceListAsync(LexVoucherStatus.draft);
                 List<LexQuotation> invoices = await handler.GetInvoicesAsync(invoicesList);

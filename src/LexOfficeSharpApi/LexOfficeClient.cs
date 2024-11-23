@@ -63,7 +63,7 @@ namespace AndreasReitberger.API.LexOffice
         const string _appBaseUrl = "https://api.lexoffice.io/";
         const string _apiVersion = "v1";
 
-        JsonSerializerSettings jsonSerializerSettings = new JsonSerializerSettings
+        JsonSerializerSettings jsonSerializerSettings = new()
         {
             ContractResolver = new DefaultContractResolver
             {

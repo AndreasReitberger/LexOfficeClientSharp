@@ -23,13 +23,13 @@ namespace AndreasReitberger.API.LexOffice
         List<LexQuotationTaxAmount> taxAmounts = [];
 
         [ObservableProperty]
-        LexQuotationTaxConditions taxConditions;
+        LexQuotationTaxConditions? taxConditions;
 
         [ObservableProperty]
         LexQuotationPaymentConditions? paymentConditions;
         
         [ObservableProperty]
-        LexShippingConditions shippingConditions;
+        LexShippingConditions? shippingConditions;
 
         [ObservableProperty]
         string introduction = string.Empty;
