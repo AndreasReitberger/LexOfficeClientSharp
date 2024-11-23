@@ -8,7 +8,7 @@ namespace AndreasReitberger.API.LexOffice
     {
         #region Properties
         [ObservableProperty]
-        Guid id;
+        Guid? id;
 
         [ObservableProperty]
         string type = string.Empty;
