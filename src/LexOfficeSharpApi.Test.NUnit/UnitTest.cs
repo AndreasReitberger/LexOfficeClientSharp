@@ -1,7 +1,7 @@
 using AndreasReitberger.API.LexOffice;
+using AndreasReitberger.API.LexOffice.Enum;
 using AndreasReitberger.Core.Utilities;
 using Newtonsoft.Json;
-using System.Collections.ObjectModel;
 using System.Security;
 
 namespace LexOfficeSharpApi.Test.NUnit
@@ -48,7 +48,7 @@ namespace LexOfficeSharpApi.Test.NUnit
         }
 
         [Test]
-        public async Task TestGetInvoices()
+        public async Task TestGetInvoicesOpen()
         {
             try
             {
@@ -62,6 +62,91 @@ namespace LexOfficeSharpApi.Test.NUnit
             }
             catch (Exception ex) 
             {           
+                Assert.Fail(ex.Message);
+            }
+        }
+
+        [Test]
+        public async Task TestCreateInvoices()
+        {
+            try
+            {
+                SecureString token = SecureStringHelper.ConvertToSecureString(tokenString);
+                LexOfficeClient handler = new(token);
+
+                // Create a new invoice object
+                var invoice = new LexCreateInvoice()
+                {
+                    Address = new LexContactAddress()
+                    {
+                        Name = "Bike & Ride GmbH & Co. KG",
+                        Supplement = "Geb‰ude 10",
+                        Street = "Musterstraﬂe 42",
+                        City = "Freiburg",
+                        Zip = "79112",
+                        CountryCode = "DE",
+                    },
+                    LineItems = new List<LexQuotationItem>
+                    {
+                        new LexQuotationItem()
+                        {
+                            Type = "custom",
+                            Name = "test",
+                            Quantity = 1,
+                            UnitName = "test2",
+                            UnitPrice = new LexQuotationUnitPrice()
+                            {
+                                Currency = "EUR",
+                                NetAmount = 5,
+                                TaxRatePercentage = 0
+                            }
+                        }
+                    },
+                    TotalPrice = new LexQuotationTotalPrice()
+                    {
+                        Currency = "EUR",
+                        TotalNetAmount = 10,
+                        TotalGrossAmount = 10,
+                        TotalTaxAmount = 10
+                    },
+                    TaxConditions = new LexQuotationTaxConditions()
+                    {
+                        TaxType = "net"
+                    },
+                    ShippingConditions = new LexShippingConditions()
+                    {
+                        ShippingDate = DateTime.Now,
+                        ShippingEndDate = DateTime.Now,
+                        ShippingType = "none"
+                    },
+                    VoucherDate = DateTime.Now,
+                };
+
+                LexInvoiceResponse lexInvoiceResponse = await handler.AddInvoiceAsync(invoice, false);
+
+                Assert.That(lexInvoiceResponse != null);
+            }
+            catch (Exception ex)
+            {
+                Assert.Fail(ex.Message);
+            }
+        }
+
+        [Test]
+        public async Task TestGetInvoicesDraft()
+        {
+            try
+            {
+                SecureString token = SecureStringHelper.ConvertToSecureString(tokenString);
+                LexOfficeClient handler = new(token);
+
+                List<VoucherListContent> invoicesList = await handler.GetInvoiceListAsync(LexVoucherStatus.draft);
+                List<LexQuotation> invoices = await handler.GetInvoicesAsync(invoicesList);
+
+                Assert.That(invoices != null && invoices.Count > 0);
+            }
+            catch (Exception ex)
+            {
                 Assert.Fail(ex.Message);
             }
         }

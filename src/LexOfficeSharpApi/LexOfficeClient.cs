@@ -1,6 +1,8 @@
-﻿using AndreasReitberger.Core.Utilities;
+﻿using AndreasReitberger.API.LexOffice.Enum;
+using AndreasReitberger.Core.Utilities;
 using CommunityToolkit.Mvvm.ComponentModel;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 using RestSharp;
 using System;
 using System.Collections.Generic;
@@ -61,6 +63,16 @@ namespace AndreasReitberger.API.LexOffice
 
         const string _appBaseUrl = "https://api.lexoffice.io/";
         const string _apiVersion = "v1";
+
+        JsonSerializerSettings jsonSerializerSettings = new JsonSerializerSettings
+        {
+            ContractResolver = new DefaultContractResolver
+            {
+                NamingStrategy = new CamelCaseNamingStrategy(),
+            },
+            DateFormatString = "yyyy-MM-ddTHH:mm:ss.fffK"
+        };
+
         #endregion
 
         #region Properties
@@ -181,7 +193,7 @@ namespace AndreasReitberger.API.LexOffice
             }
         }
 
-        async Task<string?> BaseApiCallAsync(string command, Method method = Method.Get, CancellationTokenSource? cts = default)
+        async Task<string?> BaseApiCallAsync(string command, Method method = Method.Get, string body = "", CancellationTokenSource? cts = default)
         {
             string? result = string.Empty;
             if (cts == default)
@@ -198,10 +210,11 @@ namespace AndreasReitberger.API.LexOffice
                 RequestFormat = DataFormat.Json
             };
             request.AddHeader("Authorization", $"Bearer {SecureStringHelper.ConvertToString(AccessToken)}");
+            request.AddJsonBody(body);
             if (restClient is not null)
             {
                 RestResponse? respone = await restClient.ExecuteAsync(request, cts.Token).ConfigureAwait(false);
-                if (respone.StatusCode == HttpStatusCode.OK && respone.ResponseStatus == ResponseStatus.Completed)
+                if ((respone.StatusCode == HttpStatusCode.OK || respone.StatusCode == HttpStatusCode.Created) && respone.ResponseStatus == ResponseStatus.Completed)
                 {
                     result = respone?.Content;
                 }
@@ -354,7 +367,7 @@ namespace AndreasReitberger.API.LexOffice
             LexVoucherList? list = JsonConvert.DeserializeObject<LexVoucherList>(jsonString);
             if (list is not null)
             {
-                if (page < list.TotalPages - 1)
+                if (page <= list.TotalPages)
                 {
                     page++;
                     result = new List<VoucherListContent>(list.Content);
@@ -371,7 +384,7 @@ namespace AndreasReitberger.API.LexOffice
             List<LexQuotation> result = [];
             foreach (Guid id in ids)
             {
-                LexQuotation? quote = await GetInVoiceAsync(id);
+                LexQuotation? quote = await GetInvoiceAsync(id);
                 if (quote is not null)
                     result.Add(quote);
             }
@@ -384,10 +397,17 @@ namespace AndreasReitberger.API.LexOffice
             return await GetInvoicesAsync(ids);
         }
 
-        public async Task<LexQuotation?> GetInVoiceAsync(Guid id)
+        public async Task<LexQuotation?> GetInvoiceAsync(Guid id)
         {
             string? jsonString = await BaseApiCallAsync($"invoices/{id}", Method.Get) ?? string.Empty;
             LexQuotation? contact = JsonConvert.DeserializeObject<LexQuotation>(jsonString);
+            return contact;
+        }
+
+        public async Task<LexInvoiceResponse?> AddInvoiceAsync(LexCreateInvoice lexQuotation, bool isFinalized = false)
+        {
+            string? jsonString = await BaseApiCallAsync($"invoices?finalize={isFinalized}", Method.Post, JsonConvert.SerializeObject(lexQuotation, jsonSerializerSettings)) ?? string.Empty;
+            LexInvoiceResponse? contact = JsonConvert.DeserializeObject<LexInvoiceResponse>(jsonString);
             return contact;
         }
         #endregion
