@@ -398,15 +398,24 @@ namespace AndreasReitberger.API.LexOffice
         public async Task<LexQuotation?> GetInvoiceAsync(Guid id)
         {
             string? jsonString = await BaseApiCallAsync($"invoices/{id}", Method.Get) ?? string.Empty;
-            LexQuotation? contact = JsonConvert.DeserializeObject<LexQuotation>(jsonString);
-            return contact;
+            LexQuotation? result = JsonConvert.DeserializeObject<LexQuotation>(jsonString);
+            return result;
         }
 
         public async Task<LexInvoiceResponse?> AddInvoiceAsync(LexCreateInvoice lexQuotation, bool isFinalized = false)
         {
             string? jsonString = await BaseApiCallAsync($"invoices?finalize={isFinalized}", Method.Post, JsonConvert.SerializeObject(lexQuotation, jsonSerializerSettings)) ?? string.Empty;
-            LexInvoiceResponse? contact = JsonConvert.DeserializeObject<LexInvoiceResponse>(jsonString);
-            return contact;
+            LexInvoiceResponse? result = JsonConvert.DeserializeObject<LexInvoiceResponse>(jsonString);
+            return result;
+        }
+        #endregion
+
+        #region Payments
+        public async Task<LexPayments?> GetPaymentsAsync(Guid invoiceId)
+        {
+            string? jsonString = await BaseApiCallAsync($"payments/{invoiceId}", Method.Get) ?? string.Empty;
+            LexPayments? result = JsonConvert.DeserializeObject<LexPayments>(jsonString);
+            return result;
         }
         #endregion
 
