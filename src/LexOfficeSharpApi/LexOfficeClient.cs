@@ -346,6 +346,46 @@ namespace AndreasReitberger.API.LexOffice
             LexContact? contact = JsonConvert.DeserializeObject<LexContact>(jsonString);
             return contact;
         }
+        public async Task<LexResponseDefault?> AddContactAsync(LexContact lexContact)
+        {
+            string? jsonString = await BaseApiCallAsync($"contacts", Method.Post, JsonConvert.SerializeObject(lexContact, jsonSerializerSettings)) ?? string.Empty;
+            LexResponseDefault? response = JsonConvert.DeserializeObject<LexResponseDefault>(jsonString);
+            return response;
+        }
+        public async Task<LexResponseDefault?> UpdateContactAsync(Guid contactId, LexContact lexContact)
+        {
+            string? jsonString = await BaseApiCallAsync($"contacts/{contactId}", Method.Post, JsonConvert.SerializeObject(lexContact, jsonSerializerSettings)) ?? string.Empty;
+            LexResponseDefault? response = JsonConvert.DeserializeObject<LexResponseDefault>(jsonString);
+            return response;
+        }
+        #endregion
+
+        #region Countries
+
+        public async Task<List<LexCountry>> GetCountriesAsync()
+        {
+            List<LexCountry> result = [];
+            string? jsonString = await BaseApiCallAsync("countries", Method.Get) ?? string.Empty;
+            result = JsonConvert.DeserializeObject<List<LexCountry>>(jsonString) ?? [];
+            return result;
+        }
+        #endregion
+
+        #region Credit Notes
+
+        public async Task<List<LexDocumentRespone>> GetCreditNotesAsync()
+        {
+            List<LexDocumentRespone> result = [];
+            string? jsonString = await BaseApiCallAsync("credit-notes", Method.Get) ?? string.Empty;
+            result = JsonConvert.DeserializeObject<List<LexDocumentRespone>>(jsonString) ?? [];
+            return result;
+        }
+        public async Task<LexDocumentRespone?> GetCreditNoteAsync(Guid id)
+        {
+            string? jsonString = await BaseApiCallAsync($"credit-notes/{id}", Method.Get) ?? string.Empty;
+            LexDocumentRespone? respone = JsonConvert.DeserializeObject<LexDocumentRespone>(jsonString);
+            return respone;
+        }
         #endregion
 
         #region Conditions
@@ -385,35 +425,35 @@ namespace AndreasReitberger.API.LexOffice
             return result;
         }
 
-        public async Task<List<LexQuotation>> GetInvoicesAsync(List<Guid> ids)
+        public async Task<List<LexDocumentRespone>> GetInvoicesAsync(List<Guid> ids)
         {
-            List<LexQuotation> result = [];
+            List<LexDocumentRespone> result = [];
             foreach (Guid id in ids)
             {
-                LexQuotation? quote = await GetInvoiceAsync(id);
+                LexDocumentRespone? quote = await GetInvoiceAsync(id);
                 if (quote is not null)
                     result.Add(quote);
             }
             return result;
         }
 
-        public async Task<List<LexQuotation>> GetInvoicesAsync(List<VoucherListContent> voucherList)
+        public async Task<List<LexDocumentRespone>> GetInvoicesAsync(List<VoucherListContent> voucherList)
         {
             List<Guid> ids = voucherList.Select(id => id.Id).ToList();
             return await GetInvoicesAsync(ids);
         }
 
-        public async Task<LexQuotation?> GetInvoiceAsync(Guid id)
+        public async Task<LexDocumentRespone?> GetInvoiceAsync(Guid id)
         {
             string? jsonString = await BaseApiCallAsync($"invoices/{id}", Method.Get) ?? string.Empty;
-            LexQuotation? response = JsonConvert.DeserializeObject<LexQuotation>(jsonString);
+            LexDocumentRespone? response = JsonConvert.DeserializeObject<LexDocumentRespone>(jsonString);
             return response;
         }
 
-        public async Task<LexInvoiceResponse?> AddInvoiceAsync(LexCreateInvoice lexQuotation, bool isFinalized = false)
+        public async Task<LexResponseDefault?> AddInvoiceAsync(LexDocumentRespone lexQuotation, bool isFinalized = false)
         {
             string? jsonString = await BaseApiCallAsync($"invoices?finalize={isFinalized}", Method.Post, JsonConvert.SerializeObject(lexQuotation, jsonSerializerSettings)) ?? string.Empty;
-            LexInvoiceResponse? response = JsonConvert.DeserializeObject<LexInvoiceResponse>(jsonString);
+            LexResponseDefault? response = JsonConvert.DeserializeObject<LexResponseDefault>(jsonString);
             return response;
         }
         #endregion
@@ -444,28 +484,28 @@ namespace AndreasReitberger.API.LexOffice
             return result;
         }
 
-        public async Task<List<LexQuotation>> GetQuotationsAsync(List<Guid> ids)
+        public async Task<List<LexDocumentRespone>> GetQuotationsAsync(List<Guid> ids)
         {
-            List<LexQuotation> result = [];
+            List<LexDocumentRespone> result = [];
             foreach (Guid Id in ids)
             {
-                LexQuotation? quote = await GetQuotationAsync(Id);
+                LexDocumentRespone? quote = await GetQuotationAsync(Id);
                 if (quote is not null)
                     result.Add(quote);
             }
             return result;
         }
 
-        public async Task<List<LexQuotation>> GetQuotationsAsync(List<VoucherListContent> voucherList)
+        public async Task<List<LexDocumentRespone>> GetQuotationsAsync(List<VoucherListContent> voucherList)
         {
             List<Guid> ids = voucherList.Select(id => id.Id).ToList();
             return await GetQuotationsAsync(ids);
         }
 
-        public async Task<LexQuotation?> GetQuotationAsync(Guid id)
+        public async Task<LexDocumentRespone?> GetQuotationAsync(Guid id)
         {
             string? jsonString = await BaseApiCallAsync($"quotations/{id}", Method.Get) ?? string.Empty;
-            LexQuotation? response = JsonConvert.DeserializeObject<LexQuotation>(jsonString);
+            LexDocumentRespone? response = JsonConvert.DeserializeObject<LexDocumentRespone>(jsonString);
             return response;
         }
         #endregion
