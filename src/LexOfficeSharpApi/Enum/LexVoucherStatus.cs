@@ -2,13 +2,13 @@
 {
     public enum LexVoucherStatus
     {
-        draft,
-        open,
-        overdue,
-        paid,
-        paidoff,
-        voided,
-        accepted,
-        rejected,
+        Draft,
+        Open,
+        Overdue,
+        Paid,
+        Paidoff,
+        Voided,
+        Accepted,
+        Rejected,
     }
 }

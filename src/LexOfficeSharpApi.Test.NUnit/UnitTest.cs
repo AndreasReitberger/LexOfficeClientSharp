@@ -1,14 +1,12 @@
 using AndreasReitberger.API.LexOffice;
 using AndreasReitberger.API.LexOffice.Enum;
-using AndreasReitberger.Core.Utilities;
 using Newtonsoft.Json;
-using System.Security;
 
 namespace LexOfficeSharpApi.Test.NUnit
 {
     public class Tests
     {
-        private const string tokenString = "YOUR_TOKEN";
+        private readonly string tokenString = SecretAppSettingReader.ReadSection<SecretAppSetting>("TestSetup").ApiKey ?? "";
         private LexOfficeClient? client;
 
         [SetUp]
@@ -36,10 +34,10 @@ namespace LexOfficeSharpApi.Test.NUnit
             {
                 if (client is null) throw new NullReferenceException($"The client was null!");
 
-                List<VoucherListContent> invoicesList = await client.GetInvoiceListAsync(LexVoucherStatus.open);
+                List<VoucherListContent> invoicesList = await client.GetInvoiceListAsync(LexVoucherStatus.Paid);
                 List<LexQuotation> invoices = await client.GetInvoicesAsync(invoicesList);
 
-                Assert.That(invoices != null && invoices.Count > 0);
+                Assert.That(invoices?.Count > 0);
             }
             catch (Exception ex)
             {
@@ -54,13 +52,28 @@ namespace LexOfficeSharpApi.Test.NUnit
             {
                 LexOfficeClient handler = new(tokenString);
 
-                List<VoucherListContent> invoicesList = await handler.GetInvoiceListAsync(LexVoucherStatus.open);
+                List<VoucherListContent> invoicesList = await handler.GetInvoiceListAsync(LexVoucherStatus.Open);
                 List<LexQuotation> invoices = await handler.GetInvoicesAsync(invoicesList);
 
-                Assert.That(invoices != null && invoices.Count > 0);
+                Assert.That(invoices?.Count > 0);
             }
             catch (Exception ex) 
             {           
+                Assert.Fail(ex.Message);
+            }
+        }
+
+        [Test]
+        public async Task TestGetPaymentConditions()
+        {
+            try
+            {
+                LexOfficeClient handler = new(tokenString);
+                List<LexQuotationPaymentConditions> paymentConditions = await handler.GetPaymentConditionsAsync();
+                Assert.That(paymentConditions?.Count > 0);
+            }
+            catch (Exception ex)
+            {
                 Assert.Fail(ex.Message);
             }
         }
@@ -72,8 +85,8 @@ namespace LexOfficeSharpApi.Test.NUnit
             {
                 LexOfficeClient handler = new(tokenString);
 
-                // Create a new invoice object
-                var invoice = new LexCreateInvoice()
+                // Create a new Invoice object
+                LexCreateInvoice invoice = new()
                 {
                     Address = new LexContactAddress()
                     {
@@ -84,14 +97,14 @@ namespace LexOfficeSharpApi.Test.NUnit
                         Zip = "79112",
                         CountryCode = "DE",
                     },
-                    LineItems = new List<LexQuotationItem>
-                    {
+                    LineItems =
+                    [
                         new LexQuotationItem()
                         {
                             Type = "custom",
-                            Name = "test",
+                            Name = "Energieriegel Testpaket",
                             Quantity = 1,
-                            UnitName = "test2",
+                            UnitName = "Stück",
                             UnitPrice = new LexQuotationUnitPrice()
                             {
                                 Currency = "EUR",
@@ -99,7 +112,7 @@ namespace LexOfficeSharpApi.Test.NUnit
                                 TaxRatePercentage = 0
                             }
                         }
-                    },
+                    ],
                     TotalPrice = new LexQuotationTotalPrice()
                     {
                         Currency = "EUR",
@@ -109,7 +122,7 @@ namespace LexOfficeSharpApi.Test.NUnit
                     },
                     TaxConditions = new LexQuotationTaxConditions()
                     {
-                        TaxType = "net"
+                        TaxType = LexQuotationTaxType.Vatfree,
                     },
                     ShippingConditions = new LexShippingConditions()
                     {
@@ -117,11 +130,16 @@ namespace LexOfficeSharpApi.Test.NUnit
                         ShippingEndDate = DateTime.Now,
                         ShippingType = "none"
                     },
+                    PaymentConditions = new LexQuotationPaymentConditions()
+                    {
+                        PaymentTermLabel = "10 Tage - 3 %, 30 Tage netto",
+                        PaymentTermLabelTemplate = "10 Tage - 3 %, 30 Tage netto",
+                        PaymentTermDuration = 30,
+                        PaymentDiscountConditions = new LexQuotationDiscountCondition() { DiscountPercentage = 3, DiscountRange = 10 }
+                    },
                     VoucherDate = DateTime.Now,
                 };
-
                 LexInvoiceResponse? lexInvoiceResponse = await handler.AddInvoiceAsync(invoice, false);
-
                 Assert.That(lexInvoiceResponse != null);
             }
             catch (Exception ex)
@@ -137,10 +155,10 @@ namespace LexOfficeSharpApi.Test.NUnit
             {
                 LexOfficeClient handler = new(tokenString);
 
-                List<VoucherListContent> invoicesList = await handler.GetInvoiceListAsync(LexVoucherStatus.draft);
+                List<VoucherListContent> invoicesList = await handler.GetInvoiceListAsync(LexVoucherStatus.Draft);
                 List<LexQuotation> invoices = await handler.GetInvoicesAsync(invoicesList);
 
-                Assert.That(invoices != null && invoices.Count > 0);
+                Assert.That(invoices?.Count > 0);
             }
             catch (Exception ex)
             {
@@ -171,7 +189,7 @@ namespace LexOfficeSharpApi.Test.NUnit
         {
             SecureString token = SecureStringHelper.ConvertToSecureString(tokenString);
             LexOfficeSharpApiHandler handler = new LexOfficeSharpApiHandler(token);
-            var quotesList = await handler.GetQuotationList(LexVoucherStatus.open);
+            var quotesList = await handler.GetQuotationList(LexVoucherStatus.Open);
             var quotes = await handler.GetQuotations(quotesList);
 
             Assert.IsTrue(quotes != null && quotes.Count > 0);
