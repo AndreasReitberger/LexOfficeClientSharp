@@ -4,6 +4,7 @@ using System.Collections.Generic;
 
 namespace AndreasReitberger.API.LexOffice
 {
+    [Obsolete("Use `LexDocumentRespone` instead. This is a common file for holding all information")]
     public partial class LexQuotation : ObservableObject
     {
         #region Properties
