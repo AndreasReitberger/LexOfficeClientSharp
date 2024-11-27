@@ -320,9 +320,7 @@ namespace AndreasReitberger.API.LexOffice
         public async Task<List<LexContact>> GetContactsAsync(LexContactType type, int page = 0, int size = 25, int coolDown = 20)
         {
             List<LexContact> result = [];
-            string cmd = string.Format("contacts{0}",
-                type == LexContactType.Customer ? "?customer=true" : "?vendor=true"              
-                );
+            string cmd = $"contacts?{(type == LexContactType.Customer ? "customer" : "vendor")}=true";
             cmd += $"&page={page}&size={size}";
 
             string? jsonString = await BaseApiCallAsync(cmd, Method.Get) ?? string.Empty;
@@ -355,9 +353,8 @@ namespace AndreasReitberger.API.LexOffice
         public async Task<List<LexQuotationPaymentConditions>> GetPaymentConditionsAsync()
         {
             List<LexQuotationPaymentConditions> result = [];
-
             string? jsonString = await BaseApiCallAsync($"payment-conditions", Method.Get) ?? string.Empty;
-            result = JsonConvert.DeserializeObject<List<LexQuotationPaymentConditions>>(jsonString);
+            result = JsonConvert.DeserializeObject<List<LexQuotationPaymentConditions>>(jsonString) ?? [];
             return result;
         }
         #endregion
@@ -366,12 +363,10 @@ namespace AndreasReitberger.API.LexOffice
         public async Task<List<VoucherListContent>> GetInvoiceListAsync(LexVoucherStatus status, bool archived = false, int page = 0, int size = 25)
         {
             List<VoucherListContent> result = [];
-            string type = LexVoucherType.invoice.ToString();
-            string cmd = string.Format("voucherlist?{0}&{1}&{2}",
-                $"voucherType={type}",
-                $"voucherStatus={status}",
-                $"archived={archived}"
-                );
+            string cmd = $"voucherlist?voucherType={LexVoucherType.Invoice.ToString().ToLower()}" +
+                $"&voucherStatus={status.ToString().ToLower()}" +
+                $"&archived={archived}"
+                ;
             cmd += $"&page={page}&size={size}";
 
             string? jsonString = await BaseApiCallAsync(cmd, Method.Get) ?? string.Empty;
@@ -411,15 +406,15 @@ namespace AndreasReitberger.API.LexOffice
         public async Task<LexQuotation?> GetInvoiceAsync(Guid id)
         {
             string? jsonString = await BaseApiCallAsync($"invoices/{id}", Method.Get) ?? string.Empty;
-            LexQuotation? contact = JsonConvert.DeserializeObject<LexQuotation>(jsonString);
-            return contact;
+            LexQuotation? response = JsonConvert.DeserializeObject<LexQuotation>(jsonString);
+            return response;
         }
 
         public async Task<LexInvoiceResponse?> AddInvoiceAsync(LexCreateInvoice lexQuotation, bool isFinalized = false)
         {
             string? jsonString = await BaseApiCallAsync($"invoices?finalize={isFinalized}", Method.Post, JsonConvert.SerializeObject(lexQuotation, jsonSerializerSettings)) ?? string.Empty;
-            LexInvoiceResponse? contact = JsonConvert.DeserializeObject<LexInvoiceResponse>(jsonString);
-            return contact;
+            LexInvoiceResponse? response = JsonConvert.DeserializeObject<LexInvoiceResponse>(jsonString);
+            return response;
         }
         #endregion
 
@@ -427,12 +422,10 @@ namespace AndreasReitberger.API.LexOffice
         public async Task<List<VoucherListContent>> GetQuotationListAsync(LexVoucherStatus status, bool archived = false, int page = 0, int size = 25)
         {
             List<VoucherListContent> result = [];
-            string type = LexVoucherType.quotation.ToString();
-            string cmd = string.Format("voucherlist?{0}&{1}&{2}",
-                $"voucherType={type}",
-                $"voucherStatus={status}",
-                $"archived={archived}"
-                );
+            string cmd = $"voucherlist?voucherType={LexVoucherType.Quotation.ToString().ToLower()}" +
+                $"&voucherStatus={status.ToString().ToLower()}" +
+                $"&archived={archived}"
+                ;
             cmd += $"&page={page}&size={size}";
 
             string? jsonString = await BaseApiCallAsync(cmd, Method.Get) ?? string.Empty;
@@ -472,8 +465,8 @@ namespace AndreasReitberger.API.LexOffice
         public async Task<LexQuotation?> GetQuotationAsync(Guid id)
         {
             string? jsonString = await BaseApiCallAsync($"quotations/{id}", Method.Get) ?? string.Empty;
-            LexQuotation? contact = JsonConvert.DeserializeObject<LexQuotation>(jsonString);
-            return contact;
+            LexQuotation? response = JsonConvert.DeserializeObject<LexQuotation>(jsonString);
+            return response;
         }
         #endregion
 

@@ -2,13 +2,13 @@
 {
     public enum LexVoucherType
     {
-        salesinvoice,
-        salescreditnote,
-        purchaseinvoice,
-        purchasecreditnote,
-        invoice,
-        creditnote,
-        orderconfirmation,
-        quotation,
+        SalesInvoice,
+        SalesCreditnote,
+        PurchaseInvoice,
+        PurchaseCreditnote,
+        Invoice,
+        CreditNote,
+        OrderConfirmation,
+        Quotation,
     }
 }
