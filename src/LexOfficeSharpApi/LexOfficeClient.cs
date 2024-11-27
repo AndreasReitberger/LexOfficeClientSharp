@@ -65,6 +65,7 @@ namespace AndreasReitberger.API.LexOffice
 
         JsonSerializerSettings jsonSerializerSettings = new()
         {
+            Formatting = Formatting.Indented,
             ContractResolver = new DefaultContractResolver
             {
                 NamingStrategy = new CamelCaseNamingStrategy(),
@@ -346,6 +347,18 @@ namespace AndreasReitberger.API.LexOffice
             string? jsonString = await BaseApiCallAsync($"contacts/{id}", Method.Get) ?? string.Empty;
             LexContact? contact = JsonConvert.DeserializeObject<LexContact>(jsonString);
             return contact;
+        }
+        #endregion
+
+        #region Conditions
+
+        public async Task<List<LexQuotationPaymentConditions>> GetPaymentConditionsAsync()
+        {
+            List<LexQuotationPaymentConditions> result = [];
+
+            string? jsonString = await BaseApiCallAsync($"payment-conditions", Method.Get) ?? string.Empty;
+            result = JsonConvert.DeserializeObject<List<LexQuotationPaymentConditions>>(jsonString);
+            return result;
         }
         #endregion
 

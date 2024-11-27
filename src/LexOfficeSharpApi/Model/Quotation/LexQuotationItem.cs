@@ -1,4 +1,5 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 
@@ -8,6 +9,8 @@ namespace AndreasReitberger.API.LexOffice
     {
         #region Properties
         [ObservableProperty]
+        [JsonIgnore]
+        [property: JsonIgnore]
         Guid? id;
 
         [ObservableProperty]
