@@ -458,6 +458,15 @@ namespace AndreasReitberger.API.LexOffice
         }
         #endregion
 
+        #region Payments
+        public async Task<LexPayments?> GetPaymentsAsync(Guid invoiceId)
+        {
+            string? jsonString = await BaseApiCallAsync($"payments/{invoiceId}", Method.Get) ?? string.Empty;
+            LexPayments? response = JsonConvert.DeserializeObject<LexPayments>(jsonString);
+            return response;
+        }
+        #endregion
+
         #region Quotations
         public async Task<List<VoucherListContent>> GetQuotationListAsync(LexVoucherStatus status, bool archived = false, int page = 0, int size = 25)
         {

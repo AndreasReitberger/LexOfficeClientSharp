@@ -159,6 +159,27 @@ namespace LexOfficeSharpApi.Test.NUnit
         }
 
         #endregion
+          
+        #region Payments
+        [Test]
+        public async Task TestGetPayments()
+        {
+            try
+            {
+                LexOfficeClient handler = new(tokenString);
+
+                var invoiceId = Guid.Parse("YOUR_INVOICE_ID");
+                LexPayments? payments = await handler.GetPaymentsAsync(invoiceId);
+
+                Assert.That(payments != null);
+            }
+            catch (Exception ex)
+            {
+                Assert.Fail(ex.Message);
+            }
+        }
+       
+        #endregion
 
         #region Countries
         [Test]
