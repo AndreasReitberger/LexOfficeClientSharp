@@ -4,15 +4,41 @@ using System.Collections.Generic;
 
 namespace AndreasReitberger.API.LexOffice
 {
-    [Obsolete("Use `LexDocumentRespone` instead. This is a common file for holding all information")]
-    public partial class LexCreateInvoice : ObservableObject
+    public partial class LexDocumentRespone : ObservableObject
     {
         #region Properties
+        [ObservableProperty]
+        Guid id;
+
+        [ObservableProperty]
+        Guid organizationId;
+
+        [ObservableProperty]
+        DateTimeOffset createdDate;
+
+        [ObservableProperty]
+        DateTimeOffset updatedDate;
+
+        [ObservableProperty]
+        long version;
+
+        [ObservableProperty]
+        string language = string.Empty;
+
         [ObservableProperty]
         bool archived;
 
         [ObservableProperty]
+        string voucherStatus = string.Empty;
+
+        [ObservableProperty]
+        string voucherNumber = string.Empty;
+
+        [ObservableProperty]
         DateTimeOffset voucherDate;
+
+        [ObservableProperty]
+        DateTimeOffset expirationDate;
 
         [ObservableProperty]
         LexContactAddress? address;
@@ -31,7 +57,7 @@ namespace AndreasReitberger.API.LexOffice
 
         [ObservableProperty]
         LexQuotationPaymentConditions? paymentConditions;
-        
+
         [ObservableProperty]
         LexShippingConditions? shippingConditions;
 

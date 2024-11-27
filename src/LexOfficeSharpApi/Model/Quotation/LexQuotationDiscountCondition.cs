@@ -6,7 +6,7 @@ namespace AndreasReitberger.API.LexOffice
     {
         #region Properties
         [ObservableProperty]
-        double discountPercentage;
+        decimal discountPercentage;
 
         [ObservableProperty]
         long discountRange;

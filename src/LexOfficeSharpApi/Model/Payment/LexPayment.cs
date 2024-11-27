@@ -13,7 +13,7 @@ namespace AndreasReitberger.API.LexOffice
         DateTimeOffset postingDate;
 
         [ObservableProperty]
-        double amount;
+        decimal amount;
 
         [ObservableProperty]
         string currency = string.Empty;

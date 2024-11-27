@@ -9,10 +9,10 @@ namespace AndreasReitberger.API.LexOffice
         long taxRatePercentage;
 
         [ObservableProperty]
-        double taxAmountTaxAmount;
+        decimal taxAmount;
 
         [ObservableProperty]
-        double netAmount;
+        decimal netAmount;
         #endregion
     }
 }

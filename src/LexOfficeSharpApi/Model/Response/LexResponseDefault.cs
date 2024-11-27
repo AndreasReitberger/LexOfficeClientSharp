@@ -3,15 +3,13 @@ using System;
 
 namespace AndreasReitberger.API.LexOffice
 {
-    [Obsolete("Use `LexResponseDefault` instead")]
-    public partial class LexInvoiceResponse : ObservableObject
+    public partial class LexResponseDefault : ObservableObject
     {
-        #region Properties
         [ObservableProperty]
-        Guid id;
+        Guid? id;
 
         [ObservableProperty]
-        string resourceUri = string.Empty;
+        Uri? resourceUri;
 
         [ObservableProperty]
         DateTimeOffset createdDate;
@@ -21,6 +19,5 @@ namespace AndreasReitberger.API.LexOffice
 
         [ObservableProperty]
         long version;
-        #endregion
     }
 }

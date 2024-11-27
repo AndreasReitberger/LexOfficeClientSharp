@@ -9,13 +9,13 @@ namespace AndreasReitberger.API.LexOffice
         string currency = string.Empty;
 
         [ObservableProperty]
-        double totalNetAmount;
+        decimal totalNetAmount;
 
         [ObservableProperty]
-        double totalGrossAmount;
+        decimal totalGrossAmount;
 
         [ObservableProperty]
-        double totalTaxAmount;
+        decimal totalTaxAmount;
         #endregion
     }
 }
