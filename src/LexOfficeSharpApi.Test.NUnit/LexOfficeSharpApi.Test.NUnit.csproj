@@ -7,9 +7,12 @@
 
     <IsPackable>false</IsPackable>
     <IsTestProject>true</IsTestProject>
+    <UserSecretsId>cce0c302-aab9-4d78-b553-d694e7217e86</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>
+	<PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="9.0.0" />
+	<PackageReference Include="Microsoft.Extensions.Hosting" Version="9.0.0" />
     <PackageReference Include="coverlet.collector" Version="6.0.2">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
