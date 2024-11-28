@@ -4,26 +4,29 @@ using System.Collections.Generic;
 
 namespace AndreasReitberger.API.LexOffice
 {
-    public partial class LexQuotationPaymentConditions : ObservableObject
+    public partial class LexPayments : ObservableObject
     {
         #region Properties
         [ObservableProperty]
-        Guid? id;
+        double openAmount;
 
         [ObservableProperty]
-        string paymentTermLabel = string.Empty;
+        string paymentStatus = string.Empty;
 
         [ObservableProperty]
-        string paymentTermLabelTemplate = string.Empty;
+        string currency = string.Empty;
 
         [ObservableProperty]
-        long paymentTermDuration;
+        string voucherType = string.Empty;
 
         [ObservableProperty]
-        LexQuotationDiscountCondition? paymentDiscountConditions;
+        string voucherStatus = string.Empty;
 
         [ObservableProperty]
-        bool organizationDefault;
+        DateTimeOffset paidDate;
+
+        [ObservableProperty]
+        List<LexPayment> paymentItems = [];
         #endregion
     }
 }

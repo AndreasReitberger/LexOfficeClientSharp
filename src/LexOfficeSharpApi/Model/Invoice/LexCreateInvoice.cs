@@ -8,6 +8,9 @@ namespace AndreasReitberger.API.LexOffice
     {
         #region Properties
         [ObservableProperty]
+        bool archived;
+
+        [ObservableProperty]
         DateTimeOffset voucherDate;
 
         [ObservableProperty]

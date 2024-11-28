@@ -1,4 +1,6 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
+﻿using AndreasReitberger.API.LexOffice.Enum;
+using CommunityToolkit.Mvvm.ComponentModel;
+using Newtonsoft.Json;
 
 namespace AndreasReitberger.API.LexOffice
 {
@@ -7,7 +9,11 @@ namespace AndreasReitberger.API.LexOffice
         #region Properties
 
         [ObservableProperty]
-        string taxType = string.Empty;
+        [NotifyPropertyChangedFor(nameof(TaxTypeString))]
+        LexQuotationTaxType taxType;
+
+        [JsonIgnore]
+        public string TaxTypeString => $"{TaxType}";
 
         #endregion
     }
