@@ -148,6 +148,60 @@ namespace LexOfficeSharpApi.Test.NUnit
             }
         }
 
+        [Test]
+        public async Task TestGetPayments()
+        {
+            try
+            {
+                LexOfficeClient handler = new(tokenString);
+
+                var invoiceId = Guid.Parse("YOUR_INVOICE_ID");
+                LexPayments? payments = await handler.GetPaymentsAsync(invoiceId);
+
+                Assert.That(payments != null);
+            }
+            catch (Exception ex)
+            {
+                Assert.Fail(ex.Message);
+            }
+        }
+
+        [Test]
+        public async Task TestRenderDocumentAsync()
+        {
+            try
+            {
+                LexOfficeClient handler = new(tokenString);
+
+                var invoiceId = Guid.Parse("YOUR_INVOICE_ID");
+                LexQuotationFiles files = await handler.RenderDocumentAsync(invoiceId);
+
+                Assert.That(files != null);
+            }
+            catch (Exception ex)
+            {
+                Assert.Fail(ex.Message);
+            }
+        }
+
+        [Test]
+        public async Task TestGetFileAsync()
+        {
+            try
+            {
+                LexOfficeClient handler = new(tokenString);
+
+                var documentId = Guid.Parse("YOUR_FILE_ID");
+                byte[] file = await handler.GetFileAsync(documentId);
+
+                Assert.That(file != null);
+            }
+            catch (Exception ex)
+            {
+                Assert.Fail(ex.Message);
+            }
+        }
+
         /*
         [Test]
         public async Task TestGetQuotations()

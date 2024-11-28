@@ -192,9 +192,9 @@ namespace AndreasReitberger.API.LexOffice
             }
         }
 
-        async Task<string?> BaseApiCallAsync(string command, Method method = Method.Get, string body = "", CancellationTokenSource? cts = default)
+        async Task<T?> BaseApiCallAsync<T>(string command, Method method = Method.Get, string body = "", CancellationTokenSource? cts = default)
+                       where T : class
         {
-            string? result = string.Empty;
             if (cts == default)
             {
                 cts = new(DefaultTimeout);
@@ -209,16 +209,46 @@ namespace AndreasReitberger.API.LexOffice
                 RequestFormat = DataFormat.Json
             };
             request.AddHeader("Authorization", $"Bearer {AccessToken}");
-            request.AddJsonBody(body);
+
+            if (!string.IsNullOrEmpty(body))
+            {
+                request.AddJsonBody(body);
+            }
+
             if (restClient is not null)
             {
-                RestResponse? respone = await restClient.ExecuteAsync(request, cts.Token).ConfigureAwait(false);
-                if ((respone.StatusCode == HttpStatusCode.OK || respone.StatusCode == HttpStatusCode.Created) && respone.ResponseStatus == ResponseStatus.Completed)
+                RestResponse? response = await restClient.ExecuteAsync(request, cts.Token).ConfigureAwait(false);
+
+                if ((response.StatusCode == HttpStatusCode.OK || response.StatusCode == HttpStatusCode.Created) &&
+                    response.ResponseStatus == ResponseStatus.Completed)
                 {
-                    result = respone?.Content;
+                    if (typeof(T) == typeof(byte[]))
+                    {
+                        return response.RawBytes as T;
+                    }
+                    else if (typeof(T) == typeof(string))
+                    {
+                        return response.Content as T;
+                    }
+                    else
+                    {
+                        throw new InvalidOperationException($"Unsupported return type: {typeof(T).Name}");
+                    }
+                }
+                else
+                {
+                    string errorMessage = $"Request failed with status code {(int)response.StatusCode} ({response.StatusCode}).";
+
+                    if (!string.IsNullOrEmpty(response.Content))
+                    {
+                        errorMessage += $" Response content: {response.Content}";
+                    }
+
+                    throw new HttpRequestException(errorMessage);
                 }
             }
-            return result;
+
+            return default;
         }
 
         void VerifyAccessToken()
@@ -324,7 +354,7 @@ namespace AndreasReitberger.API.LexOffice
                 );
             cmd += $"&page={page}&size={size}";
 
-            string? jsonString = await BaseApiCallAsync(cmd, Method.Get) ?? string.Empty;
+            string? jsonString = await BaseApiCallAsync<string>(cmd, Method.Get) ?? string.Empty;
             LexContactsList? contacts = JsonConvert.DeserializeObject<LexContactsList>(jsonString);
             if (contacts != null)
             {
@@ -343,7 +373,7 @@ namespace AndreasReitberger.API.LexOffice
 
         public async Task<LexContact?> GetContactAsync(Guid id)
         {
-            string? jsonString = await BaseApiCallAsync($"contacts/{id}", Method.Get) ?? string.Empty;
+            string? jsonString = await BaseApiCallAsync<string>($"contacts/{id}", Method.Get) ?? string.Empty;
             LexContact? contact = JsonConvert.DeserializeObject<LexContact>(jsonString);
             return contact;
         }
@@ -361,7 +391,7 @@ namespace AndreasReitberger.API.LexOffice
                 );
             cmd += $"&page={page}&size={size}";
 
-            string? jsonString = await BaseApiCallAsync(cmd, Method.Get) ?? string.Empty;
+            string? jsonString = await BaseApiCallAsync<string>(cmd, Method.Get) ?? string.Empty;
             LexVoucherList? list = JsonConvert.DeserializeObject<LexVoucherList>(jsonString);
             if (list is not null)
             {
@@ -397,16 +427,25 @@ namespace AndreasReitberger.API.LexOffice
 
         public async Task<LexQuotation?> GetInvoiceAsync(Guid id)
         {
-            string? jsonString = await BaseApiCallAsync($"invoices/{id}", Method.Get) ?? string.Empty;
-            LexQuotation? contact = JsonConvert.DeserializeObject<LexQuotation>(jsonString);
-            return contact;
+            string? jsonString = await BaseApiCallAsync<string>($"invoices/{id}", Method.Get) ?? string.Empty;
+            LexQuotation? response = JsonConvert.DeserializeObject<LexQuotation>(jsonString);
+            return response;
         }
 
         public async Task<LexInvoiceResponse?> AddInvoiceAsync(LexCreateInvoice lexQuotation, bool isFinalized = false)
         {
-            string? jsonString = await BaseApiCallAsync($"invoices?finalize={isFinalized}", Method.Post, JsonConvert.SerializeObject(lexQuotation, jsonSerializerSettings)) ?? string.Empty;
-            LexInvoiceResponse? contact = JsonConvert.DeserializeObject<LexInvoiceResponse>(jsonString);
-            return contact;
+            string? jsonString = await BaseApiCallAsync<string>($"invoices?finalize={isFinalized}", Method.Post, JsonConvert.SerializeObject(lexQuotation, jsonSerializerSettings)) ?? string.Empty;
+            LexInvoiceResponse? response = JsonConvert.DeserializeObject<LexInvoiceResponse>(jsonString);
+            return response;
+        }
+        #endregion
+
+        #region Payments
+        public async Task<LexPayments?> GetPaymentsAsync(Guid invoiceId)
+        {
+            string? jsonString = await BaseApiCallAsync<string>($"payments/{invoiceId}", Method.Get) ?? string.Empty;
+            LexPayments? response = JsonConvert.DeserializeObject<LexPayments>(jsonString);
+            return response;
         }
         #endregion
 
@@ -422,7 +461,7 @@ namespace AndreasReitberger.API.LexOffice
                 );
             cmd += $"&page={page}&size={size}";
 
-            string? jsonString = await BaseApiCallAsync(cmd, Method.Get) ?? string.Empty;
+            string? jsonString = await BaseApiCallAsync<string>(cmd, Method.Get) ?? string.Empty;
             LexVoucherList? list = JsonConvert.DeserializeObject<LexVoucherList>(jsonString);
             if (list is not null)
             {
@@ -458,12 +497,28 @@ namespace AndreasReitberger.API.LexOffice
 
         public async Task<LexQuotation?> GetQuotationAsync(Guid id)
         {
-            string? jsonString = await BaseApiCallAsync($"quotations/{id}", Method.Get) ?? string.Empty;
+            string? jsonString = await BaseApiCallAsync<string>($"quotations/{id}", Method.Get) ?? string.Empty;
             LexQuotation? contact = JsonConvert.DeserializeObject<LexQuotation>(jsonString);
             return contact;
         }
         #endregion
 
+        #region Documents
+
+        public async Task<LexQuotationFiles?> RenderDocumentAsync(Guid invoiceId)
+        {
+            string? jsonString = await BaseApiCallAsync<string>($"invoices/{invoiceId}/document", Method.Get) ?? string.Empty;
+            LexQuotationFiles? response = JsonConvert.DeserializeObject<LexQuotationFiles>(jsonString);
+            return response;
+        }
+
+        public async Task<byte[]> GetFileAsync(Guid id)
+        {
+            byte[] response = await BaseApiCallAsync<byte[]>($"files/{id}", Method.Get) ?? [];
+            return response;
+        }
+
+        #endregion
         #endregion
     }
 }
