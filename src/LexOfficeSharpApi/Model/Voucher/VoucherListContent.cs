@@ -32,7 +32,7 @@ namespace AndreasReitberger.API.LexOffice
         string contactName = string.Empty;
 
         [ObservableProperty]
-        double totalAmount;
+        decimal totalAmount;
 
         [ObservableProperty]
         string currency = string.Empty;
