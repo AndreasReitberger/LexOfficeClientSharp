@@ -190,8 +190,13 @@ namespace LexOfficeSharpApi.Test.NUnit
             {
                 LexOfficeClient handler = new(tokenString);
 
-                var invoiceId = Guid.Parse("YOUR_INVOICE_ID");
-                LexQuotationFiles files = await handler.RenderDocumentAsync(invoiceId);
+                List<VoucherListContent> availableInvoices = await handler.GetInvoiceListAsync(LexVoucherStatus.Paid, size: 1, pages: 1);
+                Guid invoiceId = availableInvoices.First().Id; // Guid.Parse("YOUR_INVOICE_ID");
+                Assert.That(invoiceId != Guid.Empty);
+
+                LexDocumentRespone? invoice = await handler.GetInvoiceAsync(availableInvoices.First().Id);
+
+                LexQuotationFiles? files = await handler.RenderDocumentAsync(invoiceId);
 
                 Assert.That(files != null);
             }
@@ -208,10 +213,18 @@ namespace LexOfficeSharpApi.Test.NUnit
             {
                 LexOfficeClient handler = new(tokenString);
 
-                var documentId = Guid.Parse("YOUR_FILE_ID");
+                List<VoucherListContent> availableInvoices = await handler.GetInvoiceListAsync(LexVoucherStatus.Paid, size: 1, pages: 1);
+                Guid invoiceId = availableInvoices.First().Id; // Guid.Parse("YOUR_INVOICE_ID");
+                Assert.That(invoiceId != Guid.Empty);
+
+                LexDocumentRespone? invoice = await handler.GetInvoiceAsync(availableInvoices.First().Id);
+                LexQuotationFiles? files = await handler.RenderDocumentAsync(invoiceId);
+                Assert.That(files is not null);
+
+                Guid documentId = files.DocumentFileId;// Guid.Parse("YOUR_FILE_ID");
                 byte[] file = await handler.GetFileAsync(documentId);
 
-                Assert.That(file != null);
+                Assert.That(file is not null);
             }
             catch (Exception ex)
             {

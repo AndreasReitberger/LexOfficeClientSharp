@@ -100,6 +100,9 @@ namespace AndreasReitberger.API.LexOffice
         [ObservableProperty]
         int defaultTimeout = 10000;
 
+        [ObservableProperty]
+        int minimumCooldown = 50;
+
         #endregion
 
         #region Proxy
@@ -210,7 +213,6 @@ namespace AndreasReitberger.API.LexOffice
                 RequestFormat = DataFormat.Json
             };
             request.AddHeader("Authorization", $"Bearer {AccessToken}");
-
             if (!string.IsNullOrEmpty(body))
             {
                 request.AddJsonBody(body);
@@ -248,7 +250,6 @@ namespace AndreasReitberger.API.LexOffice
                     throw new HttpRequestException(errorMessage);
                 }
             }
-
             return default;
         }
 
@@ -347,7 +348,7 @@ namespace AndreasReitberger.API.LexOffice
         #endregion
 
         #region Contacts
-        public async Task<List<LexContact>> GetContactsAsync(LexContactType type, int page = 0, int size = 25, int coolDown = 20)
+        public async Task<List<LexContact>> GetContactsAsync(LexContactType type, int page = 0, int size = 25, int cooldown = 20)
         {
             List<LexContact> result = [];
             string cmd = $"contacts?{(type == LexContactType.Customer ? "customer" : "vendor")}=true";
@@ -360,10 +361,10 @@ namespace AndreasReitberger.API.LexOffice
                 result = new List<LexContact>(contacts.Content);
                 if (page < contacts.TotalPages)
                 {
+                    await Task.Delay(cooldown < MinimumCooldown ? MinimumCooldown : cooldown);
                     page++;
                     List<LexContact> append = await GetContactsAsync(type, page, size);
                     result = new List<LexContact>(result.Concat(append));
-                    await Task.Delay(coolDown < 20 ? 20 : coolDown);
                     return result;
                 }
             }
@@ -376,12 +377,14 @@ namespace AndreasReitberger.API.LexOffice
             LexContact? contact = JsonConvert.DeserializeObject<LexContact>(jsonString);
             return contact;
         }
+
         public async Task<LexResponseDefault?> AddContactAsync(LexContact lexContact)
         {
             string? jsonString = await BaseApiCallAsync<string>($"contacts", Method.Post, JsonConvert.SerializeObject(lexContact, jsonSerializerSettings)) ?? string.Empty;
             LexResponseDefault? response = JsonConvert.DeserializeObject<LexResponseDefault>(jsonString);
             return response;
         }
+
         public async Task<LexResponseDefault?> UpdateContactAsync(Guid contactId, LexContact lexContact)
         {
             string? jsonString = await BaseApiCallAsync<string>($"contacts/{contactId}", Method.Post, JsonConvert.SerializeObject(lexContact, jsonSerializerSettings)) ?? string.Empty;
@@ -410,6 +413,7 @@ namespace AndreasReitberger.API.LexOffice
             result = JsonConvert.DeserializeObject<List<LexDocumentRespone>>(jsonString) ?? [];
             return result;
         }
+        
         public async Task<LexDocumentRespone?> GetCreditNoteAsync(Guid id)
         {
             string? jsonString = await BaseApiCallAsync<string>($"credit-notes/{id}", Method.Get) ?? string.Empty;
@@ -430,7 +434,7 @@ namespace AndreasReitberger.API.LexOffice
         #endregion
 
         #region Invoices
-        public async Task<List<VoucherListContent>> GetInvoiceListAsync(LexVoucherStatus status, bool archived = false, int page = 0, int size = 25)
+        public async Task<List<VoucherListContent>> GetInvoiceListAsync(LexVoucherStatus status, bool archived = false, int page = 0, int size = 25, int pages = -1, int cooldown = 250)
         {
             List<VoucherListContent> result = [];
             string cmd = $"voucherlist?voucherType={LexVoucherType.Invoice.ToString().ToLower()}" +
@@ -443,11 +447,12 @@ namespace AndreasReitberger.API.LexOffice
             LexVoucherList? list = JsonConvert.DeserializeObject<LexVoucherList>(jsonString);
             if (list is not null)
             {
-                if (page <= list.TotalPages)
+                if (page <= list.TotalPages && (pages > 0) ? pages > page : true)
                 {
+                    await Task.Delay(cooldown < MinimumCooldown ? MinimumCooldown : cooldown);
                     page++;
                     result = new List<VoucherListContent>(list.Content);
-                    List<VoucherListContent> append = await GetInvoiceListAsync(status, archived, page, size);
+                    List<VoucherListContent> append = await GetInvoiceListAsync(status, archived, page, size, pages, cooldown);
                     result = new List<VoucherListContent>(result.Concat(append));
                     return result;
                 }
@@ -455,7 +460,7 @@ namespace AndreasReitberger.API.LexOffice
             return result;
         }
 
-        public async Task<List<LexDocumentRespone>> GetInvoicesAsync(List<Guid> ids)
+        public async Task<List<LexDocumentRespone>> GetInvoicesAsync(List<Guid> ids, int cooldown = 50)
         {
             List<LexDocumentRespone> result = [];
             foreach (Guid id in ids)
@@ -463,6 +468,7 @@ namespace AndreasReitberger.API.LexOffice
                 LexDocumentRespone? quote = await GetInvoiceAsync(id);
                 if (quote is not null)
                     result.Add(quote);
+                await Task.Delay(cooldown < MinimumCooldown ? MinimumCooldown : cooldown);
             }
             return result;
         }
