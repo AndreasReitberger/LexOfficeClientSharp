@@ -9,10 +9,10 @@ namespace AndreasReitberger.API.LexOffice
         string currency = string.Empty;
 
         [ObservableProperty]
-        double netAmount;
+        decimal netAmount;
 
         [ObservableProperty]
-        double grossAmount;
+        decimal grossAmount;
 
         [ObservableProperty]
         long taxRatePercentage;

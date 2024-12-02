@@ -8,7 +8,7 @@ namespace AndreasReitberger.API.LexOffice
     {
         #region Properties
         [ObservableProperty]
-        double openAmount;
+        decimal openAmount;
 
         [ObservableProperty]
         string paymentStatus = string.Empty;
