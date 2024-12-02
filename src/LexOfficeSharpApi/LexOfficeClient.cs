@@ -57,13 +57,32 @@ namespace AndreasReitberger.API.LexOffice
         public static string HandlerLicenseUri = "https://www.lexoffice.de/public-api-lizenz-nutzungsbedingungen/";
         #endregion
 
-        #region Variable
+        #region Properties
+
+        #region Clients
+
+        [ObservableProperty]
+        [property: JsonIgnore, XmlIgnore]
         RestClient? restClient;
+        //partial void OnRestClientChanged(RestClient? value) => UpdateRestClientInstance();
+
+        [ObservableProperty]
+        [property: JsonIgnore, XmlIgnore]
         HttpClient? httpClient;
+        //partial void OnHttpClientChanged(HttpClient? value) => UpdateRestClientInstance();
 
-        const string _appBaseUrl = "https://api.lexoffice.io/";
-        const string _apiVersion = "v1";
+        [ObservableProperty]
+        string appBaseUrl = "https://api.lexoffice.io/";
+        partial void OnAppBaseUrlChanged(string value) => UpdateRestClientInstance();
 
+        [ObservableProperty]
+        string apiVersion = "v1";
+        partial void OnApiVersionChanged(string value) => UpdateRestClientInstance();
+        #endregion
+
+        #region SerializerSettings
+
+        [ObservableProperty]
         JsonSerializerSettings jsonSerializerSettings = new()
         {
             Formatting = Formatting.Indented,
@@ -75,8 +94,6 @@ namespace AndreasReitberger.API.LexOffice
         };
 
         #endregion
-
-        #region Properties
 
         #region General
 
@@ -169,13 +186,13 @@ namespace AndreasReitberger.API.LexOffice
         #region Methods
         void UpdateRestClientInstance()
         {
-            if (string.IsNullOrEmpty(_appBaseUrl) || string.IsNullOrEmpty(_apiVersion))
+            if (string.IsNullOrEmpty(AppBaseUrl) || string.IsNullOrEmpty(ApiVersion))
             {
                 return;
             }
             if (EnableProxy && !string.IsNullOrEmpty(ProxyAddress))
             {
-                RestClientOptions options = new($"{_appBaseUrl}{_apiVersion}/")
+                RestClientOptions options = new($"{AppBaseUrl}{ApiVersion}/")
                 {
                     ThrowOnAnyError = true,
                     Timeout = TimeSpan.FromSeconds(DefaultTimeout / 1000),
@@ -187,13 +204,13 @@ namespace AndreasReitberger.API.LexOffice
                     AllowAutoRedirect = true,
                 };
 
-                httpClient = new(handler: httpHandler, disposeHandler: true);
-                restClient = new(httpClient: httpClient, options: options);
+                HttpClient = new(handler: httpHandler, disposeHandler: true);
+                RestClient = new(httpClient: HttpClient, options: options);
             }
             else
             {
-                httpClient = null;
-                restClient = new(baseUrl: $"{_appBaseUrl}{_apiVersion}/");
+                HttpClient = null;
+                RestClient = new(baseUrl: $"{AppBaseUrl}{ApiVersion}/");
             }
         }
 
@@ -204,7 +221,7 @@ namespace AndreasReitberger.API.LexOffice
             {
                 cts = new(DefaultTimeout);
             }
-            if (restClient is null)
+            if (RestClient is null)
             {
                 UpdateRestClientInstance();
             }
@@ -218,10 +235,9 @@ namespace AndreasReitberger.API.LexOffice
             {
                 request.AddJsonBody(body);
             }
-
-            if (restClient is not null)
+            if (RestClient is not null)
             {
-                RestResponse? response = await restClient.ExecuteAsync(request, cts.Token).ConfigureAwait(false);
+                RestResponse? response = await RestClient.ExecuteAsync(request, cts.Token).ConfigureAwait(false);
 
                 if ((response.StatusCode == HttpStatusCode.OK || response.StatusCode == HttpStatusCode.Created) &&
                     response.ResponseStatus == ResponseStatus.Completed)
@@ -312,12 +328,12 @@ namespace AndreasReitberger.API.LexOffice
             {
                 // Cancel after timeout
                 CancellationTokenSource cts = new(new TimeSpan(0, 0, 0, 0, timeout));
-                string uriString = $"{_appBaseUrl}";
+                string uriString = $"{AppBaseUrl}";
                 try
                 {
-                    if (httpClient is not null)
+                    if (HttpClient is not null)
                     {
-                        HttpResponseMessage? response = await httpClient.GetAsync(uriString, cts.Token).ConfigureAwait(false);
+                        HttpResponseMessage? response = await HttpClient.GetAsync(uriString, cts.Token).ConfigureAwait(false);
                         response.EnsureSuccessStatusCode();
                         if (response != null)
                         {
@@ -383,14 +399,14 @@ namespace AndreasReitberger.API.LexOffice
 
         public async Task<LexResponseDefault?> AddContactAsync(LexContact lexContact)
         {
-            string? jsonString = await BaseApiCallAsync<string>($"contacts", Method.Post, JsonConvert.SerializeObject(lexContact, jsonSerializerSettings)) ?? string.Empty;
+            string? jsonString = await BaseApiCallAsync<string>($"contacts", Method.Post, JsonConvert.SerializeObject(lexContact, JsonSerializerSettings)) ?? string.Empty;
             LexResponseDefault? response = JsonConvert.DeserializeObject<LexResponseDefault>(jsonString);
             return response;
         }
 
         public async Task<LexResponseDefault?> UpdateContactAsync(Guid contactId, LexContact lexContact)
         {
-            string? jsonString = await BaseApiCallAsync<string>($"contacts/{contactId}", Method.Post, JsonConvert.SerializeObject(lexContact, jsonSerializerSettings)) ?? string.Empty;
+            string? jsonString = await BaseApiCallAsync<string>($"contacts/{contactId}", Method.Post, JsonConvert.SerializeObject(lexContact, JsonSerializerSettings)) ?? string.Empty;
             LexResponseDefault? response = JsonConvert.DeserializeObject<LexResponseDefault>(jsonString);
             return response;
         }
@@ -493,7 +509,7 @@ namespace AndreasReitberger.API.LexOffice
 
         public async Task<LexResponseDefault?> AddInvoiceAsync(LexDocumentRespone lexQuotation, bool isFinalized = false)
         {
-            string? jsonString = await BaseApiCallAsync<string>($"invoices?finalize={isFinalized}", Method.Post, JsonConvert.SerializeObject(lexQuotation, jsonSerializerSettings)) ?? string.Empty;
+            string? jsonString = await BaseApiCallAsync<string>($"invoices?finalize={isFinalized}", Method.Post, JsonConvert.SerializeObject(lexQuotation, JsonSerializerSettings)) ?? string.Empty;
             LexResponseDefault? response = JsonConvert.DeserializeObject<LexResponseDefault>(jsonString);
             return response;
         }
