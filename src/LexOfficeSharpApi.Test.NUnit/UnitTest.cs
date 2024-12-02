@@ -311,15 +311,18 @@ namespace LexOfficeSharpApi.Test.NUnit
             try
             {
                 LexOfficeClient handler = new(tokenString);
-                List<LexContact> list = await handler.GetContactsAsync(LexContactType.Customer);
+                List<LexContact> list = await handler.GetContactsAsync(LexContactType.Customer, size: 100, pages: 2);
                 Assert.That(list?.Count > 0);
 
-                list = await handler.GetContactsAsync(LexContactType.Vendor);
+                await Task.Delay(500);
+
+                list = await handler.GetContactsAsync(LexContactType.Vendor, size: 100, pages: 2);
                 Assert.That(list?.Count > 0);
 
                 Guid id = list.FirstOrDefault().Id;
                 var contact = await handler.GetContactAsync(id);
                 Assert.That(contact is not null);
+
             }
             catch (Exception ex)
             {

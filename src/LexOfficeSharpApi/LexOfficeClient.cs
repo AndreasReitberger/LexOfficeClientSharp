@@ -6,6 +6,7 @@ using Newtonsoft.Json.Serialization;
 using RestSharp;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -348,25 +349,27 @@ namespace AndreasReitberger.API.LexOffice
         #endregion
 
         #region Contacts
-        public async Task<List<LexContact>> GetContactsAsync(LexContactType type, int page = 0, int size = 25, int cooldown = 20)
+        public async Task<List<LexContact>> GetContactsAsync(LexContactType type, int page = 0, int size = 25, int pages = -1, int cooldown = 250)
         {
             List<LexContact> result = [];
             string cmd = $"contacts?{(type == LexContactType.Customer ? "customer" : "vendor")}=true";
             cmd += $"&page={page}&size={size}";
 
             string? jsonString = await BaseApiCallAsync<string>(cmd, Method.Get) ?? string.Empty;
-            LexContactsList? contacts = JsonConvert.DeserializeObject<LexContactsList>(jsonString);
-            if (contacts != null)
+            LexContactsList? list = JsonConvert.DeserializeObject<LexContactsList>(jsonString);
+            if (list != null)
             {
-                result = new List<LexContact>(contacts.Content);
-                if (page < contacts.TotalPages)
+                if (list.TotalPages > 1 && page < list.TotalPages &&  (pages <= 0 || (pages - 1 > page && pages > 1)))
                 {
+                    result = new List<LexContact>(list.Content);
                     await Task.Delay(cooldown < MinimumCooldown ? MinimumCooldown : cooldown);
                     page++;
-                    List<LexContact> append = await GetContactsAsync(type, page, size);
+                    List<LexContact> append = await GetContactsAsync(type, page, size, pages, cooldown);
                     result = new List<LexContact>(result.Concat(append));
                     return result;
                 }
+                else
+                    result = new List<LexContact>(list.Content);
             }
             return result;
         }
@@ -447,15 +450,17 @@ namespace AndreasReitberger.API.LexOffice
             LexVoucherList? list = JsonConvert.DeserializeObject<LexVoucherList>(jsonString);
             if (list is not null)
             {
-                if (page <= list.TotalPages && (pages > 0) ? pages > page : true)
+                if (list.TotalPages > 1 && page < list.TotalPages && (pages <= 0 || (pages - 1 > page && pages > 1)))
                 {
+                    result = new List<VoucherListContent>(list.Content);
                     await Task.Delay(cooldown < MinimumCooldown ? MinimumCooldown : cooldown);
                     page++;
-                    result = new List<VoucherListContent>(list.Content);
                     List<VoucherListContent> append = await GetInvoiceListAsync(status, archived, page, size, pages, cooldown);
                     result = new List<VoucherListContent>(result.Concat(append));
                     return result;
                 }
+                else 
+                    result = new List<VoucherListContent>(list.Content);
             }
             return result;
         }
