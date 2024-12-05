@@ -81,8 +81,8 @@ namespace AndreasReitberger.API.LexOffice
         {
             TokenLimit = 2,
             QueueProcessingOrder = QueueProcessingOrder.OldestFirst,
-            QueueLimit = 2,
-            ReplenishmentPeriod = TimeSpan.FromSeconds(1.5),
+            QueueLimit = int.MaxValue,
+            ReplenishmentPeriod = TimeSpan.FromSeconds(1),
             TokensPerPeriod = 1,
             AutoReplenishment = true,
         });
