@@ -168,7 +168,10 @@ namespace LexOfficeSharpApi.Test.NUnit
             {
                 LexOfficeClient handler = new(tokenString);
 
-                var invoiceId = Guid.Parse("YOUR_INVOICE_ID");
+                List<VoucherListContent> availableInvoices = await handler.GetInvoiceListAsync(LexVoucherStatus.Paid, size: 1, pages: 1);
+                Guid invoiceId = availableInvoices.First().Id; // Guid.Parse("YOUR_INVOICE_ID");
+                Assert.That(invoiceId != Guid.Empty);
+
                 LexPayments? payments = await handler.GetPaymentsAsync(invoiceId);
 
                 Assert.That(payments != null);
@@ -293,7 +296,7 @@ namespace LexOfficeSharpApi.Test.NUnit
             try
             {
                 LexOfficeClient handler = new(tokenString);
-                List<VoucherListContent> listContent = await handler.GetQuotationListAsync(LexVoucherStatus.Draft);
+                List<VoucherListContent> listContent = await handler.GetQuotationListAsync(LexVoucherStatus.Accepted);
                 List<LexDocumentRespone> list = await handler.GetQuotationsAsync(listContent);
                 Assert.That(list?.Count > 0);
             }
@@ -329,6 +332,34 @@ namespace LexOfficeSharpApi.Test.NUnit
                 Assert.Fail(ex.Message);
             }
         }
+        #endregion
+
+        #region RateLimiter
+        [Test]
+        public async Task TestRateLimiterOnGetContacts()
+        {
+            try
+            {
+                LexOfficeClient handler = new(tokenString);
+                List<LexContact> list = await handler.GetContactsAsync(LexContactType.Customer, size: 100, pages: -1);
+                Assert.That(list?.Count > 0);
+
+                await Task.Delay(500);
+
+                list = await handler.GetContactsAsync(LexContactType.Vendor, size: 100, pages: 2);
+                Assert.That(list?.Count > 0);
+
+                Guid id = list.FirstOrDefault().Id;
+                var contact = await handler.GetContactAsync(id);
+                Assert.That(contact is not null);
+
+            }
+            catch (Exception ex)
+            {
+                Assert.Fail(ex.Message);
+            }
+        }
+
         #endregion
     }
 }
