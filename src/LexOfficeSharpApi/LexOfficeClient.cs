@@ -1,4 +1,5 @@
 ﻿using AndreasReitberger.API.LexOffice.Enum;
+using AndreasReitberger.API.LexOffice.Utilities;
 using AndreasReitberger.Core.Utilities;
 using CommunityToolkit.Mvvm.ComponentModel;
 using Newtonsoft.Json;
@@ -6,12 +7,12 @@ using Newtonsoft.Json.Serialization;
 using RestSharp;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Text.RegularExpressions;
 using System.Threading;
+using System.Threading.RateLimiting;
 using System.Threading.Tasks;
 using System.Xml.Serialization;
 
@@ -71,6 +72,29 @@ namespace AndreasReitberger.API.LexOffice
         HttpClient? httpClient;
         //partial void OnHttpClientChanged(HttpClient? value) => UpdateRestClientInstance();
 
+#if !NETFRAMEWORK
+        [ObservableProperty]
+        [property: JsonIgnore, XmlIgnore]
+        RateLimitedHandler? rateLimitedHandler;
+
+        public static RateLimiter DefaultLimiter = new TokenBucketRateLimiter(new()
+        {
+            TokenLimit = 2,
+            QueueProcessingOrder = QueueProcessingOrder.OldestFirst,
+            QueueLimit = int.MaxValue,
+            ReplenishmentPeriod = TimeSpan.FromSeconds(1),
+            TokensPerPeriod = 1,
+            AutoReplenishment = true,
+        });
+
+        [ObservableProperty]
+        [property: JsonIgnore, XmlIgnore]
+        RateLimiter? limiter;
+        partial void OnLimiterChanged(RateLimiter? value) => UpdateRestClientInstance();
+#endif
+        [ObservableProperty]
+        bool updatingClients = false;
+
         [ObservableProperty]
         string appBaseUrl = "https://api.lexoffice.io/";
         partial void OnAppBaseUrlChanged(string value) => UpdateRestClientInstance();
@@ -119,7 +143,7 @@ namespace AndreasReitberger.API.LexOffice
         int defaultTimeout = 10000;
 
         [ObservableProperty]
-        int minimumCooldown = 50;
+        int minimumCooldown = 0;
 
         #endregion
 
@@ -186,17 +210,21 @@ namespace AndreasReitberger.API.LexOffice
         #region Methods
         void UpdateRestClientInstance()
         {
-            if (string.IsNullOrEmpty(AppBaseUrl) || string.IsNullOrEmpty(ApiVersion))
+            if (string.IsNullOrEmpty(AppBaseUrl) || string.IsNullOrEmpty(ApiVersion) || UpdatingClients)
             {
                 return;
             }
+            UpdatingClients = true;
+#if !NETFRAMEWORK
+            Limiter ??= DefaultLimiter;
+#endif
+            RestClientOptions options = new($"{AppBaseUrl}{ApiVersion}/")
+            {
+                ThrowOnAnyError = true,
+                Timeout = TimeSpan.FromSeconds(DefaultTimeout / 1000),
+            };
             if (EnableProxy && !string.IsNullOrEmpty(ProxyAddress))
             {
-                RestClientOptions options = new($"{AppBaseUrl}{ApiVersion}/")
-                {
-                    ThrowOnAnyError = true,
-                    Timeout = TimeSpan.FromSeconds(DefaultTimeout / 1000),
-                };
                 HttpClientHandler httpHandler = new()
                 {
                     UseProxy = true,
@@ -205,17 +233,23 @@ namespace AndreasReitberger.API.LexOffice
                 };
 
                 HttpClient = new(handler: httpHandler, disposeHandler: true);
-                RestClient = new(httpClient: HttpClient, options: options);
+                //RestClient = new(httpClient: HttpClient, options: options);
             }
             else
             {
-                HttpClient = null;
-                RestClient = new(baseUrl: $"{AppBaseUrl}{ApiVersion}/");
+                HttpClient =
+#if !NETFRAMEWORK
+                    new(new RateLimitedHandler(Limiter));
+#else
+                    new();
+#endif
+                //RestClient = new(baseUrl: $"{AppBaseUrl}{ApiVersion}/");
             }
+            RestClient = new(httpClient: HttpClient, options: options);
+            UpdatingClients = false;
         }
 
-        async Task<T?> BaseApiCallAsync<T>(string command, Method method = Method.Get, string body = "", CancellationTokenSource? cts = default)
-                       where T : class
+        async Task<T?> BaseApiCallAsync<T>(string command, Method method = Method.Get, string body = "", CancellationTokenSource? cts = default)  where T : class
         {
             if (cts == default)
             {
@@ -282,7 +316,7 @@ namespace AndreasReitberger.API.LexOffice
                 OnError(new UnhandledExceptionEventArgs(exc, false));
             }
         }
-        #endregion
+#endregion
 
         #region Public Methods
 
@@ -365,7 +399,7 @@ namespace AndreasReitberger.API.LexOffice
         #endregion
 
         #region Contacts
-        public async Task<List<LexContact>> GetContactsAsync(LexContactType type, int page = 0, int size = 25, int pages = -1, int cooldown = 250)
+        public async Task<List<LexContact>> GetContactsAsync(LexContactType type, int page = 0, int size = 25, int pages = -1, int cooldown = 0)
         {
             List<LexContact> result = [];
             string cmd = $"contacts?{(type == LexContactType.Customer ? "customer" : "vendor")}=true";
@@ -378,7 +412,8 @@ namespace AndreasReitberger.API.LexOffice
                 if (list.TotalPages > 1 && page < list.TotalPages &&  (pages <= 0 || (pages - 1 > page && pages > 1)))
                 {
                     result = new List<LexContact>(list.Content);
-                    await Task.Delay(cooldown < MinimumCooldown ? MinimumCooldown : cooldown);
+                    if(MinimumCooldown > 0 && cooldown > 0)
+                        await Task.Delay(cooldown < MinimumCooldown ? MinimumCooldown : cooldown);
                     page++;
                     List<LexContact> append = await GetContactsAsync(type, page, size, pages, cooldown);
                     result = new List<LexContact>(result.Concat(append));
@@ -453,7 +488,7 @@ namespace AndreasReitberger.API.LexOffice
         #endregion
 
         #region Invoices
-        public async Task<List<VoucherListContent>> GetInvoiceListAsync(LexVoucherStatus status, bool archived = false, int page = 0, int size = 25, int pages = -1, int cooldown = 250)
+        public async Task<List<VoucherListContent>> GetInvoiceListAsync(LexVoucherStatus status, bool archived = false, int page = 0, int size = 25, int pages = -1, int cooldown = 0)
         {
             List<VoucherListContent> result = [];
             string cmd = $"voucherlist?voucherType={LexVoucherType.Invoice.ToString().ToLower()}" +
@@ -469,7 +504,8 @@ namespace AndreasReitberger.API.LexOffice
                 if (list.TotalPages > 1 && page < list.TotalPages && (pages <= 0 || (pages - 1 > page && pages > 1)))
                 {
                     result = new List<VoucherListContent>(list.Content);
-                    await Task.Delay(cooldown < MinimumCooldown ? MinimumCooldown : cooldown);
+                    if (MinimumCooldown > 0 && cooldown > 0)
+                        await Task.Delay(cooldown < MinimumCooldown ? MinimumCooldown : cooldown);
                     page++;
                     List<VoucherListContent> append = await GetInvoiceListAsync(status, archived, page, size, pages, cooldown);
                     result = new List<VoucherListContent>(result.Concat(append));
