@@ -158,8 +158,50 @@ namespace LexOfficeSharpApi.Test.NUnit
             }
         }
 
+        [Test]
+        public async Task TestCreateCreditNoteDraft()
+        {
+            try
+            {
+                LexOfficeClient handler = new(tokenString);
+
+                List<VoucherListContent> invoicesList = await handler.GetInvoiceListAsync(LexVoucherStatus.Open);
+
+                List<LexDocumentRespone> invoices = await handler.GetInvoicesAsync(invoicesList);
+                var invoice = invoices.FirstOrDefault();
+
+                var voucherNumber = invoice.VoucherNumber;
+
+                invoice.Title = "Rechnungskorrektur";
+                invoice.Introduction = $"Rechnungskorrektur zur Rechnung {voucherNumber}";
+
+                invoice.LineItems.Add(
+                    new LexQuotationItem()
+                    {
+                        Type = "custom",
+                        Name = "Energieriegel Testpaket",
+                        Quantity = 0.1m,
+                        UnitName = "Stück",
+                        UnitPrice = new LexQuotationUnitPrice()
+                        {
+                            Currency = "EUR",
+                            NetAmount = -150,
+                            TaxRatePercentage = 0
+                        }
+                    }
+                );
+
+                var rs = await handler.AddCreditNoteAsync(invoice, true);
+
+                Assert.That(rs != null);
+            }
+            catch (Exception ex)
+            {
+                Assert.Fail(ex.Message);
+            }
+        }
         #endregion
-          
+
         #region Payments
         [Test]
         public async Task TestGetPayments()

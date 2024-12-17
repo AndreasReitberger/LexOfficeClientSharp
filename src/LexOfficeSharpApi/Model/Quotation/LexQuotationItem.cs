@@ -23,7 +23,7 @@ namespace AndreasReitberger.API.LexOffice
         string description = string.Empty;
 
         [ObservableProperty]
-        long quantity;
+        decimal quantity;
 
         [ObservableProperty]
         string unitName = string.Empty;
