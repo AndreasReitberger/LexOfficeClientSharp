@@ -439,6 +439,14 @@ namespace AndreasReitberger.API.LexOffice
             LexDocumentRespone? respone = JsonConvert.DeserializeObject<LexDocumentRespone>(jsonString);
             return respone;
         }
+
+        public async Task<LexResponseDefault?> AddCreditNoteAsync(LexDocumentRespone lexQuotation, bool isFinalized = false)
+        {
+            var body = JsonConvert.SerializeObject(lexQuotation, JsonSerializerSettings);
+            string? jsonString = await BaseApiCallAsync<string>($"credit-notes/?finalize={isFinalized}", Method.Post, body) ?? string.Empty;
+            LexResponseDefault? response = JsonConvert.DeserializeObject<LexResponseDefault>(jsonString);
+            return response;
+        }
         #endregion
 
         #region Conditions
@@ -481,7 +489,7 @@ namespace AndreasReitberger.API.LexOffice
             return result;
         }
 
-        public async Task<List<LexDocumentRespone>> GetInvoicesAsync(List<Guid> ids, int cooldown = 50)
+        public async Task<List<LexDocumentRespone>> GetInvoicesAsync(List<Guid> ids, int cooldown = 500)
         {
             List<LexDocumentRespone> result = [];
             foreach (Guid id in ids)
