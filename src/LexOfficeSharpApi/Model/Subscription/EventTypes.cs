@@ -1,4 +1,4 @@
-﻿namespace AndreasReitberger.API.LexOffice.Model.Subscription
+﻿namespace AndreasReitberger.API.LexOffice
 {
     public static class EventTypes
     {

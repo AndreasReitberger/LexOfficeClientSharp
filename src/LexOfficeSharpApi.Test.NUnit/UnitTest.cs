@@ -1,6 +1,5 @@
 using AndreasReitberger.API.LexOffice;
 using AndreasReitberger.API.LexOffice.Enum;
-using AndreasReitberger.API.LexOffice.Model.Subscription;
 using Newtonsoft.Json;
 
 namespace LexOfficeSharpApi.Test.NUnit
