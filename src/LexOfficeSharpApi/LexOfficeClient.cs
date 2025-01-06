@@ -1,5 +1,4 @@
 ﻿using AndreasReitberger.API.LexOffice.Enum;
-using AndreasReitberger.API.LexOffice.Model.Response;
 using AndreasReitberger.API.LexOffice.Utilities;
 using AndreasReitberger.Core.Utilities;
 using CommunityToolkit.Mvvm.ComponentModel;

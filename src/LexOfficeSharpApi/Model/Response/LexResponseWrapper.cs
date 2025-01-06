@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace AndreasReitberger.API.LexOffice.Model.Response
+namespace AndreasReitberger.API.LexOffice
 {
     public class LexResponseWrapper
     {
