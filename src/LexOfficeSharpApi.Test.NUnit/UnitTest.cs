@@ -1,5 +1,6 @@
 using AndreasReitberger.API.LexOffice;
 using AndreasReitberger.API.LexOffice.Enum;
+using AndreasReitberger.API.LexOffice.Model.Subscription;
 using Newtonsoft.Json;
 
 namespace LexOfficeSharpApi.Test.NUnit
@@ -40,7 +41,7 @@ namespace LexOfficeSharpApi.Test.NUnit
                 if (client is null) throw new NullReferenceException($"The client was null!");
 
                 List<VoucherListContent> invoicesList = await client.GetInvoiceListAsync(LexVoucherStatus.Paid);
-                List<LexDocumentRespone> invoices = await client.GetInvoicesAsync(invoicesList);
+                List<LexDocumentResponse> invoices = await client.GetInvoicesAsync(invoicesList);
 
                 Assert.That(invoices?.Count > 0);
             }
@@ -60,7 +61,7 @@ namespace LexOfficeSharpApi.Test.NUnit
                 LexOfficeClient handler = new(tokenString);
 
                 List<VoucherListContent> invoicesList = await handler.GetInvoiceListAsync(LexVoucherStatus.Open);
-                List<LexDocumentRespone> invoices = await handler.GetInvoicesAsync(invoicesList);
+                List<LexDocumentResponse> invoices = await handler.GetInvoicesAsync(invoicesList);
 
                 Assert.That(invoices?.Count > 0);
             }
@@ -78,7 +79,7 @@ namespace LexOfficeSharpApi.Test.NUnit
                 LexOfficeClient handler = new(tokenString);
 
                 // Create a new Invoice object
-                LexDocumentRespone invoice = new()
+                LexDocumentResponse invoice = new()
                 {
                     Address = new LexContactAddress()
                     {
@@ -148,7 +149,7 @@ namespace LexOfficeSharpApi.Test.NUnit
                 LexOfficeClient handler = new(tokenString);
 
                 List<VoucherListContent> invoicesList = await handler.GetInvoiceListAsync(LexVoucherStatus.Draft);
-                List<LexDocumentRespone> invoices = await handler.GetInvoicesAsync(invoicesList);
+                List<LexDocumentResponse> invoices = await handler.GetInvoicesAsync(invoicesList);
 
                 Assert.That(invoices?.Count > 0);
             }
@@ -167,7 +168,7 @@ namespace LexOfficeSharpApi.Test.NUnit
 
                 List<VoucherListContent> invoicesList = await handler.GetInvoiceListAsync(LexVoucherStatus.Open);
 
-                List<LexDocumentRespone> invoices = await handler.GetInvoicesAsync(invoicesList);
+                List<LexDocumentResponse> invoices = await handler.GetInvoicesAsync(invoicesList);
                 var invoice = invoices.FirstOrDefault();
 
                 var voucherNumber = invoice.VoucherNumber;
@@ -194,6 +195,38 @@ namespace LexOfficeSharpApi.Test.NUnit
                 var rs = await handler.AddCreditNoteAsync(invoice, true);
 
                 Assert.That(rs != null);
+            }
+            catch (Exception ex)
+            {
+                Assert.Fail(ex.Message);
+            }
+        }
+
+        [Test]
+        public async Task TestAddEventSubscription()
+        {
+            try
+            {
+                LexOfficeClient handler = new(tokenString);
+
+                // Cleanup available event subscriptions
+                List<LexResponseDefault> allSubscriptions = await handler.GetAllEventSubscriptionsAsync();
+                foreach(var subscriptions in allSubscriptions)
+                {
+                    await handler.DeleteEventSubscriptionAsync(subscriptions.SubscriptionId);
+                }
+
+                LexResponseDefault newSubscription = await handler.AddEventSubscriptionAsync(new LexDocumentResponse
+                {
+                    EventType = EventTypes.PaymentChanged,
+                    CallbackUrl = "https://webhook.site/11dac08c-7a64-4467-aae9-8ec5dd1f3338"
+                });
+
+                LexResponseDefault subscription = await handler.GetEventSubscriptionAsync(newSubscription.Id);
+
+                Assert.That(newSubscription != null);
+                Assert.That(newSubscription.Id != subscription.Id);
+                Assert.That(newSubscription.EventType != subscription.EventType);
             }
             catch (Exception ex)
             {
@@ -239,7 +272,7 @@ namespace LexOfficeSharpApi.Test.NUnit
                 Guid invoiceId = availableInvoices.First().Id; // Guid.Parse("YOUR_INVOICE_ID");
                 Assert.That(invoiceId != Guid.Empty);
 
-                LexDocumentRespone? invoice = await handler.GetInvoiceAsync(availableInvoices.First().Id);
+                LexDocumentResponse? invoice = await handler.GetInvoiceAsync(availableInvoices.First().Id);
 
                 LexQuotationFiles? files = await handler.RenderDocumentAsync(invoiceId);
 
@@ -262,7 +295,7 @@ namespace LexOfficeSharpApi.Test.NUnit
                 Guid invoiceId = availableInvoices.First().Id; // Guid.Parse("YOUR_INVOICE_ID");
                 Assert.That(invoiceId != Guid.Empty);
 
-                LexDocumentRespone? invoice = await handler.GetInvoiceAsync(availableInvoices.First().Id);
+                LexDocumentResponse? invoice = await handler.GetInvoiceAsync(availableInvoices.First().Id);
                 LexQuotationFiles? files = await handler.RenderDocumentAsync(invoiceId);
                 Assert.That(files is not null);
 
@@ -304,7 +337,7 @@ namespace LexOfficeSharpApi.Test.NUnit
             try
             {
                 LexOfficeClient handler = new(tokenString);
-                List<LexDocumentRespone> list = await handler.GetCreditNotesAsync();
+                List<LexDocumentResponse> list = await handler.GetCreditNotesAsync();
                 Assert.That(list?.Count > 0);
             }
             catch (Exception ex)
@@ -339,7 +372,7 @@ namespace LexOfficeSharpApi.Test.NUnit
             {
                 LexOfficeClient handler = new(tokenString);
                 List<VoucherListContent> listContent = await handler.GetQuotationListAsync(LexVoucherStatus.Accepted);
-                List<LexDocumentRespone> list = await handler.GetQuotationsAsync(listContent);
+                List<LexDocumentResponse> list = await handler.GetQuotationsAsync(listContent);
                 Assert.That(list?.Count > 0);
             }
             catch (Exception ex)
