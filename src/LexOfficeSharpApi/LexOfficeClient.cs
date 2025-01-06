@@ -496,7 +496,7 @@ namespace AndreasReitberger.API.LexOffice
         #endregion
 
         #region Invoices
-        public async Task<List<VoucherListContent>> GetInvoiceListAsync(LexVoucherStatus status, bool archived = false, int page = 0, int size = 25, int pages = -1, int cooldown = 500)
+        public async Task<List<VoucherListContent>> GetInvoiceListAsync(LexVoucherStatus status, bool archived = false, int page = 0, int size = 25, int pages = -1, int cooldown = 0)
         {
             List<VoucherListContent> result = [];
             string cmd = $"voucherlist?voucherType={LexVoucherType.Invoice.ToString().ToLower()}" +
@@ -525,7 +525,7 @@ namespace AndreasReitberger.API.LexOffice
             return result;
         }
 
-        public async Task<List<LexDocumentRespone>> GetInvoicesAsync(List<Guid> ids, int cooldown = 500)
+        public async Task<List<LexDocumentRespone>> GetInvoicesAsync(List<Guid> ids, int cooldown = 0)
         {
             List<LexDocumentRespone> result = [];
             foreach (Guid id in ids)
