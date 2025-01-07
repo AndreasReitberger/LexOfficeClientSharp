@@ -9,6 +9,12 @@ namespace AndreasReitberger.API.LexOffice
         Guid? id;
 
         [ObservableProperty]
+        Guid subscriptionId;
+
+        [ObservableProperty]
+        Guid organizationId;
+
+        [ObservableProperty]
         Uri? resourceUri;
 
         [ObservableProperty]
@@ -16,6 +22,15 @@ namespace AndreasReitberger.API.LexOffice
 
         [ObservableProperty]
         DateTimeOffset updatedDate;
+
+        [ObservableProperty]
+        DateTimeOffset eventDate;
+
+        [ObservableProperty]
+        string eventType;
+
+        [ObservableProperty]
+        string callbackUrl;
 
         [ObservableProperty]
         long version;

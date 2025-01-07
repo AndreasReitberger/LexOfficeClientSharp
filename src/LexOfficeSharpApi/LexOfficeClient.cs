@@ -289,6 +289,10 @@ namespace AndreasReitberger.API.LexOffice
                         throw new InvalidOperationException($"Unsupported return type: {typeof(T).Name}");
                     }
                 }
+                else if (response.StatusCode == HttpStatusCode.NoContent)
+                {
+                    return default;
+                }
                 else
                 {
                     string errorMessage = $"Request failed with status code {(int)response.StatusCode} ({response.StatusCode}).";
@@ -460,22 +464,22 @@ namespace AndreasReitberger.API.LexOffice
 
         #region Credit Notes
 
-        public async Task<List<LexDocumentRespone>> GetCreditNotesAsync()
+        public async Task<List<LexDocumentResponse>> GetCreditNotesAsync()
         {
-            List<LexDocumentRespone> result = [];
+            List<LexDocumentResponse> result = [];
             string? jsonString = await BaseApiCallAsync<string>("credit-notes", Method.Get) ?? string.Empty;
-            result = JsonConvert.DeserializeObject<List<LexDocumentRespone>>(jsonString) ?? [];
+            result = JsonConvert.DeserializeObject<List<LexDocumentResponse>>(jsonString) ?? [];
             return result;
         }
         
-        public async Task<LexDocumentRespone?> GetCreditNoteAsync(Guid id)
+        public async Task<LexDocumentResponse?> GetCreditNoteAsync(Guid id)
         {
             string? jsonString = await BaseApiCallAsync<string>($"credit-notes/{id}", Method.Get) ?? string.Empty;
-            LexDocumentRespone? respone = JsonConvert.DeserializeObject<LexDocumentRespone>(jsonString);
+            LexDocumentResponse? respone = JsonConvert.DeserializeObject<LexDocumentResponse>(jsonString);
             return respone;
         }
 
-        public async Task<LexResponseDefault?> AddCreditNoteAsync(LexDocumentRespone lexQuotation, bool isFinalized = false)
+        public async Task<LexResponseDefault?> AddCreditNoteAsync(LexDocumentResponse lexQuotation, bool isFinalized = false)
         {
             var body = JsonConvert.SerializeObject(lexQuotation, JsonSerializerSettings);
             string? jsonString = await BaseApiCallAsync<string>($"credit-notes/?finalize={isFinalized}", Method.Post, body) ?? string.Empty;
@@ -525,12 +529,12 @@ namespace AndreasReitberger.API.LexOffice
             return result;
         }
 
-        public async Task<List<LexDocumentRespone>> GetInvoicesAsync(List<Guid> ids, int cooldown = 0)
+        public async Task<List<LexDocumentResponse>> GetInvoicesAsync(List<Guid> ids, int cooldown = 0)
         {
-            List<LexDocumentRespone> result = [];
+            List<LexDocumentResponse> result = [];
             foreach (Guid id in ids)
             {
-                LexDocumentRespone? quote = await GetInvoiceAsync(id);
+                LexDocumentResponse? quote = await GetInvoiceAsync(id);
                 if (quote is not null)
                     result.Add(quote);
                 await Task.Delay(cooldown < MinimumCooldown ? MinimumCooldown : cooldown);
@@ -538,26 +542,53 @@ namespace AndreasReitberger.API.LexOffice
             return result;
         }
 
-        public async Task<List<LexDocumentRespone>> GetInvoicesAsync(List<VoucherListContent> voucherList)
+        public async Task<List<LexDocumentResponse>> GetInvoicesAsync(List<VoucherListContent> voucherList)
         {
             List<Guid> ids = voucherList.Select(id => id.Id).ToList();
             return await GetInvoicesAsync(ids);
         }
 
-        public async Task<LexDocumentRespone?> GetInvoiceAsync(Guid id)
+        public async Task<LexDocumentResponse?> GetInvoiceAsync(Guid id)
         {
             string? jsonString = await BaseApiCallAsync<string>($"invoices/{id}", Method.Get) ?? string.Empty;
-            LexDocumentRespone? response = JsonConvert.DeserializeObject<LexDocumentRespone>(jsonString);
+            LexDocumentResponse? response = JsonConvert.DeserializeObject<LexDocumentResponse>(jsonString);
             return response;
         }
 
-        public async Task<LexResponseDefault?> AddInvoiceAsync(LexDocumentRespone lexQuotation, bool isFinalized = false)
+        public async Task<LexResponseDefault?> AddInvoiceAsync(LexDocumentResponse lexQuotation, bool isFinalized = false)
         {
             string? jsonString = await BaseApiCallAsync<string>($"invoices?finalize={isFinalized}", Method.Post, JsonConvert.SerializeObject(lexQuotation, JsonSerializerSettings)) ?? string.Empty;
             LexResponseDefault? response = JsonConvert.DeserializeObject<LexResponseDefault>(jsonString);
             return response;
         }
         #endregion
+
+        public async Task<LexResponseDefault?> AddEventSubscriptionAsync(LexDocumentResponse lexQuotation)
+        {
+            var json = JsonConvert.SerializeObject(lexQuotation, JsonSerializerSettings) ?? string.Empty;
+            string? jsonString = await BaseApiCallAsync<string>($"event-subscriptions", Method.Post, json);
+            LexResponseDefault? response = JsonConvert.DeserializeObject<LexResponseDefault>(jsonString);
+            return response;
+        }
+
+        public async Task<LexResponseDefault?> GetEventSubscriptionAsync(Guid? id)
+        {
+            string? jsonString = await BaseApiCallAsync<string>($"event-subscriptions/{id}");
+            LexResponseDefault? response = JsonConvert.DeserializeObject<LexResponseDefault>(jsonString);
+            return response;
+        }
+
+        public async Task<List<LexResponseDefault>?> GetAllEventSubscriptionsAsync()
+        {
+            string? jsonString = await BaseApiCallAsync<string>($"event-subscriptions", Method.Get);
+            List<LexResponseDefault>? response = JsonConvert.DeserializeObject<LexResponseWrapper>(jsonString).Content;
+            return response;
+        }
+
+        public async Task DeleteEventSubscriptionAsync(Guid? id)
+        {
+            await BaseApiCallAsync<string>($"event-subscriptions/{id}", Method.Delete);
+        }
 
         #region Payments
         public async Task<LexPayments?> GetPaymentsAsync(Guid invoiceId)
@@ -594,28 +625,28 @@ namespace AndreasReitberger.API.LexOffice
             return result;
         }
 
-        public async Task<List<LexDocumentRespone>> GetQuotationsAsync(List<Guid> ids)
+        public async Task<List<LexDocumentResponse>> GetQuotationsAsync(List<Guid> ids)
         {
-            List<LexDocumentRespone> result = [];
+            List<LexDocumentResponse> result = [];
             foreach (Guid Id in ids)
             {
-                LexDocumentRespone? quote = await GetQuotationAsync(Id);
+                LexDocumentResponse? quote = await GetQuotationAsync(Id);
                 if (quote is not null)
                     result.Add(quote);
             }
             return result;
         }
 
-        public async Task<List<LexDocumentRespone>> GetQuotationsAsync(List<VoucherListContent> voucherList)
+        public async Task<List<LexDocumentResponse>> GetQuotationsAsync(List<VoucherListContent> voucherList)
         {
             List<Guid> ids = voucherList.Select(id => id.Id).ToList();
             return await GetQuotationsAsync(ids);
         }
 
-        public async Task<LexDocumentRespone?> GetQuotationAsync(Guid id)
+        public async Task<LexDocumentResponse?> GetQuotationAsync(Guid id)
         {
             string? jsonString = await BaseApiCallAsync<string>($"quotations/{id}", Method.Get) ?? string.Empty;
-            LexDocumentRespone? response = JsonConvert.DeserializeObject<LexDocumentRespone>(jsonString);
+            LexDocumentResponse? response = JsonConvert.DeserializeObject<LexDocumentResponse>(jsonString);
             return response;
         }
         #endregion

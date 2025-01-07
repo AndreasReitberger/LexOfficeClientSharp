@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace AndreasReitberger.API.LexOffice
 {
-    public partial class LexDocumentRespone : ObservableObject
+    public partial class LexDocumentResponse : ObservableObject
     {
         #region Properties
         [ObservableProperty]
@@ -72,6 +72,12 @@ namespace AndreasReitberger.API.LexOffice
 
         [ObservableProperty]
         string title = string.Empty;
+
+        [ObservableProperty]
+        string eventType = string.Empty;
+
+        [ObservableProperty]
+        string callbackUrl = string.Empty;
         #endregion
     }
 }
