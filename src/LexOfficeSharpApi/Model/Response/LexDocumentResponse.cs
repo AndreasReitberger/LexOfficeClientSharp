@@ -72,12 +72,6 @@ namespace AndreasReitberger.API.LexOffice
 
         [ObservableProperty]
         string title = string.Empty;
-
-        [ObservableProperty]
-        string eventType = string.Empty;
-
-        [ObservableProperty]
-        string callbackUrl = string.Empty;
         #endregion
     }
 }

@@ -15,6 +15,9 @@ namespace AndreasReitberger.API.LexOffice
         Guid organizationId;
 
         [ObservableProperty]
+        Guid resourceId;
+
+        [ObservableProperty]
         Uri? resourceUri;
 
         [ObservableProperty]
