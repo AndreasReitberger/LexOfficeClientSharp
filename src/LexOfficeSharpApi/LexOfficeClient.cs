@@ -563,7 +563,7 @@ namespace AndreasReitberger.API.LexOffice
         }
         #endregion
 
-        public async Task<LexResponseDefault?> AddEventSubscriptionAsync(LexDocumentResponse lexQuotation)
+        public async Task<LexResponseDefault?> AddEventSubscriptionAsync(LexResponseDefault lexQuotation)
         {
             var json = JsonConvert.SerializeObject(lexQuotation, JsonSerializerSettings) ?? string.Empty;
             string? jsonString = await BaseApiCallAsync<string>($"event-subscriptions", Method.Post, json);

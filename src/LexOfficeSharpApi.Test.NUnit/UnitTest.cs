@@ -215,7 +215,8 @@ namespace LexOfficeSharpApi.Test.NUnit
                     await handler.DeleteEventSubscriptionAsync(subscriptions.SubscriptionId);
                 }
 
-                LexResponseDefault newSubscription = await handler.AddEventSubscriptionAsync(new LexDocumentResponse
+                // Create event subscription
+                LexResponseDefault newSubscription = await handler.AddEventSubscriptionAsync(new LexResponseDefault
                 {
                     EventType = EventTypes.PaymentChanged,
                     CallbackUrl = "https://webhook.site/11dac08c-7a64-4467-aae9-8ec5dd1f3338"
