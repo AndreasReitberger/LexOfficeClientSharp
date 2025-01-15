@@ -220,7 +220,7 @@ namespace AndreasReitberger.API.LexOffice
 #endif
             RestClientOptions options = new($"{AppBaseUrl}{ApiVersion}/")
             {
-                ThrowOnAnyError = true,
+                ThrowOnAnyError = false,
                 Timeout = TimeSpan.FromSeconds(DefaultTimeout / 1000),
             };
             if (EnableProxy && !string.IsNullOrEmpty(ProxyAddress))
