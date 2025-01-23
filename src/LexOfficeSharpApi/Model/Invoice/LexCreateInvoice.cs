@@ -31,7 +31,7 @@ namespace AndreasReitberger.API.LexOffice
 
         [ObservableProperty]
         LexQuotationPaymentConditions? paymentConditions;
-        
+
         [ObservableProperty]
         LexShippingConditions? shippingConditions;
 

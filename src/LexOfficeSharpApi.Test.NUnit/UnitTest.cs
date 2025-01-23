@@ -64,8 +64,8 @@ namespace LexOfficeSharpApi.Test.NUnit
 
                 Assert.That(invoices?.Count > 0);
             }
-            catch (Exception ex) 
-            {           
+            catch (Exception ex)
+            {
                 Assert.Fail(ex.Message);
             }
         }
@@ -210,7 +210,7 @@ namespace LexOfficeSharpApi.Test.NUnit
 
                 // Cleanup available event subscriptions
                 List<LexResponseDefault> allSubscriptions = await handler.GetAllEventSubscriptionsAsync();
-                foreach(var subscriptions in allSubscriptions)
+                foreach (var subscriptions in allSubscriptions)
                 {
                     await handler.DeleteEventSubscriptionAsync(subscriptions.SubscriptionId);
                 }
@@ -256,9 +256,9 @@ namespace LexOfficeSharpApi.Test.NUnit
                 Assert.Fail(ex.Message);
             }
         }
-      
+
         #endregion
-          
+
         #region Files
 
         [Test]
@@ -310,7 +310,7 @@ namespace LexOfficeSharpApi.Test.NUnit
             }
         }
 
-       
+
         #endregion
 
         #region Countries
