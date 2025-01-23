@@ -249,7 +249,7 @@ namespace AndreasReitberger.API.LexOffice
             UpdatingClients = false;
         }
 
-        async Task<T?> BaseApiCallAsync<T>(string command, Method method = Method.Get, string body = "", CancellationTokenSource? cts = default)  where T : class
+        async Task<T?> BaseApiCallAsync<T>(string command, Method method = Method.Get, string body = "", CancellationTokenSource? cts = default) where T : class
         {
             if (cts == default)
             {
@@ -314,20 +314,20 @@ namespace AndreasReitberger.API.LexOffice
             {
                 IsAccessTokenValid = Regex.IsMatch(AccessToken ?? string.Empty, RegexHelper.LexOfficeAccessToken) && !string.IsNullOrEmpty(AccessToken);
             }
-            catch(Exception exc)
+            catch (Exception exc)
             {
                 IsAccessTokenValid = false;
                 OnError(new UnhandledExceptionEventArgs(exc, false));
             }
         }
-#endregion
+        #endregion
 
         #region Public Methods
 
         #region Proxy
-        Uri GetProxyUri() => 
+        Uri GetProxyUri() =>
             ProxyAddress.StartsWith("http://") || ProxyAddress.StartsWith("https://") ? new Uri($"{ProxyAddress}:{ProxyPort}") : new Uri($"{(SecureProxyConnection ? "https" : "http")}://{ProxyAddress}:{ProxyPort}");
-        
+
         WebProxy GetCurrentProxy()
         {
             WebProxy proxy = new()
@@ -413,10 +413,10 @@ namespace AndreasReitberger.API.LexOffice
             LexContactsList? list = JsonConvert.DeserializeObject<LexContactsList>(jsonString);
             if (list != null)
             {
-                if (list.TotalPages > 1 && page < list.TotalPages &&  (pages <= 0 || (pages - 1 > page && pages > 1)))
+                if (list.TotalPages > 1 && page < list.TotalPages && (pages <= 0 || (pages - 1 > page && pages > 1)))
                 {
                     result = new List<LexContact>(list.Content);
-                    if(MinimumCooldown > 0 && cooldown > 0)
+                    if (MinimumCooldown > 0 && cooldown > 0)
                         await Task.Delay(cooldown < MinimumCooldown ? MinimumCooldown : cooldown);
                     page++;
                     List<LexContact> append = await GetContactsAsync(type, page, size, pages, cooldown);
@@ -471,7 +471,7 @@ namespace AndreasReitberger.API.LexOffice
             result = JsonConvert.DeserializeObject<List<LexDocumentResponse>>(jsonString) ?? [];
             return result;
         }
-        
+
         public async Task<LexDocumentResponse?> GetCreditNoteAsync(Guid id)
         {
             string? jsonString = await BaseApiCallAsync<string>($"credit-notes/{id}", Method.Get) ?? string.Empty;
@@ -523,7 +523,7 @@ namespace AndreasReitberger.API.LexOffice
                     result = new List<VoucherListContent>(result.Concat(append));
                     return result;
                 }
-                else 
+                else
                     result = new List<VoucherListContent>(list.Content);
             }
             return result;
