@@ -8,16 +8,16 @@ namespace AndreasReitberger.API.LexOffice
         #region Properties
 
         [ObservableProperty]
-        string countryCode = string.Empty;
+        public partial string CountryCode { get; set; } = string.Empty;
 
         [ObservableProperty]
-        string countryNameDE = string.Empty;
+        public partial string CountryNameDE { get; set; } = string.Empty;
 
         [ObservableProperty]
-        string countryNameEN = string.Empty;
+        public partial string CountryNameEN { get; set; } = string.Empty;
 
         [ObservableProperty]
-        LexTaxClassifications taxClassification;
+        public partial LexTaxClassifications TaxClassification { get; set; }
         //string taxClassification = string.Empty;
         #endregion
     }

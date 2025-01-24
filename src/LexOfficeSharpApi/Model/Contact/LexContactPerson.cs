@@ -6,22 +6,22 @@ namespace AndreasReitberger.API.LexOffice
     {
         #region Properties
         [ObservableProperty]
-        string salutation = string.Empty;
+        public partial string Salutation { get; set; } = string.Empty;
 
         [ObservableProperty]
-        string firstName = string.Empty;
+        public partial string FirstName { get; set; } = string.Empty;
 
         [ObservableProperty]
-        string lastName = string.Empty;
+        public partial string LastName { get; set; } = string.Empty;
 
         [ObservableProperty]
-        bool primary;
+        public partial bool Primary { get; set; }
 
         [ObservableProperty]
-        string emailAddress = string.Empty;
+        public partial string EmailAddress { get; set; } = string.Empty;
 
         [ObservableProperty]
-        string phoneNumber = string.Empty;
+        public partial string PhoneNumber { get; set; } = string.Empty;
         #endregion
     }
 }

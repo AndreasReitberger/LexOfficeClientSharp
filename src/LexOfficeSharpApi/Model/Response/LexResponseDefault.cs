@@ -6,36 +6,36 @@ namespace AndreasReitberger.API.LexOffice
     public partial class LexResponseDefault : ObservableObject
     {
         [ObservableProperty]
-        Guid? id;
+        public partial Guid? Id { get; set; }
 
         [ObservableProperty]
-        Guid subscriptionId;
+        public partial Guid SubscriptionId { get; set; }
 
         [ObservableProperty]
-        Guid organizationId;
+        public partial Guid OrganizationId { get; set; }
 
         [ObservableProperty]
-        Guid resourceId;
+        public partial Guid ResourceId { get; set; }
 
         [ObservableProperty]
-        Uri? resourceUri;
+        public partial Uri? ResourceUri { get; set; }
 
         [ObservableProperty]
-        DateTimeOffset createdDate;
+        public partial DateTimeOffset CreatedDate { get; set; }
 
         [ObservableProperty]
-        DateTimeOffset updatedDate;
+        public partial DateTimeOffset UpdatedDate { get; set; }
 
         [ObservableProperty]
-        DateTimeOffset eventDate;
+        public partial DateTimeOffset EventDate { get; set; }
 
         [ObservableProperty]
-        string eventType = string.Empty;
+        public partial string EventType { get; set; } = string.Empty;
 
         [ObservableProperty]
-        string callbackUrl = string.Empty;
+        public partial string CallbackUrl { get; set; } = string.Empty;
 
         [ObservableProperty]
-        long version;
+        public partial long Version { get; set; }
     }
 }

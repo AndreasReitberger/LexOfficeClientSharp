@@ -1,7 +1,7 @@
 <Project>
     <PropertyGroup>
-        <Version>1.0.8</Version>
-        <!--<PackageIcon>logo_128.png</PackageIcon>-->
+        <Version>1.0.8-preview</Version>
+        <PackageIcon>ar_128.png</PackageIcon>
         <NeutralLanguage>en</NeutralLanguage>
         <PackageProjectUrl>https://github.com/AndreasReitberger/LexOfficeClientSharp</PackageProjectUrl>
         <RepositoryUrl>https://github.com/AndreasReitberger/LexOfficeClientSharp</RepositoryUrl>
@@ -9,7 +9,7 @@
         <PackageReleaseNotes>Check GitHub releases for changelog.</PackageReleaseNotes>
         <Authors>Andreas Reitberger</Authors>
         <Copyright>Andreas Reitberger</Copyright>
-        <LangVersion>12</LangVersion>
+        <LangVersion>preview</LangVersion>
         <PublishReadyToRun>false</PublishReadyToRun>
 		<Nullable>enable</Nullable>
 

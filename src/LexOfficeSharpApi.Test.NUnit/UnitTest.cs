@@ -436,5 +436,13 @@ namespace LexOfficeSharpApi.Test.NUnit
         }
 
         #endregion
+
+        #region Cleanup
+        [TearDown]
+        public void BaseTearDown()
+        {
+            client?.Dispose();
+        }
+        #endregion
     }
 }

@@ -6,19 +6,19 @@ namespace AndreasReitberger.API.LexOffice
     {
         #region Properties
         [ObservableProperty]
-        string property = string.Empty;
+        public partial string Property { get; set; } = string.Empty;
 
         [ObservableProperty]
-        string direction = string.Empty;
+        public partial string Direction { get; set; } = string.Empty;
 
         [ObservableProperty]
-        bool? ignoreCase;
+        public partial bool? IgnoreCase { get; set; }
 
         [ObservableProperty]
-        string nullHandling = string.Empty;
+        public partial string NullHandling { get; set; } = string.Empty;
 
         [ObservableProperty]
-        bool? ascending;
+        public partial bool? Ascending { get; set; }
         #endregion
     }
 }

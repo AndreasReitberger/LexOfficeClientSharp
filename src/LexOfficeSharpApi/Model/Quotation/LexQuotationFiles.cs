@@ -8,7 +8,7 @@ namespace AndreasReitberger.API.LexOffice
         #region Properties
 
         [ObservableProperty]
-        Guid documentFileId;
+        public partial Guid DocumentFileId { get; set; }
 
         #endregion
     }
