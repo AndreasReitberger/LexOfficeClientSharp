@@ -563,10 +563,12 @@ namespace AndreasReitberger.API.LexOffice
         }
         #endregion
 
+        #region Subscription
         public async Task<LexResponseDefault?> AddEventSubscriptionAsync(LexResponseDefault lexQuotation)
         {
-            var json = JsonConvert.SerializeObject(lexQuotation, JsonSerializerSettings) ?? string.Empty;
+            string json = JsonConvert.SerializeObject(lexQuotation, JsonSerializerSettings) ?? string.Empty;
             string? jsonString = await BaseApiCallAsync<string>($"event-subscriptions", Method.Post, json);
+            if (jsonString is null) return null;
             LexResponseDefault? response = JsonConvert.DeserializeObject<LexResponseDefault>(jsonString);
             return response;
         }
@@ -574,6 +576,7 @@ namespace AndreasReitberger.API.LexOffice
         public async Task<LexResponseDefault?> GetEventSubscriptionAsync(Guid? id)
         {
             string? jsonString = await BaseApiCallAsync<string>($"event-subscriptions/{id}");
+            if (jsonString is null) return null;
             LexResponseDefault? response = JsonConvert.DeserializeObject<LexResponseDefault>(jsonString);
             return response;
         }
@@ -581,19 +584,19 @@ namespace AndreasReitberger.API.LexOffice
         public async Task<List<LexResponseDefault>?> GetAllEventSubscriptionsAsync()
         {
             string? jsonString = await BaseApiCallAsync<string>($"event-subscriptions", Method.Get);
-            List<LexResponseDefault>? response = JsonConvert.DeserializeObject<LexResponseWrapper>(jsonString).Content;
+            if (jsonString is null) return null;
+            List<LexResponseDefault>? response = JsonConvert.DeserializeObject<LexResponseWrapper>(jsonString)?.Content;
             return response;
         }
 
-        public async Task DeleteEventSubscriptionAsync(Guid? id)
-        {
-            await BaseApiCallAsync<string>($"event-subscriptions/{id}", Method.Delete);
-        }
+        public Task DeleteEventSubscriptionAsync(Guid? id) => BaseApiCallAsync<string>($"event-subscriptions/{id}", Method.Delete);
+        #endregion
 
         #region Payments
         public async Task<LexPayments?> GetPaymentsAsync(Guid invoiceId)
         {
-            string? jsonString = await BaseApiCallAsync<string>($"payments/{invoiceId}", Method.Get) ?? string.Empty;
+            string? jsonString = await BaseApiCallAsync<string>($"payments/{invoiceId}", Method.Get);
+            if (jsonString is null) return null;
             LexPayments? response = JsonConvert.DeserializeObject<LexPayments>(jsonString);
             return response;
         }
@@ -639,13 +642,14 @@ namespace AndreasReitberger.API.LexOffice
 
         public async Task<List<LexDocumentResponse>> GetQuotationsAsync(List<VoucherListContent> voucherList)
         {
-            List<Guid> ids = voucherList.Select(id => id.Id).ToList();
+            List<Guid> ids = [.. voucherList.Select(id => id.Id)];
             return await GetQuotationsAsync(ids);
         }
 
         public async Task<LexDocumentResponse?> GetQuotationAsync(Guid id)
         {
-            string? jsonString = await BaseApiCallAsync<string>($"quotations/{id}", Method.Get) ?? string.Empty;
+            string? jsonString = await BaseApiCallAsync<string>($"quotations/{id}", Method.Get);
+            if (jsonString is null) return null;
             LexDocumentResponse? response = JsonConvert.DeserializeObject<LexDocumentResponse>(jsonString);
             return response;
         }
@@ -655,18 +659,16 @@ namespace AndreasReitberger.API.LexOffice
 
         public async Task<LexQuotationFiles?> RenderDocumentAsync(Guid invoiceId)
         {
-            string? jsonString = await BaseApiCallAsync<string>($"invoices/{invoiceId}/document", Method.Get) ?? string.Empty;
+            string? jsonString = await BaseApiCallAsync<string>($"invoices/{invoiceId}/document", Method.Get);
+            if (jsonString is null) return null;
             LexQuotationFiles? response = JsonConvert.DeserializeObject<LexQuotationFiles>(jsonString);
             return response;
         }
 
-        public async Task<byte[]> GetFileAsync(Guid id)
-        {
-            byte[] response = await BaseApiCallAsync<byte[]>($"files/{id}", Method.Get) ?? [];
-            return response;
-        }
+        public Task<byte[]?> GetFileAsync(Guid id) => BaseApiCallAsync<byte[]>($"files/{id}", Method.Get);
 
         #endregion
+
         #endregion
     }
 }

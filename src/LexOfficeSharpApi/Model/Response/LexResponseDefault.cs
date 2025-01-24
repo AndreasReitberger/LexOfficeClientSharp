@@ -30,10 +30,10 @@ namespace AndreasReitberger.API.LexOffice
         DateTimeOffset eventDate;
 
         [ObservableProperty]
-        string eventType;
+        string eventType = string.Empty;
 
         [ObservableProperty]
-        string callbackUrl;
+        string callbackUrl = string.Empty;
 
         [ObservableProperty]
         long version;
