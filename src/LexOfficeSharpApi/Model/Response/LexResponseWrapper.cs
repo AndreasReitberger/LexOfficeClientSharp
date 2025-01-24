@@ -4,6 +4,6 @@ namespace AndreasReitberger.API.LexOffice
 {
     public class LexResponseWrapper
     {
-        public List<LexResponseDefault> Content { get; set; }
+        public List<LexResponseDefault> Content { get; set; } = [];
     }
 }
