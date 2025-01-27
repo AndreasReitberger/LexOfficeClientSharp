@@ -1,10 +1,12 @@
 ﻿#if !NETFRAMEWORK
 using AndreasReitberger.API.REST;
+using AndreasReitberger.API.REST.Enums;
+#else
+using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 #endif
 using AndreasReitberger.Core.Utilities;
 using CommunityToolkit.Mvvm.ComponentModel;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Serialization;
 using RestSharp;
 using System;
 using System.Net;
@@ -59,12 +61,13 @@ namespace AndreasReitberger.API.LexOffice
         public static string HandlerLicenseUri = "https://www.lexoffice.de/public-api-lizenz-nutzungsbedingungen/";
         #endregion
 
-        #region Properties
+#region Properties
 
-        #region SerializerSettings
+#region SerializerSettings
 
+#if NETFRAMEWORK
         [ObservableProperty]
-        public partial JsonSerializerSettings JsonSerializerSettings { get; set; } = new()
+        public partial JsonSerializerSettings NewtonsoftJsonSerializerSettings { get; set; } = new()
         {
             Formatting = Formatting.Indented,
             ContractResolver = new DefaultContractResolver
@@ -73,22 +76,22 @@ namespace AndreasReitberger.API.LexOffice
             },
             DateFormatString = "yyyy-MM-ddTHH:mm:ss.fffK"
         };
-
-        #endregion
+#endif
+    #endregion
 
         #region General
 
+#if NETFRAMEWORK
         [ObservableProperty]
         [JsonIgnore, XmlIgnore]
         public partial string? AccessToken { get; set; } = null;
-
         partial void OnAccessTokenChanged(string? value) => VerifyAccessToken();
-
-        #endregion
+#endif
+#endregion
 
 #endregion
 
-#region EventHandlers
+        #region EventHandlers
 #if NETFRAMEWORK
         public event EventHandler? Error;
         protected virtual void OnError()
@@ -103,22 +106,35 @@ namespace AndreasReitberger.API.LexOffice
 #endregion
 
         #region Constructor
-        public LexOfficeClient()
+        public LexOfficeClient() 
         {
             IsInitialized = false;
+            ApiTargetPath ??= "https://api.lexoffice.io/";
+            ApiVersion = "v1";
         }
-        public LexOfficeClient(string accessToken)
+#if NETFRAMEWORK
+        public LexOfficeClient(string accessToken) : this()
         {
             AccessToken = accessToken;
             IsInitialized = true;
             Instance = this;
         }
-        #endregion
+#else
+        public LexOfficeClient(string accessToken, string tokenName = "Authorization", string url = "https://api.lexoffice.io/", string version = "v1") : base(authHeader: new AuthenticationHeader()
+        {
+            Target = AuthenticationHeaderTarget.Header,
+            Token = $"Bearer {accessToken}",
+        }, tokenName: tokenName, url: url, version: version)
+        {
+            //AccessToken = accessToken;
+            IsInitialized = true;
+            Instance = this;
+        }
+#endif
+#endregion
 
         #region Methods
 #if NETFRAMEWORK
-
-#endif
         [Obsolete("In the future, use `SendRestApiRequestAsync` from the `RestApiClient`!")]
         async Task<T?> BaseApiCallAsync<T>(string command, Method method = Method.Get, string body = "", CancellationTokenSource? cts = default) where T : class
         {
@@ -191,6 +207,7 @@ namespace AndreasReitberger.API.LexOffice
                 OnError(new UnhandledExceptionEventArgs(exc, false));
             }
         }
-        #endregion
+#endif
+#endregion
     }
 }

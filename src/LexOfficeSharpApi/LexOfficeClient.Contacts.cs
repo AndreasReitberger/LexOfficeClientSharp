@@ -25,6 +25,8 @@ namespace AndreasReitberger.API.LexOffice
     {
 
         #region Contacts
+
+#if NETFRAMEWORK
         public async Task<List<LexContact>> GetContactsAsync(LexContactType type, int page = 0, int size = 25, int pages = -1, int cooldown = 0)
         {
             List<LexContact> result = [];
@@ -57,8 +59,69 @@ namespace AndreasReitberger.API.LexOffice
             LexContact? contact = JsonConvert.DeserializeObject<LexContact>(jsonString);
             return contact;
         }
-#if !NETFRAMEWORK
-        public async Task<LexContact?> GetContactNewAsync(Guid id)
+
+        public async Task<LexResponseDefault?> AddContactAsync(LexContact lexContact)
+        {
+            string? jsonString = await BaseApiCallAsync<string>($"contacts", Method.Post, JsonConvert.SerializeObject(lexContact, NewtonsoftJsonSerializerSettings)) ?? string.Empty;
+            LexResponseDefault? response = JsonConvert.DeserializeObject<LexResponseDefault>(jsonString);
+            return response;
+        }
+
+        public async Task<LexResponseDefault?> UpdateContactAsync(Guid contactId, LexContact lexContact)
+        {
+            string? jsonString = await BaseApiCallAsync<string>($"contacts/{contactId}", Method.Post, JsonConvert.SerializeObject(lexContact, NewtonsoftJsonSerializerSettings)) ?? string.Empty;
+            LexResponseDefault? response = JsonConvert.DeserializeObject<LexResponseDefault>(jsonString);
+            return response;
+        }
+#else
+        public async Task<List<LexContact>> GetContactsAsync(LexContactType type, int page = 0, int size = 25, int pages = -1, int cooldown = 0)
+        {
+            IRestApiRequestRespone? result = null;
+            List<LexContact> resultObject = [];
+            try
+            {
+                string targetUri = $"contacts";
+                result = await SendRestApiRequestAsync(
+                       requestTargetUri: targetUri,
+                       method: Method.Get,
+                       command: "",
+                       jsonObject: null,
+                       authHeaders: AuthHeaders,
+                       urlSegments: new()
+                       {
+                           { type == LexContactType.Customer ? "customer" : "vendor", "true" },
+                           { "page", $"{page}" },
+                           { "size", $"{size}" },
+                       },
+                       cts: default
+                       )
+                    .ConfigureAwait(false);
+                LexContactsList? list = GetObjectFromJson<LexContactsList>(result?.Result, base.NewtonsoftJsonSerializerSettings);
+                if (list is not null)
+                {
+                    if (list.TotalPages > 1 && page < list.TotalPages && (pages <= 0 || (pages - 1 > page && pages > 1)))
+                    {
+                        resultObject = new List<LexContact>(list.Content);
+                        if (MinimumCooldown > 0 && cooldown > 0)
+                            await Task.Delay(cooldown < MinimumCooldown ? MinimumCooldown : cooldown);
+                        page++;
+                        List<LexContact> append = await GetContactsAsync(type, page, size, pages, cooldown);
+                        resultObject = new List<LexContact>(resultObject.Concat(append));
+                        return resultObject;
+                    }
+                    else
+                        resultObject = new List<LexContact>(list.Content);
+                }
+                return resultObject;
+            }
+            catch (Exception exc)
+            {
+                OnError(new UnhandledExceptionEventArgs(exc, false));
+                return resultObject;
+            }
+        }
+
+        public async Task<LexContact?> GetContactAsync(Guid id)
         {
             IRestApiRequestRespone? result = null;
             LexContact? resultObject = null;
@@ -75,18 +138,62 @@ namespace AndreasReitberger.API.LexOffice
                        cts: default
                        )
                     .ConfigureAwait(false);
-                resultObject = GetObjectFromJson<LexContact>(result?.Result, NewtonsoftJsonSerializerSettings);
+                resultObject = GetObjectFromJson<LexContact>(result?.Result, base.NewtonsoftJsonSerializerSettings);
                 return resultObject;
             }
-            catch (JsonException jecx)
+            catch (Exception exc)
             {
-                OnError(new JsonConvertEventArgs()
-                {
-                    Exception = jecx,
-                    OriginalString = result?.Result,
-                    TargetType = nameof(GetContactAsync),
-                    Message = jecx.Message,
-                });
+                OnError(new UnhandledExceptionEventArgs(exc, false));
+                return resultObject;
+            }
+        }
+
+        public async Task<LexResponseDefault?> AddContactAsync(LexContact lexContact)
+        {
+            IRestApiRequestRespone? result = null;
+            LexResponseDefault? resultObject = null;
+            try
+            {
+                string json = JsonConvert.SerializeObject(lexContact, NewtonsoftJsonSerializerSettings);
+                string targetUri = $"contacts";
+                result = await SendRestApiRequestAsync(
+                       requestTargetUri: targetUri,
+                       method: Method.Post,
+                       command: "",
+                       jsonObject: json,
+                       authHeaders: AuthHeaders,
+                       urlSegments: null,
+                       cts: default
+                       )
+                    .ConfigureAwait(false);
+                resultObject = GetObjectFromJson<LexResponseDefault>(result?.Result, base.NewtonsoftJsonSerializerSettings);
+                return resultObject;
+            }
+            catch (Exception exc)
+            {
+                OnError(new UnhandledExceptionEventArgs(exc, false));
+                return resultObject;
+            }
+        }
+
+        public async Task<LexResponseDefault?> UpdateContactAsync(Guid contactId, LexContact lexContact)
+        {
+            IRestApiRequestRespone? result = null;
+            LexResponseDefault? resultObject = null;
+            try
+            {
+                string targetUri = $"contacts/{contactId}";
+                result = await SendRestApiRequestAsync(
+                       requestTargetUri: targetUri,
+                       method: Method.Post,
+                       command: "",
+                       jsonObject: lexContact,
+                       authHeaders: AuthHeaders,
+                       urlSegments: null,
+                       cts: default
+                       )
+                    .ConfigureAwait(false);
+                resultObject = GetObjectFromJson<LexResponseDefault>(result?.Result, base.NewtonsoftJsonSerializerSettings);
                 return resultObject;
             }
             catch (Exception exc)
@@ -96,21 +203,7 @@ namespace AndreasReitberger.API.LexOffice
             }
         }
 #endif
-        public async Task<LexResponseDefault?> AddContactAsync(LexContact lexContact)
-        {
-            string? jsonString = await BaseApiCallAsync<string>($"contacts", Method.Post, JsonConvert.SerializeObject(lexContact, JsonSerializerSettings)) ?? string.Empty;
-            LexResponseDefault? response = JsonConvert.DeserializeObject<LexResponseDefault>(jsonString);
-            return response;
-        }
-
-        public async Task<LexResponseDefault?> UpdateContactAsync(Guid contactId, LexContact lexContact)
-        {
-            string? jsonString = await BaseApiCallAsync<string>($"contacts/{contactId}", Method.Post, JsonConvert.SerializeObject(lexContact, JsonSerializerSettings)) ?? string.Empty;
-            LexResponseDefault? response = JsonConvert.DeserializeObject<LexResponseDefault>(jsonString);
-            return response;
-        }
-
-#endregion
+        #endregion
 
     }
 }

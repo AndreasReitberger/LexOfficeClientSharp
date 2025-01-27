@@ -21,7 +21,7 @@ namespace AndreasReitberger.API.LexOffice
             {
                 return _client;
             }
-            public LexOfficeConnectionBuilder WithWebAddress(string webAddress)
+            public LexOfficeConnectionBuilder WithWebAddress(string webAddress = "https://api.lexoffice.io/")
             {
                 _client.ApiTargetPath = webAddress;
                 return this;

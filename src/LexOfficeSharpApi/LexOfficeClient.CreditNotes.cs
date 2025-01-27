@@ -1,5 +1,7 @@
 ﻿#if !NETFRAMEWORK
 using AndreasReitberger.API.REST;
+using AndreasReitberger.API.REST.Interfaces;
+
 #else
 using CommunityToolkit.Mvvm.ComponentModel;
 #endif
@@ -22,6 +24,7 @@ namespace AndreasReitberger.API.LexOffice
 
         #region Credit Notes
 
+#if NETFRAMEWORK
         public async Task<List<LexDocumentResponse>> GetCreditNotesAsync()
         {
             List<LexDocumentResponse> result = [];
@@ -39,11 +42,98 @@ namespace AndreasReitberger.API.LexOffice
 
         public async Task<LexResponseDefault?> AddCreditNoteAsync(LexDocumentResponse lexQuotation, bool isFinalized = false)
         {
-            var body = JsonConvert.SerializeObject(lexQuotation, JsonSerializerSettings);
+            var body = JsonConvert.SerializeObject(lexQuotation, NewtonsoftJsonSerializerSettings);
             string? jsonString = await BaseApiCallAsync<string>($"credit-notes/?finalize={isFinalized}", Method.Post, body) ?? string.Empty;
             LexResponseDefault? response = JsonConvert.DeserializeObject<LexResponseDefault>(jsonString);
             return response;
         }
+#else
+
+        public async Task<List<LexDocumentResponse>> GetCreditNotesAsync()
+        {
+            IRestApiRequestRespone? result = null;
+            List<LexDocumentResponse> resultObject = [];
+            try
+            {
+                string targetUri = $"credit-notes";
+                result = await SendRestApiRequestAsync(
+                       requestTargetUri: targetUri,
+                       method: Method.Get,
+                       command: "",
+                       jsonObject: null,
+                       authHeaders: AuthHeaders,
+                       urlSegments: null,
+                       cts: default
+                       )
+                    .ConfigureAwait(false);
+                resultObject = [.. GetObjectFromJson<List<LexDocumentResponse>>(result?.Result, base.NewtonsoftJsonSerializerSettings)];
+                return resultObject;
+            }
+            catch (Exception exc)
+            {
+                OnError(new UnhandledExceptionEventArgs(exc, false));
+                return resultObject;
+            }
+        }
+
+        public async Task<LexDocumentResponse?> GetCreditNoteAsync(Guid id)
+        {
+            IRestApiRequestRespone? result = null;
+            LexDocumentResponse? resultObject = null;
+            try
+            {
+                string targetUri = $"credit-notes/{id}";
+                result = await SendRestApiRequestAsync(
+                       requestTargetUri: targetUri,
+                       method: Method.Get,
+                       command: "",
+                       jsonObject: null,
+                       authHeaders: AuthHeaders,
+                       urlSegments: null,
+                       cts: default
+                       )
+                    .ConfigureAwait(false);
+                resultObject = GetObjectFromJson<LexDocumentResponse>(result?.Result, base.NewtonsoftJsonSerializerSettings);
+                return resultObject;
+            }
+            catch (Exception exc)
+            {
+                OnError(new UnhandledExceptionEventArgs(exc, false));
+                return resultObject;
+            }
+        }
+
+        public async Task<LexResponseDefault?> AddCreditNoteAsync(LexDocumentResponse lexQuotation, bool isFinalized = false)
+        {
+            IRestApiRequestRespone? result = null;
+            LexResponseDefault? resultObject = null;
+            try
+            {
+                string json = JsonConvert.SerializeObject(lexQuotation, NewtonsoftJsonSerializerSettings);
+                string targetUri = $"credit-notes";
+                result = await SendRestApiRequestAsync(
+                       requestTargetUri: targetUri,
+                       method: Method.Post,
+                       command: "",
+                       jsonObject: json,
+                       authHeaders: AuthHeaders,
+                       urlSegments: new()
+                       {
+                           { "finalize", $"{isFinalized}"   }
+                       },
+                       cts: default
+                       )
+                    .ConfigureAwait(false);
+                resultObject = GetObjectFromJson<LexResponseDefault>(result?.Result, base.NewtonsoftJsonSerializerSettings);
+                return resultObject;
+            }
+            catch (Exception exc)
+            {
+                OnError(new UnhandledExceptionEventArgs(exc, false));
+                return resultObject;
+            }
+        }
+#endif
         #endregion
 
     }

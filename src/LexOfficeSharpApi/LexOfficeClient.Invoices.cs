@@ -1,6 +1,8 @@
 ﻿using AndreasReitberger.API.LexOffice.Enum;
 #if !NETFRAMEWORK
 using AndreasReitberger.API.REST;
+using AndreasReitberger.API.REST.Interfaces;
+
 #else
 using CommunityToolkit.Mvvm.ComponentModel;
 #endif
@@ -22,6 +24,8 @@ namespace AndreasReitberger.API.LexOffice
 #endif
     {
         #region Invoices
+
+#if NETFRAMEWORK
         public async Task<List<VoucherListContent>> GetInvoiceListAsync(LexVoucherStatus status, bool archived = false, int page = 0, int size = 25, int pages = -1, int cooldown = 0)
         {
             List<VoucherListContent> result = [];
@@ -79,10 +83,137 @@ namespace AndreasReitberger.API.LexOffice
 
         public async Task<LexResponseDefault?> AddInvoiceAsync(LexDocumentResponse lexQuotation, bool isFinalized = false)
         {
-            string? jsonString = await BaseApiCallAsync<string>($"invoices?finalize={isFinalized}", Method.Post, JsonConvert.SerializeObject(lexQuotation, JsonSerializerSettings)) ?? string.Empty;
+            string? jsonString = await BaseApiCallAsync<string>($"invoices?finalize={isFinalized}", Method.Post, JsonConvert.SerializeObject(lexQuotation, NewtonsoftJsonSerializerSettings)) ?? string.Empty;
             LexResponseDefault? response = JsonConvert.DeserializeObject<LexResponseDefault>(jsonString);
             return response;
         }
+#else
+        public async Task<List<VoucherListContent>> GetInvoiceListAsync(LexVoucherStatus status, bool archived = false, int page = 0, int size = 25, int pages = -1, int cooldown = 0)
+        {
+            IRestApiRequestRespone? result = null;
+            List<VoucherListContent> resultObject = [];
+            try
+            {
+                string targetUri = $"voucherlist";
+                result = await SendRestApiRequestAsync(
+                       requestTargetUri: targetUri,
+                       method: Method.Get,
+                       command: "",
+                       jsonObject: null,
+                       authHeaders: AuthHeaders,
+                       urlSegments: new()
+                       {
+                           { "voucherType", LexVoucherType.Invoice.ToString().ToLower() },
+                           { "voucherStatus", status.ToString().ToLower() },
+                           { "archived", $"{archived}" },
+                           { "page", $"{page}" },
+                           { "size", $"{size}" },
+                       },
+                       cts: default
+                       )
+                    .ConfigureAwait(false);
+                LexVoucherList? list = GetObjectFromJson<LexVoucherList>(result?.Result, base.NewtonsoftJsonSerializerSettings);
+                if (list is not null)
+                {
+                    if (list.TotalPages > 1 && page < list.TotalPages && (pages <= 0 || (pages - 1 > page && pages > 1)))
+                    {
+                        resultObject = [.. list.Content];
+                        if (MinimumCooldown > 0 && cooldown > 0)
+                            await Task.Delay(cooldown < MinimumCooldown ? MinimumCooldown : cooldown);
+                        page++;
+                        List<VoucherListContent> append = await GetInvoiceListAsync(status, archived, page, size, pages, cooldown);
+                        resultObject = [.. resultObject.Concat(append)];
+                        return resultObject;
+                    }
+                    else
+                        resultObject = [.. list.Content];
+                }
+                return resultObject;
+            }
+            catch (Exception exc)
+            {
+                OnError(new UnhandledExceptionEventArgs(exc, false));
+                return resultObject;
+            }
+        }
+
+        public async Task<List<LexDocumentResponse>> GetInvoicesAsync(List<Guid> ids, int cooldown = 0)
+        {
+            List<LexDocumentResponse> result = [];
+            foreach (Guid id in ids)
+            {
+                LexDocumentResponse? quote = await GetInvoiceAsync(id);
+                if (quote is not null)
+                    result.Add(quote);
+                await Task.Delay(cooldown < MinimumCooldown ? MinimumCooldown : cooldown);
+            }
+            return result;
+        }
+
+        public async Task<List<LexDocumentResponse>> GetInvoicesAsync(List<VoucherListContent> voucherList)
+        {
+            List<Guid> ids = voucherList.Select(id => id.Id).ToList();
+            return await GetInvoicesAsync(ids);
+        }
+
+        public async Task<LexDocumentResponse?> GetInvoiceAsync(Guid id)
+        {
+            IRestApiRequestRespone? result = null;
+            LexDocumentResponse? resultObject = null;
+            try
+            {
+                string targetUri = $"invoices/{id}";
+                result = await SendRestApiRequestAsync(
+                       requestTargetUri: targetUri,
+                       method: Method.Get,
+                       command: "",
+                       jsonObject: null,
+                       authHeaders: AuthHeaders,
+                       urlSegments: null,
+                       cts: default
+                       )
+                    .ConfigureAwait(false);
+                resultObject = GetObjectFromJson<LexDocumentResponse>(result?.Result, base.NewtonsoftJsonSerializerSettings);
+                return resultObject;
+            }
+            catch (Exception exc)
+            {
+                OnError(new UnhandledExceptionEventArgs(exc, false));
+                return resultObject;
+            }
+        }
+
+        public async Task<LexResponseDefault?> AddInvoiceAsync(LexDocumentResponse lexQuotation, bool isFinalized = false)
+        {
+            IRestApiRequestRespone? result = null;
+            LexResponseDefault? resultObject = null;
+            try
+            {
+                string json = JsonConvert.SerializeObject(lexQuotation, NewtonsoftJsonSerializerSettings);
+                string targetUri = $"invoices";
+                result = await SendRestApiRequestAsync(
+                       requestTargetUri: targetUri,
+                       method: Method.Post,
+                       command: "",
+                       jsonObject: json,
+                       authHeaders: AuthHeaders,
+                       urlSegments: new()
+                       {
+                           { "finalize", $"{isFinalized}" }
+                       },
+                       cts: default
+                       )
+                    .ConfigureAwait(false);
+                resultObject = GetObjectFromJson<LexResponseDefault>(result?.Result, base.NewtonsoftJsonSerializerSettings);
+                return resultObject;
+            }
+            catch (Exception exc)
+            {
+                OnError(new UnhandledExceptionEventArgs(exc, false));
+                return resultObject;
+            }
+        }
+#endif
         #endregion
     }
 }

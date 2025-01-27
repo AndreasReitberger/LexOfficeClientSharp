@@ -1,11 +1,15 @@
 ﻿#if !NETFRAMEWORK
 using AndreasReitberger.API.REST;
+using AndreasReitberger.API.REST.Interfaces;
+
 #else
 using CommunityToolkit.Mvvm.ComponentModel;
 #endif
 using Newtonsoft.Json;
 using RestSharp;
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace AndreasReitberger.API.LexOffice
@@ -20,6 +24,7 @@ namespace AndreasReitberger.API.LexOffice
     {
         #region Countries
 
+#if NETFRAMEWORK
         public async Task<List<LexCountry>> GetCountriesAsync()
         {
             List<LexCountry> result = [];
@@ -27,6 +32,35 @@ namespace AndreasReitberger.API.LexOffice
             result = JsonConvert.DeserializeObject<List<LexCountry>>(jsonString) ?? [];
             return result;
         }
+#else
+
+        public async Task<List<LexCountry>> GetCountriesAsync()
+        {
+            IRestApiRequestRespone? result = null;
+            List<LexCountry> resultObject = [];
+            try
+            {
+                string targetUri = $"countries";
+                result = await SendRestApiRequestAsync(
+                       requestTargetUri: targetUri,
+                       method: Method.Get,
+                       command: "",
+                       jsonObject: null,
+                       authHeaders: AuthHeaders,
+                       urlSegments: null,
+                       cts: default
+                       )
+                    .ConfigureAwait(false);
+                resultObject = [.. GetObjectFromJson<List<LexCountry>>(result?.Result, base.NewtonsoftJsonSerializerSettings)];
+                return resultObject;
+            }
+            catch (Exception exc)
+            {
+                OnError(new UnhandledExceptionEventArgs(exc, false));
+                return resultObject;
+            }
+        }
+#endif
         #endregion
     }
 }

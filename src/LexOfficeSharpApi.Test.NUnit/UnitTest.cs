@@ -209,23 +209,23 @@ namespace LexOfficeSharpApi.Test.NUnit
                 LexOfficeClient handler = new(tokenString);
 
                 // Cleanup available event subscriptions
-                List<LexResponseDefault> allSubscriptions = await handler.GetAllEventSubscriptionsAsync();
-                foreach (var subscriptions in allSubscriptions)
+                List<LexResponseDefault>? allSubscriptions = await handler.GetAllEventSubscriptionsAsync();
+                foreach (LexResponseDefault subscriptions in allSubscriptions)
                 {
                     await handler.DeleteEventSubscriptionAsync(subscriptions.SubscriptionId);
                 }
 
                 // Create event subscription
-                LexResponseDefault newSubscription = await handler.AddEventSubscriptionAsync(new LexResponseDefault
+                LexResponseDefault? newSubscription = await handler.AddEventSubscriptionAsync(new LexResponseDefault
                 {
                     EventType = EventTypes.PaymentChanged,
                     CallbackUrl = "https://webhook.site/11dac08c-7a64-4467-aae9-8ec5dd1f3338"
                 });
 
-                LexResponseDefault subscription = await handler.GetEventSubscriptionAsync(newSubscription.Id);
+                LexResponseDefault? subscription = await handler.GetEventSubscriptionAsync(newSubscription.Id);
 
                 Assert.That(newSubscription != null);
-                Assert.That(newSubscription.Id != subscription.Id);
+                Assert.That(newSubscription?.Id != subscription?.Id);
                 Assert.That(newSubscription.EventType != subscription.EventType);
             }
             catch (Exception ex)
@@ -301,8 +301,9 @@ namespace LexOfficeSharpApi.Test.NUnit
 
                 Guid documentId = files.DocumentFileId;// Guid.Parse("YOUR_FILE_ID");
                 byte[] file = await handler.GetFileAsync(documentId);
-
                 Assert.That(file is not null);
+
+                await File.WriteAllBytesAsync($"invoice.pdf", file);
             }
             catch (Exception ex)
             {
@@ -400,7 +401,6 @@ namespace LexOfficeSharpApi.Test.NUnit
                 Guid id = list.FirstOrDefault().Id;
                 var contact = await handler.GetContactAsync(id);
                 Assert.That(contact is not null);
-
             }
             catch (Exception ex)
             {
