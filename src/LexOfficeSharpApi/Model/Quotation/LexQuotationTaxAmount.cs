@@ -6,13 +6,13 @@ namespace AndreasReitberger.API.LexOffice
     {
         #region Properties
         [ObservableProperty]
-        long taxRatePercentage;
+        public partial long TaxRatePercentage { get; set; }
 
         [ObservableProperty]
-        decimal taxAmount;
+        public partial decimal TaxAmount { get; set; }
 
         [ObservableProperty]
-        decimal netAmount;
+        public partial decimal NetAmount { get; set; }
         #endregion
     }
 }

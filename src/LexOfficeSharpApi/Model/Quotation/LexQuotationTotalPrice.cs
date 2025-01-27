@@ -6,16 +6,16 @@ namespace AndreasReitberger.API.LexOffice
     {
         #region Properties
         [ObservableProperty]
-        string currency = string.Empty;
+        public partial string Currency { get; set; } = string.Empty;
 
         [ObservableProperty]
-        decimal totalNetAmount;
+        public partial decimal TotalNetAmount { get; set; }
 
         [ObservableProperty]
-        decimal totalGrossAmount;
+        public partial decimal TotalGrossAmount { get; set; }
 
         [ObservableProperty]
-        decimal totalTaxAmount;
+        public partial decimal TotalTaxAmount { get; set; }
         #endregion
     }
 }

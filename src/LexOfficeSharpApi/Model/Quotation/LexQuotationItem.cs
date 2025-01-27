@@ -9,42 +9,42 @@ namespace AndreasReitberger.API.LexOffice
     {
         #region Properties
         [ObservableProperty]
+        [field: JsonIgnore]
         [JsonIgnore]
-        [property: JsonIgnore]
-        Guid? id;
+        public partial Guid? Id { get; set; }
 
         [ObservableProperty]
-        string type = string.Empty;
+        public partial string Type { get; set; } = string.Empty;
 
         [ObservableProperty]
-        string name = string.Empty;
+        public partial string Name { get; set; } = string.Empty;
 
         [ObservableProperty]
-        string description = string.Empty;
+        public partial string Description { get; set; } = string.Empty;
 
         [ObservableProperty]
-        decimal quantity;
+        public partial decimal Quantity { get; set; }
 
         [ObservableProperty]
-        string unitName = string.Empty;
+        public partial string UnitName { get; set; } = string.Empty;
 
         [ObservableProperty]
-        LexQuotationUnitPrice? unitPrice;
+        public partial LexQuotationUnitPrice? UnitPrice { get; set; }
 
         [ObservableProperty]
-        long discountPercentage;
+        public partial long DiscountPercentage { get; set; }
 
         [ObservableProperty]
-        double lineItemAmount;
+        public partial double LineItemAmount { get; set; }
 
         [ObservableProperty]
-        List<LexQuotationItem> subItems = [];
+        public partial List<LexQuotationItem> SubItems { get; set; } = [];
 
         [ObservableProperty]
-        bool alternative;
+        public partial bool Alternative { get; set; }
 
         [ObservableProperty]
-        bool optional;
+        public partial bool Optional { get; set; }
         #endregion
     }
 }

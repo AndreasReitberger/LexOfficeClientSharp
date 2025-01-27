@@ -8,37 +8,37 @@ namespace AndreasReitberger.API.LexOffice
     {
         #region Properties
         [ObservableProperty]
-        Guid id;
+        public partial Guid Id { get; set; }
 
         [ObservableProperty]
-        string voucherType = string.Empty;
+        public partial string VoucherType { get; set; } = string.Empty;
 
         [ObservableProperty]
-        string voucherStatus = string.Empty;
+        public partial string VoucherStatus { get; set; } = string.Empty;
 
         [ObservableProperty]
-        string voucherNumber = string.Empty;
+        public partial string VoucherNumber { get; set; } = string.Empty;
 
         [ObservableProperty]
-        DateTimeOffset voucherDate;
+        public partial DateTimeOffset VoucherDate { get; set; }
 
         [ObservableProperty]
-        DateTimeOffset updatedDate;
+        public partial DateTimeOffset UpdatedDate { get; set; }
 
         [ObservableProperty]
-        DateTimeOffset dueDate;
+        public partial DateTimeOffset DueDate { get; set; }
 
         [ObservableProperty]
-        string contactName = string.Empty;
+        public partial string ContactName { get; set; } = string.Empty;
 
         [ObservableProperty]
-        decimal totalAmount;
+        public partial decimal TotalAmount { get; set; }
 
         [ObservableProperty]
-        string currency = string.Empty;
+        public partial string Currency { get; set; } = string.Empty;
 
         [ObservableProperty]
-        bool archived;
+        public partial bool Archived { get; set; }
         #endregion
     }
 }

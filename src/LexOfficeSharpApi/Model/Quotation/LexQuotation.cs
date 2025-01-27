@@ -9,68 +9,69 @@ namespace AndreasReitberger.API.LexOffice
     {
         #region Properties
         [ObservableProperty]
-        Guid id;
+        public partial Guid Id { get; set; }
 
         [ObservableProperty]
-        Guid organizationId;
+        public partial Guid OrganizationId { get; set; }
 
         [ObservableProperty]
-        DateTimeOffset createdDate;
+        public partial DateTimeOffset CreatedDate { get; set; }
 
         [ObservableProperty]
-        DateTimeOffset updatedDate;
+        public partial DateTimeOffset UpdatedDate { get; set; }
 
         [ObservableProperty]
-        long version;
+        public partial long Version { get; set; }
 
         [ObservableProperty]
-        string language = string.Empty;
+        public partial string Language { get; set; } = string.Empty;
 
         [ObservableProperty]
-        bool archived;
+        public partial bool Archived { get; set; }
 
         [ObservableProperty]
-        string voucherStatus = string.Empty;
+        public partial string VoucherStatus { get; set; } = string.Empty;
 
         [ObservableProperty]
-        string voucherNumber = string.Empty;
+        public partial string VoucherNumber { get; set; } = string.Empty;
 
         [ObservableProperty]
-        DateTimeOffset voucherDate;
+        public partial DateTimeOffset VoucherDate { get; set; }
 
         [ObservableProperty]
-        DateTimeOffset expirationDate;
+        public partial DateTimeOffset ExpirationDate { get; set; }
 
         [ObservableProperty]
-        LexContactAddress? address;
+        public partial LexContactAddress? Address { get; set; }
 
         [ObservableProperty]
-        List<LexQuotationItem> lineItems = [];
+        public partial List<LexQuotationItem> LineItems { get; set; } = [];
 
         [ObservableProperty]
-        LexQuotationTotalPrice? totalPrice;
+        public partial LexQuotationTotalPrice? TotalPrice { get; set; }
 
         [ObservableProperty]
-        List<LexQuotationTaxAmount> taxAmounts = [];
+        public partial List<LexQuotationTaxAmount> TaxAmounts { get; set; } = [];
 
         [ObservableProperty]
-        LexQuotationTaxConditions? taxConditions;
+        public partial LexQuotationTaxConditions? TaxConditions { get; set; }
+
         //Dictionary<string, string> taxConditions;
 
         [ObservableProperty]
-        LexQuotationPaymentConditions? paymentConditions;
+        public partial LexQuotationPaymentConditions? PaymentConditions { get; set; }
 
         [ObservableProperty]
-        string introduction = string.Empty;
+        public partial string Introduction { get; set; } = string.Empty;
 
         [ObservableProperty]
-        string remark = string.Empty;
+        public partial string Remark { get; set; } = string.Empty;
 
         [ObservableProperty]
-        LexQuotationFiles? files;
+        public partial LexQuotationFiles? Files { get; set; }
 
         [ObservableProperty]
-        string title = string.Empty;
+        public partial string Title { get; set; } = string.Empty;
         #endregion
     }
 }

@@ -7,31 +7,31 @@ namespace AndreasReitberger.API.LexOffice
     {
         #region Properties
         [ObservableProperty]
-        List<LexContact> content = [];
+        public partial List<LexContact> Content { get; set; } = [];
 
         [ObservableProperty]
-        bool first;
+        public partial bool First { get; set; }
 
         [ObservableProperty]
-        bool last;
+        public partial bool Last { get; set; }
 
         [ObservableProperty]
-        long totalPages;
+        public partial long TotalPages { get; set; }
 
         [ObservableProperty]
-        long totalElements;
+        public partial long TotalElements { get; set; }
 
         [ObservableProperty]
-        long numberOfElements;
+        public partial long NumberOfElements { get; set; }
 
         [ObservableProperty]
-        long size;
+        public partial long Size { get; set; }
 
         [ObservableProperty]
-        long number;
+        public partial long Number { get; set; }
 
         [ObservableProperty]
-        List<LexVoucherSort> sort = [];
+        public partial List<LexVoucherSort> Sort { get; set; } = [];
         #endregion
     }
 }

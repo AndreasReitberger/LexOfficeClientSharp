@@ -6,7 +6,7 @@ namespace AndreasReitberger.API.LexOffice
     {
         #region Properties
         [ObservableProperty]
-        long number;
+        public partial long Number { get; set; }
         #endregion
     }
 }

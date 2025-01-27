@@ -10,7 +10,7 @@ namespace AndreasReitberger.API.LexOffice
 
         [ObservableProperty]
         [NotifyPropertyChangedFor(nameof(TaxTypeString))]
-        LexQuotationTaxType taxType;
+        public partial LexQuotationTaxType TaxType { get; set; }
 
         [JsonIgnore]
         public string TaxTypeString => $"{TaxType}";

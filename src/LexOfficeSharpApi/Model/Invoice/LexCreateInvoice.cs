@@ -9,43 +9,43 @@ namespace AndreasReitberger.API.LexOffice
     {
         #region Properties
         [ObservableProperty]
-        bool archived;
+        public partial bool Archived { get; set; }
 
         [ObservableProperty]
-        DateTimeOffset voucherDate;
+        public partial DateTimeOffset VoucherDate { get; set; }
 
         [ObservableProperty]
-        LexContactAddress? address;
+        public partial LexContactAddress? Address { get; set; }
 
         [ObservableProperty]
-        List<LexQuotationItem> lineItems = [];
+        public partial List<LexQuotationItem> LineItems { get; set; } = [];
 
         [ObservableProperty]
-        LexQuotationTotalPrice? totalPrice;
+        public partial LexQuotationTotalPrice? TotalPrice { get; set; }
 
         [ObservableProperty]
-        List<LexQuotationTaxAmount> taxAmounts = [];
+        public partial List<LexQuotationTaxAmount> TaxAmounts { get; set; } = [];
 
         [ObservableProperty]
-        LexQuotationTaxConditions? taxConditions;
+        public partial LexQuotationTaxConditions? TaxConditions { get; set; }
 
         [ObservableProperty]
-        LexQuotationPaymentConditions? paymentConditions;
+        public partial LexQuotationPaymentConditions? PaymentConditions { get; set; }
 
         [ObservableProperty]
-        LexShippingConditions? shippingConditions;
+        public partial LexShippingConditions? ShippingConditions { get; set; }
 
         [ObservableProperty]
-        string introduction = string.Empty;
+        public partial string Introduction { get; set; } = string.Empty;
 
         [ObservableProperty]
-        string remark = string.Empty;
+        public partial string Remark { get; set; } = string.Empty;
 
         [ObservableProperty]
-        LexQuotationFiles? files;
+        public partial LexQuotationFiles? Files { get; set; }
 
         [ObservableProperty]
-        string title = string.Empty;
+        public partial string Title { get; set; } = string.Empty;
         #endregion
     }
 }

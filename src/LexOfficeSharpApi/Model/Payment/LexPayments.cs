@@ -8,25 +8,25 @@ namespace AndreasReitberger.API.LexOffice
     {
         #region Properties
         [ObservableProperty]
-        decimal openAmount;
+        public partial decimal OpenAmount { get; set; }
 
         [ObservableProperty]
-        string paymentStatus = string.Empty;
+        public partial string PaymentStatus { get; set; } = string.Empty;
 
         [ObservableProperty]
-        string currency = string.Empty;
+        public partial string Currency { get; set; } = string.Empty;
 
         [ObservableProperty]
-        string voucherType = string.Empty;
+        public partial string VoucherType { get; set; } = string.Empty;
 
         [ObservableProperty]
-        string voucherStatus = string.Empty;
+        public partial string VoucherStatus { get; set; } = string.Empty;
 
         [ObservableProperty]
-        DateTimeOffset paidDate;
+        public partial DateTimeOffset PaidDate { get; set; }
 
         [ObservableProperty]
-        List<LexPayment> paymentItems = [];
+        public partial List<LexPayment> PaymentItems { get; set; } = [];
         #endregion
     }
 }

@@ -8,37 +8,37 @@ namespace AndreasReitberger.API.LexOffice
     {
         #region Properties
         [ObservableProperty]
-        Guid id;
+        public partial Guid Id { get; set; }
 
         [ObservableProperty]
-        Guid organizationId;
+        public partial Guid OrganizationId { get; set; }
 
         [ObservableProperty]
-        long version;
+        public partial long Version { get; set; }
 
         [ObservableProperty]
-        Dictionary<string, LexCustomerNumber> roles = [];
+        public partial Dictionary<string, LexCustomerNumber> Roles { get; set; } = [];
 
         [ObservableProperty]
-        LexContactCompany? company;
+        public partial LexContactCompany? Company { get; set; }
 
         [ObservableProperty]
-        LexContactPerson? person;
+        public partial LexContactPerson? Person { get; set; }
 
         [ObservableProperty]
-        Dictionary<string, List<LexContactAddress>> addresses = [];
+        public partial Dictionary<string, List<LexContactAddress>> Addresses { get; set; } = [];
 
         [ObservableProperty]
-        Dictionary<string, List<string>> emailAddresses = [];
+        public partial Dictionary<string, List<string>> EmailAddresses { get; set; } = [];
 
         [ObservableProperty]
-        Dictionary<string, List<string>> phoneNumbers = [];
+        public partial Dictionary<string, List<string>> PhoneNumbers { get; set; } = [];
 
         [ObservableProperty]
-        string note = string.Empty;
+        public partial string Note { get; set; } = string.Empty;
 
         [ObservableProperty]
-        bool archived;
+        public partial bool Archived { get; set; }
         #endregion
     }
 }
