@@ -7,13 +7,13 @@ namespace AndreasReitberger.API.LexOffice
     {
         #region Properties
         [ObservableProperty]
-        DateTimeOffset shippingDate;
+        public partial DateTimeOffset ShippingDate { get; set; }
 
         [ObservableProperty]
-        DateTimeOffset shippingEndDate;
+        public partial DateTimeOffset ShippingEndDate { get; set; }
 
         [ObservableProperty]
-        string shippingType = string.Empty;
+        public partial string ShippingType { get; set; } = string.Empty;
         #endregion
     }
 }

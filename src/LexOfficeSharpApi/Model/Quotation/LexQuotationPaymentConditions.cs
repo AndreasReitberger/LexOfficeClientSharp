@@ -8,22 +8,22 @@ namespace AndreasReitberger.API.LexOffice
     {
         #region Properties
         [ObservableProperty]
-        Guid? id;
+        public partial Guid? Id { get; set; }
 
         [ObservableProperty]
-        string paymentTermLabel = string.Empty;
+        public partial string PaymentTermLabel { get; set; } = string.Empty;
 
         [ObservableProperty]
-        string paymentTermLabelTemplate = string.Empty;
+        public partial string PaymentTermLabelTemplate { get; set; } = string.Empty;
 
         [ObservableProperty]
-        long paymentTermDuration;
+        public partial long PaymentTermDuration { get; set; }
 
         [ObservableProperty]
-        LexQuotationDiscountCondition? paymentDiscountConditions;
+        public partial LexQuotationDiscountCondition? PaymentDiscountConditions { get; set; }
 
         [ObservableProperty]
-        bool organizationDefault;
+        public partial bool OrganizationDefault { get; set; }
         #endregion
     }
 }

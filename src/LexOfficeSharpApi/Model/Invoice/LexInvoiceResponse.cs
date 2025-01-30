@@ -8,19 +8,19 @@ namespace AndreasReitberger.API.LexOffice
     {
         #region Properties
         [ObservableProperty]
-        Guid id;
+        public partial Guid Id { get; set; }
 
         [ObservableProperty]
-        string resourceUri = string.Empty;
+        public partial string ResourceUri { get; set; } = string.Empty;
 
         [ObservableProperty]
-        DateTimeOffset createdDate;
+        public partial DateTimeOffset CreatedDate { get; set; }
 
         [ObservableProperty]
-        DateTimeOffset updatedDate;
+        public partial DateTimeOffset UpdatedDate { get; set; }
 
         [ObservableProperty]
-        long version;
+        public partial long Version { get; set; }
         #endregion
     }
 }

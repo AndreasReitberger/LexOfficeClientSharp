@@ -7,19 +7,19 @@ namespace AndreasReitberger.API.LexOffice
     {
         #region Properties
         [ObservableProperty]
-        string name = string.Empty;
+        public partial string Name { get; set; } = string.Empty;
 
         [ObservableProperty]
-        string taxNumber = string.Empty;
+        public partial string TaxNumber { get; set; } = string.Empty;
 
         [ObservableProperty]
-        string vatRegistrationId = string.Empty;
+        public partial string VatRegistrationId { get; set; } = string.Empty;
 
         [ObservableProperty]
-        bool allowTaxFreeInvoices;
+        public partial bool AllowTaxFreeInvoices { get; set; }
 
         [ObservableProperty]
-        List<LexContactPerson> contactPersons = [];
+        public partial List<LexContactPerson> ContactPersons { get; set; } = [];
         #endregion
     }
 }

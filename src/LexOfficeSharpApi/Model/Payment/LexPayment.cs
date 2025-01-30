@@ -7,16 +7,16 @@ namespace AndreasReitberger.API.LexOffice
     {
         #region Properties
         [ObservableProperty]
-        string paymentItemType = string.Empty;
+        public partial string PaymentItemType { get; set; } = string.Empty;
 
         [ObservableProperty]
-        DateTimeOffset postingDate;
+        public partial DateTimeOffset PostingDate { get; set; }
 
         [ObservableProperty]
-        decimal amount;
+        public partial decimal Amount { get; set; }
 
         [ObservableProperty]
-        string currency = string.Empty;
+        public partial string Currency { get; set; } = string.Empty;
         #endregion
     }
 }

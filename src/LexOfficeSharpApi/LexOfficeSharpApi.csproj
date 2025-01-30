@@ -11,6 +11,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageReference Include="RCoreSharp" Version="1.0.9" />
     <PackageReference Include="RestSharp" Version="112.1.0" />
@@ -19,4 +20,12 @@
     <PackageReference Include="System.Threading.RateLimiting" Version="9.0.1" />
     <None Include="..\..\README.md" Pack="true" PackagePath="\" />
   </ItemGroup>
+
+  <ItemGroup Condition="'$(TargetFramework)' != 'net48'">	
+    <PackageReference Include="RestApiClientSharp">
+      <Version>1.0.3.1</Version>
+    </PackageReference>
+    <!--<ProjectReference Include="..\..\..\RestApiClientSharp\src\RestApiClientSharp\RestApiClientSharp.csproj" />-->
+  </ItemGroup>
+
 </Project>
