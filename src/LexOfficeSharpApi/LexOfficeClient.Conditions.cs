@@ -24,6 +24,11 @@ namespace AndreasReitberger.API.LexOffice
         #region Conditions
 
 #if NETFRAMEWORK
+        /// <summary>
+        /// Get all available payment conditions
+        /// Docs: <see href="https://developers.lexoffice.io/docs/#payment-conditions-endpoint-retrieve-list-of-payment-conditions"/>
+        /// </summary>
+        /// <returns>A list of <seealso cref="LexQuotationPaymentConditions"/></returns>
         public async Task<List<LexQuotationPaymentConditions>> GetPaymentConditionsAsync()
         {
             List<LexQuotationPaymentConditions> result = [];
@@ -32,7 +37,11 @@ namespace AndreasReitberger.API.LexOffice
             return result;
         }
 #else
-
+        /// <summary>
+        /// Get all available payment conditions
+        /// Docs: <see href="https://developers.lexoffice.io/docs/#payment-conditions-endpoint-retrieve-list-of-payment-conditions"/>
+        /// </summary>
+        /// <returns>A list of <seealso cref="LexQuotationPaymentConditions"/></returns>
         public async Task<List<LexQuotationPaymentConditions>> GetPaymentConditionsAsync()
         {
             IRestApiRequestRespone? result = null;

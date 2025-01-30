@@ -83,7 +83,11 @@ namespace AndreasReitberger.API.LexOffice
         #region General
 
 #if !NETFRAMEWORK
-        // A client can make up to 2 requests per second to the lexoffice API.
+        /// <summary>
+        /// The default rate limiter for the rest api connection.
+        /// A client can make up to 2 requests per second to the lexoffice API.
+        /// Docs: <seealso href="https://developers.lexoffice.io/docs/#api-rate-limits"/>
+        /// </summary>
         public new static RateLimiter DefaultLimiter = new TokenBucketRateLimiter(new()
         {
             TokenLimit = 2,

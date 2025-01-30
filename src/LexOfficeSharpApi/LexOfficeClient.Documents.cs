@@ -38,7 +38,12 @@ namespace AndreasReitberger.API.LexOffice
         public Task<byte[]?> GetFileAsync(Guid id) => BaseApiCallAsync<byte[]>($"files/{id}", Method.Get);
 
 #else
-
+        /// <summary>
+        /// Render a document for a specific invoice id
+        /// Docs: <seealso href="https://developers.lexoffice.io/docs/#invoices-endpoint-retrieve-an-invoice"/>
+        /// </summary>
+        /// <param name="invoiceId">The invoice id to be rendered</param>
+        /// <returns><seealso cref="LexQuotationFiles"/></returns>
         public async Task<LexQuotationFiles?> RenderDocumentAsync(Guid invoiceId)
         {
             IRestApiRequestRespone? result = null;
@@ -66,6 +71,13 @@ namespace AndreasReitberger.API.LexOffice
             }
         }
 
+        /// <summary>
+        /// Gets the file of a rendered document by its id
+        /// Docs: <seealso href="https://developers.lexoffice.io/docs/#files-endpoint-upload-a-file"/>
+        /// </summary>
+        /// <param name="id">The id of the rendered document</param>
+        /// <param name="target">The requested file format, for instance a pdf. See <seealso cref="AcceptedFileHeaders"/></param>
+        /// <returns>List of <seealso cref="byte"/></returns>
         public Task<byte[]?> GetFileAsync(Guid id, string target = AcceptedFileHeaders.Pdf) 
             => DownloadFileFromUriAsync($"files/{id}", AuthHeaders, headers: new() { { "Accept", target } });
 #endif

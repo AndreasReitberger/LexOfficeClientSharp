@@ -25,6 +25,11 @@ namespace AndreasReitberger.API.LexOffice
         #region Credit Notes
 
 #if NETFRAMEWORK
+        /// <summary>
+        /// Get all available credit notes as a list of <seealso cref="LexDocumentResponse"/>
+        /// Docs: <seealso href="https://developers.lexoffice.io/docs/#credit-notes-endpoint-purpose"/>
+        /// </summary>
+        /// <returns>List of <seealso cref="LexDocumentResponse"/></returns>
         public async Task<List<LexDocumentResponse>> GetCreditNotesAsync()
         {
             List<LexDocumentResponse> result = [];
@@ -32,14 +37,27 @@ namespace AndreasReitberger.API.LexOffice
             result = JsonConvert.DeserializeObject<List<LexDocumentResponse>>(jsonString) ?? [];
             return result;
         }
-
+        
+        /// <summary>
+        /// Gets a single credit note by its id
+        /// Docs: <seealso href="https://developers.lexoffice.io/docs/#credit-notes-endpoint-retrieve-a-credit-note"/>
+        /// </summary>
+        /// <param name="id">The id of the credit note</param>
+        /// <returns><seealso cref="LexDocumentResponse"/></returns>
         public async Task<LexDocumentResponse?> GetCreditNoteAsync(Guid id)
         {
             string? jsonString = await BaseApiCallAsync<string>($"credit-notes/{id}", Method.Get) ?? string.Empty;
             LexDocumentResponse? respone = JsonConvert.DeserializeObject<LexDocumentResponse>(jsonString);
             return respone;
         }
-
+        
+        /// <summary>
+        /// Adds a new credit note to lexoffice
+        /// Docs: <seealso href="https://developers.lexoffice.io/docs/#credit-notes-endpoint-create-a-credit-note"/>
+        /// </summary>
+        /// <param name="lexQuotation">The quotation as <seealso cref="LexDocumentResponse"/></param>
+        /// <param name="isFinalized">Whether the note is finalized</param>
+        /// <returns><seealso cref="LexResponseDefault"/></returns>
         public async Task<LexResponseDefault?> AddCreditNoteAsync(LexDocumentResponse lexQuotation, bool isFinalized = false)
         {
             var body = JsonConvert.SerializeObject(lexQuotation, NewtonsoftJsonSerializerSettings);
@@ -48,7 +66,11 @@ namespace AndreasReitberger.API.LexOffice
             return response;
         }
 #else
-
+        /// <summary>
+        /// Get all available credit notes as a list of <seealso cref="LexDocumentResponse"/>
+        /// Docs: <seealso href="https://developers.lexoffice.io/docs/#credit-notes-endpoint-purpose"/>
+        /// </summary>
+        /// <returns>List of <seealso cref="LexDocumentResponse"/></returns>
         public async Task<List<LexDocumentResponse>> GetCreditNotesAsync()
         {
             IRestApiRequestRespone? result = null;
@@ -76,6 +98,12 @@ namespace AndreasReitberger.API.LexOffice
             }
         }
 
+        /// <summary>
+        /// Gets a single credit note by its id
+        /// Docs: <seealso href="https://developers.lexoffice.io/docs/#credit-notes-endpoint-retrieve-a-credit-note"/>
+        /// </summary>
+        /// <param name="id">The id of the credit note</param>
+        /// <returns><seealso cref="LexDocumentResponse"/></returns>
         public async Task<LexDocumentResponse?> GetCreditNoteAsync(Guid id)
         {
             IRestApiRequestRespone? result = null;
@@ -103,6 +131,13 @@ namespace AndreasReitberger.API.LexOffice
             }
         }
 
+        /// <summary>
+        /// Adds a new credit note to lexoffice
+        /// Docs: <seealso href="https://developers.lexoffice.io/docs/#credit-notes-endpoint-create-a-credit-note"/>
+        /// </summary>
+        /// <param name="lexQuotation">The quotation as <seealso cref="LexDocumentResponse"/></param>
+        /// <param name="isFinalized">Whether the note is finalized</param>
+        /// <returns><seealso cref="LexResponseDefault"/></returns>
         public async Task<LexResponseDefault?> AddCreditNoteAsync(LexDocumentResponse lexQuotation, bool isFinalized = false)
         {
             IRestApiRequestRespone? result = null;
