@@ -21,9 +21,11 @@
     <None Include="..\..\README.md" Pack="true" PackagePath="\" />
   </ItemGroup>
 
-  <ItemGroup Condition="'$(TargetFramework)' != 'net48'">
+  <ItemGroup Condition="'$(TargetFramework)' != 'net48'">	
     <PackageReference Include="RestApiClientSharp">
-      <Version>1.0.2</Version>
+      <Version>1.0.3.1</Version>
     </PackageReference>
+    <!--<ProjectReference Include="..\..\..\RestApiClientSharp\src\RestApiClientSharp\RestApiClientSharp.csproj" />-->
   </ItemGroup>
+
 </Project>

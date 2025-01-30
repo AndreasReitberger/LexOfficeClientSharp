@@ -1,6 +1,7 @@
 using AndreasReitberger.API.LexOffice;
 using AndreasReitberger.API.LexOffice.Enum;
 using Newtonsoft.Json;
+using System.Diagnostics;
 
 namespace LexOfficeSharpApi.Test.NUnit
 {
@@ -14,8 +15,25 @@ namespace LexOfficeSharpApi.Test.NUnit
         public void Setup()
         {
             client = new LexOfficeClient.LexOfficeConnectionBuilder()
+                .WithWebAddress()
                 .WithApiKey(tokenString)
+                .WithTimeout(100 * 1000)
+                // A client can make up to 2 requests per second to the lexoffice API.
+                //.WithRateLimiter(true, tokenLimit: 2, tokensPerPeriod: 2, replenishmentPeriod: 1.5)
                 .Build();
+            client.Error += (sender, args) =>
+            {
+                if (args is UnhandledExceptionEventArgs a)
+                {
+                    Debug.WriteLine($"Error: {a.ExceptionObject}");
+                    //Assert.Fail($"Error: {args?.ToString()}");
+                }
+            };
+            client.RestApiError += (sender, args) =>
+            {
+                Debug.WriteLine($"REST-Error: {args?.ToString()}");
+                //Assert.Fail($"REST-Error: {args?.ToString()}");
+            };
         }
         #endregion
 
@@ -23,11 +41,18 @@ namespace LexOfficeSharpApi.Test.NUnit
         [Test]
         public void TestJsonSerialization()
         {
-            string? json = JsonConvert.SerializeObject(client, Formatting.Indented);
-            Assert.That(!string.IsNullOrEmpty(json));
+            try
+            {
+                string? json = JsonConvert.SerializeObject(client, Formatting.Indented, settings: LexOfficeClient.DefaultNewtonsoftJsonSerializerSettings);
+                Assert.That(!string.IsNullOrEmpty(json));
 
-            var client2 = JsonConvert.DeserializeObject<LexOfficeClient>(json);
-            Assert.That(client2 is not null);
+                LexOfficeClient? client2 = JsonConvert.DeserializeObject<LexOfficeClient>(json, settings: LexOfficeClient.DefaultNewtonsoftJsonSerializerSettings);
+                Assert.That(client2, Is.Not.EqualTo(null));
+            }
+            catch (Exception ex)
+            {
+                Assert.Fail(ex.Message);
+            }
         }
         #endregion
 
@@ -58,11 +83,10 @@ namespace LexOfficeSharpApi.Test.NUnit
             try
             {
                 LexOfficeClient handler = new(tokenString);
-
                 List<VoucherListContent> invoicesList = await handler.GetInvoiceListAsync(LexVoucherStatus.Open);
                 List<LexDocumentResponse> invoices = await handler.GetInvoicesAsync(invoicesList);
 
-                Assert.That(invoices?.Count > 0);
+                Assert.That(invoices?.Count, Is.GreaterThan(0));
             }
             catch (Exception ex)
             {
@@ -75,8 +99,7 @@ namespace LexOfficeSharpApi.Test.NUnit
         {
             try
             {
-                LexOfficeClient handler = new(tokenString);
-
+                if (client is null) throw new NullReferenceException($"The client was null!");
                 // Create a new Invoice object
                 LexDocumentResponse invoice = new()
                 {
@@ -131,8 +154,8 @@ namespace LexOfficeSharpApi.Test.NUnit
                     },
                     VoucherDate = DateTime.Now,
                 };
-                LexResponseDefault? lexInvoiceResponse = await handler.AddInvoiceAsync(invoice, false);
-                Assert.That(lexInvoiceResponse != null);
+                LexResponseDefault? lexInvoiceResponse = await client.AddInvoiceAsync(invoice, false);
+                Assert.That(lexInvoiceResponse, Is.Not.EqualTo(null));
             }
             catch (Exception ex)
             {
@@ -145,12 +168,11 @@ namespace LexOfficeSharpApi.Test.NUnit
         {
             try
             {
-                LexOfficeClient handler = new(tokenString);
+                if (client is null) throw new NullReferenceException($"The client was null!");
+                List<VoucherListContent> invoicesList = await client.GetInvoiceListAsync(LexVoucherStatus.Draft);
+                List<LexDocumentResponse> invoices = await client.GetInvoicesAsync(invoicesList);
 
-                List<VoucherListContent> invoicesList = await handler.GetInvoiceListAsync(LexVoucherStatus.Draft);
-                List<LexDocumentResponse> invoices = await handler.GetInvoicesAsync(invoicesList);
-
-                Assert.That(invoices?.Count > 0);
+                Assert.That(invoices?.Count, Is.GreaterThan(0));
             }
             catch (Exception ex)
             {
@@ -163,15 +185,13 @@ namespace LexOfficeSharpApi.Test.NUnit
         {
             try
             {
-                LexOfficeClient handler = new(tokenString);
-
-                List<VoucherListContent> invoicesList = await handler.GetInvoiceListAsync(LexVoucherStatus.Open);
-
-                List<LexDocumentResponse> invoices = await handler.GetInvoicesAsync(invoicesList);
-                var invoice = invoices.FirstOrDefault();
-
-                var voucherNumber = invoice.VoucherNumber;
-
+                if (client is null) throw new NullReferenceException($"The client was null!");
+                
+                List<VoucherListContent> invoicesList = await client.GetInvoiceListAsync(LexVoucherStatus.Open);
+                List<LexDocumentResponse> invoices = await client.GetInvoicesAsync(invoicesList);
+                var invoice = invoices.FirstOrDefault() ?? throw new NullReferenceException("No invoice found!");
+                
+                string voucherNumber = invoice.VoucherNumber;
                 invoice.Title = "Rechnungskorrektur";
                 invoice.Introduction = $"Rechnungskorrektur zur Rechnung {voucherNumber}";
 
@@ -191,9 +211,8 @@ namespace LexOfficeSharpApi.Test.NUnit
                     }
                 );
 
-                var rs = await handler.AddCreditNoteAsync(invoice, true);
-
-                Assert.That(rs != null);
+                LexResponseDefault? rs = await client.AddCreditNoteAsync(invoice, true);
+                Assert.That(rs, Is.Not.EqualTo(null));
             }
             catch (Exception ex)
             {
@@ -206,27 +225,28 @@ namespace LexOfficeSharpApi.Test.NUnit
         {
             try
             {
-                LexOfficeClient handler = new(tokenString);
-
+                if (client is null) throw new NullReferenceException($"The client was null!");
                 // Cleanup available event subscriptions
-                List<LexResponseDefault>? allSubscriptions = await handler.GetAllEventSubscriptionsAsync();
+                List<LexResponseDefault>? allSubscriptions = await client.GetAllEventSubscriptionsAsync() ?? throw new NullReferenceException("No subscriptions found!");
                 foreach (LexResponseDefault subscriptions in allSubscriptions)
                 {
-                    await handler.DeleteEventSubscriptionAsync(subscriptions.SubscriptionId);
+                    await client.DeleteEventSubscriptionAsync(subscriptions.SubscriptionId);
                 }
 
                 // Create event subscription
-                LexResponseDefault? newSubscription = await handler.AddEventSubscriptionAsync(new LexResponseDefault
+                LexResponseDefault? newSubscription = await client.AddEventSubscriptionAsync(new LexResponseDefault
                 {
                     EventType = EventTypes.PaymentChanged,
                     CallbackUrl = "https://webhook.site/11dac08c-7a64-4467-aae9-8ec5dd1f3338"
                 });
 
-                LexResponseDefault? subscription = await handler.GetEventSubscriptionAsync(newSubscription.Id);
-
-                Assert.That(newSubscription != null);
-                Assert.That(newSubscription?.Id != subscription?.Id);
-                Assert.That(newSubscription.EventType != subscription.EventType);
+                LexResponseDefault? subscription = await client.GetEventSubscriptionAsync(newSubscription?.Id);
+                using (Assert.EnterMultipleScope())
+                {
+                    Assert.That(newSubscription, Is.Not.EqualTo(null));
+                    Assert.That(newSubscription?.Id, Is.Not.EqualTo(subscription?.Id));
+                    Assert.That(newSubscription?.EventType, Is.Not.EqualTo(subscription?.EventType));
+                }
             }
             catch (Exception ex)
             {
@@ -241,15 +261,14 @@ namespace LexOfficeSharpApi.Test.NUnit
         {
             try
             {
-                LexOfficeClient handler = new(tokenString);
-
-                List<VoucherListContent> availableInvoices = await handler.GetInvoiceListAsync(LexVoucherStatus.Paid, size: 1, pages: 1);
+                if (client is null) throw new NullReferenceException($"The client was null!");
+                
+                List<VoucherListContent> availableInvoices = await client.GetInvoiceListAsync(LexVoucherStatus.Paid, size: 1, pages: 1);
                 Guid invoiceId = availableInvoices.First().Id; // Guid.Parse("YOUR_INVOICE_ID");
-                Assert.That(invoiceId != Guid.Empty);
+                Assert.That(invoiceId, Is.Not.EqualTo(Guid.Empty));
 
-                LexPayments? payments = await handler.GetPaymentsAsync(invoiceId);
-
-                Assert.That(payments != null);
+                LexPayments? payments = await client.GetPaymentsAsync(invoiceId);
+                Assert.That(payments, Is.Not.EqualTo(null));
             }
             catch (Exception ex)
             {
@@ -266,17 +285,15 @@ namespace LexOfficeSharpApi.Test.NUnit
         {
             try
             {
-                LexOfficeClient handler = new(tokenString);
-
-                List<VoucherListContent> availableInvoices = await handler.GetInvoiceListAsync(LexVoucherStatus.Paid, size: 1, pages: 1);
+                if (client is null) throw new NullReferenceException($"The client was null!");
+                List<VoucherListContent> availableInvoices = await client.GetInvoiceListAsync(LexVoucherStatus.Paid, size: 1, pages: 1);
                 Guid invoiceId = availableInvoices.First().Id; // Guid.Parse("YOUR_INVOICE_ID");
-                Assert.That(invoiceId != Guid.Empty);
+                Assert.That(invoiceId, Is.Not.EqualTo(Guid.Empty));
 
-                LexDocumentResponse? invoice = await handler.GetInvoiceAsync(availableInvoices.First().Id);
+                LexDocumentResponse? invoice = await client.GetInvoiceAsync(availableInvoices.First().Id);
+                LexQuotationFiles? files = await client.RenderDocumentAsync(invoiceId);
 
-                LexQuotationFiles? files = await handler.RenderDocumentAsync(invoiceId);
-
-                Assert.That(files != null);
+                Assert.That(files, Is.Not.EqualTo(null));
             }
             catch (Exception ex)
             {
@@ -289,19 +306,19 @@ namespace LexOfficeSharpApi.Test.NUnit
         {
             try
             {
-                LexOfficeClient handler = new(tokenString);
+                if (client is null) throw new NullReferenceException($"The client was null!");
 
-                List<VoucherListContent> availableInvoices = await handler.GetInvoiceListAsync(LexVoucherStatus.Paid, size: 1, pages: 1);
+                List<VoucherListContent> availableInvoices = await client.GetInvoiceListAsync(LexVoucherStatus.Paid, size: 1, pages: 1);
                 Guid invoiceId = availableInvoices.First().Id; // Guid.Parse("YOUR_INVOICE_ID");
-                Assert.That(invoiceId != Guid.Empty);
+                Assert.That(invoiceId, Is.Not.EqualTo(Guid.Empty));
 
-                LexDocumentResponse? invoice = await handler.GetInvoiceAsync(availableInvoices.First().Id);
-                LexQuotationFiles? files = await handler.RenderDocumentAsync(invoiceId);
-                Assert.That(files is not null);
+                LexDocumentResponse? invoice = await client.GetInvoiceAsync(availableInvoices.First().Id);
+                LexQuotationFiles? files = await client.RenderDocumentAsync(invoiceId);
+                Assert.That(files, Is.Not.EqualTo(null));
 
                 Guid documentId = files.DocumentFileId;// Guid.Parse("YOUR_FILE_ID");
-                byte[] file = await handler.GetFileAsync(documentId);
-                Assert.That(file is not null);
+                byte[]? file = await client.GetFileAsync(documentId);
+                Assert.That(file, Is.Not.EqualTo(null));
 
                 await File.WriteAllBytesAsync($"invoice.pdf", file);
             }
@@ -320,9 +337,9 @@ namespace LexOfficeSharpApi.Test.NUnit
         {
             try
             {
-                LexOfficeClient handler = new(tokenString);
-                List<LexCountry> list = await handler.GetCountriesAsync();
-                Assert.That(list?.Count > 0);
+                if (client is null) throw new NullReferenceException($"The client was null!");
+                List<LexCountry> list = await client.GetCountriesAsync();
+                Assert.That(list?.Count, Is.GreaterThan(0));
             }
             catch (Exception ex)
             {
@@ -337,9 +354,9 @@ namespace LexOfficeSharpApi.Test.NUnit
         {
             try
             {
-                LexOfficeClient handler = new(tokenString);
-                List<LexDocumentResponse> list = await handler.GetCreditNotesAsync();
-                Assert.That(list?.Count > 0);
+                if (client is null) throw new NullReferenceException($"The client was null!");
+                List<LexDocumentResponse> list = await client.GetCreditNotesAsync();
+                Assert.That(list?.Count, Is.GreaterThan(0));
             }
             catch (Exception ex)
             {
@@ -354,9 +371,9 @@ namespace LexOfficeSharpApi.Test.NUnit
         {
             try
             {
-                LexOfficeClient handler = new(tokenString);
-                List<LexQuotationPaymentConditions> paymentConditions = await handler.GetPaymentConditionsAsync();
-                Assert.That(paymentConditions?.Count > 0);
+                if (client is null) throw new NullReferenceException($"The client was null!");
+                List<LexQuotationPaymentConditions> paymentConditions = await client.GetPaymentConditionsAsync();
+                Assert.That(paymentConditions?.Count, Is.GreaterThan(0));
             }
             catch (Exception ex)
             {
@@ -371,10 +388,10 @@ namespace LexOfficeSharpApi.Test.NUnit
         {
             try
             {
-                LexOfficeClient handler = new(tokenString);
-                List<VoucherListContent> listContent = await handler.GetQuotationListAsync(LexVoucherStatus.Accepted);
-                List<LexDocumentResponse> list = await handler.GetQuotationsAsync(listContent);
-                Assert.That(list?.Count > 0);
+                if (client is null) throw new NullReferenceException($"The client was null!");
+                List<VoucherListContent> listContent = await client.GetQuotationListAsync(LexVoucherStatus.Accepted);
+                List<LexDocumentResponse> list = await client.GetQuotationsAsync(listContent);
+                Assert.That(list?.Count, Is.GreaterThan(0));
             }
             catch (Exception ex)
             {
@@ -389,18 +406,18 @@ namespace LexOfficeSharpApi.Test.NUnit
         {
             try
             {
-                LexOfficeClient handler = new(tokenString);
-                List<LexContact> list = await handler.GetContactsAsync(LexContactType.Customer, size: 100, pages: 2);
-                Assert.That(list?.Count > 0);
+                if (client is null) throw new NullReferenceException($"The client was null!");
+                List<LexContact> list = await client.GetContactsAsync(LexContactType.Customer, size: 100, pages: 2);
+                Assert.That(list?.Count, Is.GreaterThan(0));
 
                 await Task.Delay(500);
 
-                list = await handler.GetContactsAsync(LexContactType.Vendor, size: 100, pages: 2);
-                Assert.That(list?.Count > 0);
+                list = await client.GetContactsAsync(LexContactType.Vendor, size: 100, pages: 2);
+                Assert.That(list?.Count, Is.GreaterThan(0));
 
-                Guid id = list.FirstOrDefault().Id;
-                var contact = await handler.GetContactAsync(id);
-                Assert.That(contact is not null);
+                Guid id = list?.FirstOrDefault()?.Id ?? Guid.Empty;
+                var contact = await client.GetContactAsync(id);
+                Assert.That(contact, Is.Not.EqualTo(null));
             }
             catch (Exception ex)
             {
@@ -415,18 +432,18 @@ namespace LexOfficeSharpApi.Test.NUnit
         {
             try
             {
-                LexOfficeClient handler = new(tokenString);
-                List<LexContact> list = await handler.GetContactsAsync(LexContactType.Customer, size: 100, pages: -1);
-                Assert.That(list?.Count > 0);
+                if (client is null) throw new NullReferenceException($"The client was null!");
+                List<LexContact> list = await client.GetContactsAsync(LexContactType.Customer, size: 100, pages: -1);
+                Assert.That(list?.Count, Is.GreaterThan(0));
 
                 await Task.Delay(500);
 
-                list = await handler.GetContactsAsync(LexContactType.Vendor, size: 100, pages: 2);
-                Assert.That(list?.Count > 0);
+                list = await client.GetContactsAsync(LexContactType.Vendor, size: 100, pages: 2);
+                Assert.That(list?.Count, Is.GreaterThan(0));
 
-                Guid id = list.FirstOrDefault().Id;
-                var contact = await handler.GetContactAsync(id);
-                Assert.That(contact is not null);
+                Guid id = list?.FirstOrDefault()?.Id ?? Guid.Empty;
+                var contact = await client.GetContactAsync(id);
+                Assert.That(contact, Is.Not.EqualTo(null));
 
             }
             catch (Exception ex)

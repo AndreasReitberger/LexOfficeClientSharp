@@ -101,7 +101,7 @@ namespace AndreasReitberger.API.LexOffice
                        cts: default
                        )
                     .ConfigureAwait(false);
-                LexVoucherList? list = GetObjectFromJson<LexVoucherList>(result?.Result, base.NewtonsoftJsonSerializerSettings);
+                LexVoucherList? list = GetObjectFromJson<LexVoucherList>(result?.Result, NewtonsoftJsonSerializerSettings);
                 if (list is not null)
                 {
                     if (list.TotalPages > 1 && page < list.TotalPages && (pages <= 0 || (pages - 1 > page && pages > 1)))
@@ -125,7 +125,7 @@ namespace AndreasReitberger.API.LexOffice
                 return resultObject;
             }
         }
-        public async Task<List<LexDocumentResponse>> GetQuotationsAsync(List<Guid> ids)
+        public async Task<List<LexDocumentResponse>> GetQuotationsAsync(List<Guid> ids, int cooldown = 50)
         {
             List<LexDocumentResponse> result = [];
             foreach (Guid Id in ids)
@@ -133,6 +133,8 @@ namespace AndreasReitberger.API.LexOffice
                 LexDocumentResponse? quote = await GetQuotationAsync(Id);
                 if (quote is not null)
                     result.Add(quote);
+                if (cooldown > 0)
+                    await Task.Delay(50);
             }
             return result;
         }
@@ -160,7 +162,7 @@ namespace AndreasReitberger.API.LexOffice
                        cts: default
                        )
                     .ConfigureAwait(false);
-                resultObject = GetObjectFromJson<LexDocumentResponse>(result?.Result, base.NewtonsoftJsonSerializerSettings);
+                resultObject = GetObjectFromJson<LexDocumentResponse>(result?.Result, NewtonsoftJsonSerializerSettings);
                 return resultObject;
             }
             catch (Exception exc)

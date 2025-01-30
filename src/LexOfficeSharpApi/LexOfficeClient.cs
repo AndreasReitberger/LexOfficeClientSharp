@@ -13,6 +13,7 @@ using System.Net;
 using System.Net.Http;
 using System.Text.RegularExpressions;
 using System.Threading;
+using System.Threading.RateLimiting;
 using System.Threading.Tasks;
 using System.Xml.Serialization;
 
@@ -61,9 +62,9 @@ namespace AndreasReitberger.API.LexOffice
         public static string HandlerLicenseUri = "https://www.lexoffice.de/public-api-lizenz-nutzungsbedingungen/";
         #endregion
 
-#region Properties
+        #region Properties
 
-#region SerializerSettings
+        #region SerializerSettings
 
 #if NETFRAMEWORK
         [ObservableProperty]
@@ -77,9 +78,22 @@ namespace AndreasReitberger.API.LexOffice
             DateFormatString = "yyyy-MM-ddTHH:mm:ss.fffK"
         };
 #endif
-    #endregion
+        #endregion
 
         #region General
+
+#if !NETFRAMEWORK
+        // A client can make up to 2 requests per second to the lexoffice API.
+        public new static RateLimiter DefaultLimiter = new TokenBucketRateLimiter(new()
+        {
+            TokenLimit = 2,
+            QueueProcessingOrder = QueueProcessingOrder.OldestFirst,
+            QueueLimit = int.MaxValue,
+            ReplenishmentPeriod = TimeSpan.FromSeconds(1.5),
+            TokensPerPeriod = 2,
+            AutoReplenishment = true,
+        });
+#endif
 
 #if NETFRAMEWORK
         [ObservableProperty]
@@ -87,9 +101,9 @@ namespace AndreasReitberger.API.LexOffice
         public partial string? AccessToken { get; set; } = null;
         partial void OnAccessTokenChanged(string? value) => VerifyAccessToken();
 #endif
-#endregion
+        #endregion
 
-#endregion
+        #endregion
 
         #region EventHandlers
 #if NETFRAMEWORK
@@ -103,7 +117,7 @@ namespace AndreasReitberger.API.LexOffice
             Error?.Invoke(this, e);
         }
 #endif
-#endregion
+        #endregion
 
         #region Constructor
         public LexOfficeClient() 
@@ -111,6 +125,9 @@ namespace AndreasReitberger.API.LexOffice
             IsInitialized = false;
             ApiTargetPath ??= "https://api.lexoffice.io/";
             ApiVersion = "v1";
+#if !NETFRAMEWORK
+            Limiter ??= DefaultLimiter;
+#endif
         }
 #if NETFRAMEWORK
         public LexOfficeClient(string accessToken) : this()
@@ -126,6 +143,9 @@ namespace AndreasReitberger.API.LexOffice
             Token = $"Bearer {accessToken}",
         }, tokenName: tokenName, url: url, version: version)
         {
+#if !NETFRAMEWORK
+            Limiter ??= DefaultLimiter;
+#endif
             //AccessToken = accessToken;
             IsInitialized = true;
             Instance = this;

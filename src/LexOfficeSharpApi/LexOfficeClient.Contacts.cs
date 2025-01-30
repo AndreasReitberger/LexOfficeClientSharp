@@ -96,7 +96,7 @@ namespace AndreasReitberger.API.LexOffice
                        cts: default
                        )
                     .ConfigureAwait(false);
-                LexContactsList? list = GetObjectFromJson<LexContactsList>(result?.Result, base.NewtonsoftJsonSerializerSettings);
+                LexContactsList? list = GetObjectFromJson<LexContactsList>(result?.Result, NewtonsoftJsonSerializerSettings);
                 if (list is not null)
                 {
                     if (list.TotalPages > 1 && page < list.TotalPages && (pages <= 0 || (pages - 1 > page && pages > 1)))
@@ -138,7 +138,7 @@ namespace AndreasReitberger.API.LexOffice
                        cts: default
                        )
                     .ConfigureAwait(false);
-                resultObject = GetObjectFromJson<LexContact>(result?.Result, base.NewtonsoftJsonSerializerSettings);
+                resultObject = GetObjectFromJson<LexContact>(result?.Result, NewtonsoftJsonSerializerSettings);
                 return resultObject;
             }
             catch (Exception exc)
@@ -166,7 +166,7 @@ namespace AndreasReitberger.API.LexOffice
                        cts: default
                        )
                     .ConfigureAwait(false);
-                resultObject = GetObjectFromJson<LexResponseDefault>(result?.Result, base.NewtonsoftJsonSerializerSettings);
+                resultObject = GetObjectFromJson<LexResponseDefault>(result?.Result, NewtonsoftJsonSerializerSettings);
                 return resultObject;
             }
             catch (Exception exc)
@@ -193,7 +193,7 @@ namespace AndreasReitberger.API.LexOffice
                        cts: default
                        )
                     .ConfigureAwait(false);
-                resultObject = GetObjectFromJson<LexResponseDefault>(result?.Result, base.NewtonsoftJsonSerializerSettings);
+                resultObject = GetObjectFromJson<LexResponseDefault>(result?.Result, NewtonsoftJsonSerializerSettings);
                 return resultObject;
             }
             catch (Exception exc)

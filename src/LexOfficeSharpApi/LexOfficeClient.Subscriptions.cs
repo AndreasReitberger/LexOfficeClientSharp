@@ -68,7 +68,7 @@ namespace AndreasReitberger.API.LexOffice
                        cts: default
                        )
                     .ConfigureAwait(false);
-                resultObject = GetObjectFromJson<LexResponseDefault>(result?.Result, base.NewtonsoftJsonSerializerSettings);
+                resultObject = GetObjectFromJson<LexResponseDefault>(result?.Result, NewtonsoftJsonSerializerSettings);
                 return resultObject;
             }
             catch (Exception exc)
@@ -95,7 +95,7 @@ namespace AndreasReitberger.API.LexOffice
                        cts: default
                        )
                     .ConfigureAwait(false);
-                resultObject = GetObjectFromJson<LexResponseDefault>(result?.Result, base.NewtonsoftJsonSerializerSettings);
+                resultObject = GetObjectFromJson<LexResponseDefault>(result?.Result, NewtonsoftJsonSerializerSettings);
                 return resultObject;
             }
             catch (Exception exc)
@@ -122,7 +122,7 @@ namespace AndreasReitberger.API.LexOffice
                        cts: default
                        )
                     .ConfigureAwait(false);
-                resultObject = GetObjectFromJson<LexResponseWrapper>(result?.Result, base.NewtonsoftJsonSerializerSettings)?.Content;
+                resultObject = GetObjectFromJson<LexResponseWrapper>(result?.Result, NewtonsoftJsonSerializerSettings)?.Content;
                 return resultObject;
             }
             catch (Exception exc)
@@ -149,7 +149,7 @@ namespace AndreasReitberger.API.LexOffice
                        cts: default
                        )
                     .ConfigureAwait(false);
-                resultObject = GetObjectFromJson<LexResponseDefault>(result?.Result, base.NewtonsoftJsonSerializerSettings);
+                resultObject = GetObjectFromJson<LexResponseDefault>(result?.Result, NewtonsoftJsonSerializerSettings);
                 return resultObject;
             }
             catch (Exception exc)

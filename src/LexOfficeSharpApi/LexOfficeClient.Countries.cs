@@ -51,7 +51,7 @@ namespace AndreasReitberger.API.LexOffice
                        cts: default
                        )
                     .ConfigureAwait(false);
-                resultObject = [.. GetObjectFromJson<List<LexCountry>>(result?.Result, base.NewtonsoftJsonSerializerSettings)];
+                resultObject = [.. GetObjectFromJson<List<LexCountry>>(result?.Result, NewtonsoftJsonSerializerSettings)];
                 return resultObject;
             }
             catch (Exception exc)

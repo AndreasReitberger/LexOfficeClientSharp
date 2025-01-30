@@ -112,7 +112,11 @@ namespace AndreasReitberger.API.LexOffice
                        cts: default
                        )
                     .ConfigureAwait(false);
-                LexVoucherList? list = GetObjectFromJson<LexVoucherList>(result?.Result, base.NewtonsoftJsonSerializerSettings);
+                if (result?.Succeeded is false)
+                {
+                    ThrowOnError(respone: result, methodName: nameof(GetInvoiceListAsync));
+                }
+                LexVoucherList? list = GetObjectFromJson<LexVoucherList>(result?.Result, NewtonsoftJsonSerializerSettings);
                 if (list is not null)
                 {
                     if (list.TotalPages > 1 && page < list.TotalPages && (pages <= 0 || (pages - 1 > page && pages > 1)))
@@ -173,7 +177,7 @@ namespace AndreasReitberger.API.LexOffice
                        cts: default
                        )
                     .ConfigureAwait(false);
-                resultObject = GetObjectFromJson<LexDocumentResponse>(result?.Result, base.NewtonsoftJsonSerializerSettings);
+                resultObject = GetObjectFromJson<LexDocumentResponse>(result?.Result, NewtonsoftJsonSerializerSettings);
                 return resultObject;
             }
             catch (Exception exc)
@@ -204,7 +208,7 @@ namespace AndreasReitberger.API.LexOffice
                        cts: default
                        )
                     .ConfigureAwait(false);
-                resultObject = GetObjectFromJson<LexResponseDefault>(result?.Result, base.NewtonsoftJsonSerializerSettings);
+                resultObject = GetObjectFromJson<LexResponseDefault>(result?.Result, NewtonsoftJsonSerializerSettings);
                 return resultObject;
             }
             catch (Exception exc)
