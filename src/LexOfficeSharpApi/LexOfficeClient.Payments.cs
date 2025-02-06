@@ -24,6 +24,12 @@ namespace AndreasReitberger.API.LexOffice
         #region Payments
 
 #if NETFRAMEWORK
+        /// <summary>
+        /// Gets a single payment by the invoice id.
+        /// Docs: <seealso href="https://developers.lexoffice.io/docs/#payments-endpoint-payments-properties"/>
+        /// </summary>
+        /// <param name="invoiceId">The id</param>
+        /// <returns><seealso cref="LexPayments"/></returns>
         public async Task<LexPayments?> GetPaymentsAsync(Guid invoiceId)
         {
             string? jsonString = await BaseApiCallAsync<string>($"payments/{invoiceId}", Method.Get);
@@ -32,7 +38,12 @@ namespace AndreasReitberger.API.LexOffice
             return response;
         }
 #else
-
+        /// <summary>
+        /// Gets a single payment by the invoice id.
+        /// Docs: <seealso href="https://developers.lexoffice.io/docs/#payments-endpoint-payments-properties"/>
+        /// </summary>
+        /// <param name="invoiceId">The id</param>
+        /// <returns><seealso cref="LexPayments"/></returns>
         public async Task<LexPayments?> GetPaymentsAsync(Guid invoiceId)
         {
             IRestApiRequestRespone? result = null;
@@ -60,6 +71,6 @@ namespace AndreasReitberger.API.LexOffice
             }
         }
 #endif
-#endregion
+        #endregion
     }
 }

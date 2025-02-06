@@ -26,6 +26,17 @@ namespace AndreasReitberger.API.LexOffice
         #region Invoices
 
 #if NETFRAMEWORK
+        /// <summary>
+        /// Get all available invoices as a list of <seealso cref="VoucherListContent"/>
+        /// Docs: <seealso href="https://developers.lexoffice.io/docs/#voucherlist-endpoint-retrieve-and-filter-voucherlist"/>
+        /// </summary>
+        /// <param name="status">The status, see <seealso cref="LexVoucherStatus"/></param>
+        /// <param name="archived">Whether if archived</param>
+        /// <param name="page">The starting page</param>
+        /// <param name="size">The size of each page</param>
+        /// <param name="pages">The end page</param>
+        /// <param name="cooldown">A cooldown between the single queries</param>
+        /// <returns>List of <seealso cref="VoucherListContent"/></returns>
         public async Task<List<VoucherListContent>> GetInvoiceListAsync(LexVoucherStatus status, bool archived = false, int page = 0, int size = 25, int pages = -1, int cooldown = 0)
         {
             List<VoucherListContent> result = [];
@@ -54,7 +65,14 @@ namespace AndreasReitberger.API.LexOffice
             }
             return result;
         }
-
+        
+        /// <summary>
+        /// Gets a list of invoices by their ids
+        /// Docs: <seealso href="https://developers.lexoffice.io/docs/#invoices-endpoint-retrieve-an-invoice"/>
+        /// </summary>
+        /// <param name="ids">The invoice ids</param>
+        /// <param name="cooldown">A cooldown between the single queries</param>
+        /// <returns>List of <seealso cref="LexDocumentResponse"/></returns>
         public async Task<List<LexDocumentResponse>> GetInvoicesAsync(List<Guid> ids, int cooldown = 0)
         {
             List<LexDocumentResponse> result = [];
@@ -67,13 +85,25 @@ namespace AndreasReitberger.API.LexOffice
             }
             return result;
         }
-
+        
+        /// <summary>
+        /// Gets a list of invoices by their ids
+        /// Docs: <seealso href="https://developers.lexoffice.io/docs/#invoices-endpoint-retrieve-an-invoice"/>
+        /// </summary>
+        /// <param name="voucherList">A list of <seealso cref="VoucherListContent"/> to be fetched</param>
+        /// <returns>List of <seealso cref="LexDocumentResponse"/></returns>
         public async Task<List<LexDocumentResponse>> GetInvoicesAsync(List<VoucherListContent> voucherList)
         {
             List<Guid> ids = voucherList.Select(id => id.Id).ToList();
             return await GetInvoicesAsync(ids);
         }
-
+        
+        /// <summary>
+        /// Gets a single invoice by its id.
+        /// Docs: <seealso href="https://developers.lexoffice.io/docs/#invoices-endpoint-retrieve-an-invoice"/>
+        /// </summary>
+        /// <param name="id">The id</param>
+        /// <returns><seealso cref="LexDocumentResponse"/></returns>
         public async Task<LexDocumentResponse?> GetInvoiceAsync(Guid id)
         {
             string? jsonString = await BaseApiCallAsync<string>($"invoices/{id}", Method.Get) ?? string.Empty;
@@ -81,6 +111,13 @@ namespace AndreasReitberger.API.LexOffice
             return response;
         }
 
+        /// <summary>
+        /// Add a new invoice to lexoffice
+        /// Docs: <seealso href="https://developers.lexoffice.io/docs/#invoices-endpoint-create-an-invoice"/>
+        /// </summary>
+        /// <param name="lexQuotation">The quotation as <seealso cref="LexDocumentResponse"/></param>
+        /// <param name="isFinalized">Whether it is finalized</param>
+        /// <returns><seealso cref="LexResponseDefault"/></returns>
         public async Task<LexResponseDefault?> AddInvoiceAsync(LexDocumentResponse lexQuotation, bool isFinalized = false)
         {
             string? jsonString = await BaseApiCallAsync<string>($"invoices?finalize={isFinalized}", Method.Post, JsonConvert.SerializeObject(lexQuotation, NewtonsoftJsonSerializerSettings)) ?? string.Empty;
@@ -88,6 +125,17 @@ namespace AndreasReitberger.API.LexOffice
             return response;
         }
 #else
+        /// <summary>
+        /// Get all available invoices as a list of <seealso cref="VoucherListContent"/>
+        /// Docs: <seealso href="https://developers.lexoffice.io/docs/#voucherlist-endpoint-retrieve-and-filter-voucherlist"/>
+        /// </summary>
+        /// <param name="status">The status, see <seealso cref="LexVoucherStatus"/></param>
+        /// <param name="archived">Whether if archived</param>
+        /// <param name="page">The starting page</param>
+        /// <param name="size">The size of each page</param>
+        /// <param name="pages">The end page</param>
+        /// <param name="cooldown">A cooldown between the single queries</param>
+        /// <returns>List of <seealso cref="VoucherListContent"/></returns>
         public async Task<List<VoucherListContent>> GetInvoiceListAsync(LexVoucherStatus status, bool archived = false, int page = 0, int size = 25, int pages = -1, int cooldown = 0)
         {
             IRestApiRequestRespone? result = null;
@@ -141,6 +189,13 @@ namespace AndreasReitberger.API.LexOffice
             }
         }
 
+        /// <summary>
+        /// Gets a list of invoices by their ids
+        /// Docs: <seealso href="https://developers.lexoffice.io/docs/#invoices-endpoint-retrieve-an-invoice"/>
+        /// </summary>
+        /// <param name="ids">The invoice ids</param>
+        /// <param name="cooldown">A cooldown between the single queries</param>
+        /// <returns>List of <seealso cref="LexDocumentResponse"/></returns>
         public async Task<List<LexDocumentResponse>> GetInvoicesAsync(List<Guid> ids, int cooldown = 0)
         {
             List<LexDocumentResponse> result = [];
@@ -154,12 +209,24 @@ namespace AndreasReitberger.API.LexOffice
             return result;
         }
 
+        /// <summary>
+        /// Gets a list of invoices by their ids
+        /// Docs: <seealso href="https://developers.lexoffice.io/docs/#invoices-endpoint-retrieve-an-invoice"/>
+        /// </summary>
+        /// <param name="voucherList">A list of <seealso cref="VoucherListContent"/> to be fetched</param>
+        /// <returns>List of <seealso cref="LexDocumentResponse"/></returns>
         public async Task<List<LexDocumentResponse>> GetInvoicesAsync(List<VoucherListContent> voucherList)
         {
             List<Guid> ids = voucherList.Select(id => id.Id).ToList();
             return await GetInvoicesAsync(ids);
         }
 
+        /// <summary>
+        /// Gets a single invoice by its id.
+        /// Docs: <seealso href="https://developers.lexoffice.io/docs/#invoices-endpoint-retrieve-an-invoice"/>
+        /// </summary>
+        /// <param name="id">The id</param>
+        /// <returns><seealso cref="LexDocumentResponse"/></returns>
         public async Task<LexDocumentResponse?> GetInvoiceAsync(Guid id)
         {
             IRestApiRequestRespone? result = null;
@@ -187,6 +254,13 @@ namespace AndreasReitberger.API.LexOffice
             }
         }
 
+        /// <summary>
+        /// Add a new invoice to lexoffice
+        /// Docs: <seealso href="https://developers.lexoffice.io/docs/#invoices-endpoint-create-an-invoice"/>
+        /// </summary>
+        /// <param name="lexQuotation">The quotation as <seealso cref="LexDocumentResponse"/></param>
+        /// <param name="isFinalized">Whether it is finalized</param>
+        /// <returns><seealso cref="LexResponseDefault"/></returns>
         public async Task<LexResponseDefault?> AddInvoiceAsync(LexDocumentResponse lexQuotation, bool isFinalized = false)
         {
             IRestApiRequestRespone? result = null;

@@ -25,6 +25,11 @@ namespace AndreasReitberger.API.LexOffice
         #region Countries
 
 #if NETFRAMEWORK
+        /// <summary>
+        /// Get all available countries as a list of <seealso cref="LexCountry"/>
+        /// Docs: <seealso href="https://developers.lexoffice.io/docs/#countries-endpoint-retrieve-list-of-countries"/>
+        /// </summary>
+        /// <returns>List of <seealso cref="LexCountry"/></returns>
         public async Task<List<LexCountry>> GetCountriesAsync()
         {
             List<LexCountry> result = [];
@@ -33,7 +38,11 @@ namespace AndreasReitberger.API.LexOffice
             return result;
         }
 #else
-
+        /// <summary>
+        /// Get all available countries as a list of <seealso cref="LexCountry"/>
+        /// Docs: <seealso href="https://developers.lexoffice.io/docs/#countries-endpoint-retrieve-list-of-countries"/>
+        /// </summary>
+        /// <returns>List of <seealso cref="LexCountry"/></returns>
         public async Task<List<LexCountry>> GetCountriesAsync()
         {
             IRestApiRequestRespone? result = null;

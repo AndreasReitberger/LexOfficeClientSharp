@@ -26,6 +26,17 @@ namespace AndreasReitberger.API.LexOffice
         #region Quotations
 
 #if NETFRAMEWORK
+        /// <summary>
+        /// Returns a list of all available quotations. Use with care, this function can overload the rest api limit!
+        /// Docs: <seealso href="https://developers.lexoffice.io/docs/#quotations-endpoint-retrieve-a-quotation"/>
+        /// </summary>
+        /// <param name="status">The status, see <seealso cref="LexVoucherStatus"/></param>
+        /// <param name="archived">Whether its archived</param>
+        /// <param name="page">The starting page</param>
+        /// <param name="size">The size of each page</param>
+        /// <param name="pages">The end page</param>
+        /// <param name="cooldown">A cooldown between each query</param>
+        /// <returns>List of <seealso cref="VoucherListContent"/></returns>
         public async Task<List<VoucherListContent>> GetQuotationListAsync(LexVoucherStatus status, bool archived = false, int page = 0, int size = 25)
         {
             List<VoucherListContent> result = [];
@@ -50,7 +61,14 @@ namespace AndreasReitberger.API.LexOffice
             }
             return result;
         }
-
+        
+        /// <summary>
+        /// Gets a list of quotation by there ids
+        /// Docs: <seealso href="https://developers.lexoffice.io/docs/#quotations-endpoint-retrieve-a-quotation"/>
+        /// </summary>
+        /// <param name="ids">A list of <seealso cref="Guid"/></param>
+        /// <param name="cooldown">A cooldown between each query</param>
+        /// <returns>List of <seealso cref="LexDocumentResponse"/></returns>
         public async Task<List<LexDocumentResponse>> GetQuotationsAsync(List<Guid> ids)
         {
             List<LexDocumentResponse> result = [];
@@ -62,13 +80,25 @@ namespace AndreasReitberger.API.LexOffice
             }
             return result;
         }
-
+        
+        /// <summary>
+        /// Gets a list of quotation by there ids from a list of <seealso cref="VoucherListContent"/>"/>
+        /// Docs: <seealso href="https://developers.lexoffice.io/docs/#quotations-endpoint-retrieve-a-quotation"/>
+        /// </summary>
+        /// <param name="voucherList">A list of <seealso cref="VoucherListContent"/></param>
+        /// <returns>List of <seealso cref="LexDocumentResponse"/></returns>
         public async Task<List<LexDocumentResponse>> GetQuotationsAsync(List<VoucherListContent> voucherList)
         {
             List<Guid> ids = [.. voucherList.Select(id => id.Id)];
             return await GetQuotationsAsync(ids);
         }
-
+        
+        /// <summary>
+        /// Gets a single quotation by its id
+        /// Docs: <seealso href="https://developers.lexoffice.io/docs/#quotations-endpoint-retrieve-a-quotation"/>
+        /// </summary>
+        /// <param name="id">The id of the quotation</param>
+        /// <returns><seealso cref="LexDocumentResponse"/></returns>
         public async Task<LexDocumentResponse?> GetQuotationAsync(Guid id)
         {
             string? jsonString = await BaseApiCallAsync<string>($"quotations/{id}", Method.Get);
@@ -77,6 +107,17 @@ namespace AndreasReitberger.API.LexOffice
             return response;
         }
 #else
+        /// <summary>
+        /// Returns a list of all available quotations. Use with care, this function can overload the rest api limit!
+        /// Docs: <seealso href="https://developers.lexoffice.io/docs/#quotations-endpoint-retrieve-a-quotation"/>
+        /// </summary>
+        /// <param name="status">The status, see <seealso cref="LexVoucherStatus"/></param>
+        /// <param name="archived">Whether its archived</param>
+        /// <param name="page">The starting page</param>
+        /// <param name="size">The size of each page</param>
+        /// <param name="pages">The end page</param>
+        /// <param name="cooldown">A cooldown between each query</param>
+        /// <returns>List of <seealso cref="VoucherListContent"/></returns>
         public async Task<List<VoucherListContent>> GetQuotationListAsync(LexVoucherStatus status, bool archived = false, int page = 0, int size = 25, int pages = -1, int cooldown = 0)
         {
             IRestApiRequestRespone? result = null;
@@ -125,6 +166,14 @@ namespace AndreasReitberger.API.LexOffice
                 return resultObject;
             }
         }
+
+        /// <summary>
+        /// Gets a list of quotation by there ids
+        /// Docs: <seealso href="https://developers.lexoffice.io/docs/#quotations-endpoint-retrieve-a-quotation"/>
+        /// </summary>
+        /// <param name="ids">A list of <seealso cref="Guid"/></param>
+        /// <param name="cooldown">A cooldown between each query</param>
+        /// <returns>List of <seealso cref="LexDocumentResponse"/></returns>
         public async Task<List<LexDocumentResponse>> GetQuotationsAsync(List<Guid> ids, int cooldown = 50)
         {
             List<LexDocumentResponse> result = [];
@@ -139,12 +188,24 @@ namespace AndreasReitberger.API.LexOffice
             return result;
         }
 
+        /// <summary>
+        /// Gets a list of quotation by there ids from a list of <seealso cref="VoucherListContent"/>"/>
+        /// Docs: <seealso href="https://developers.lexoffice.io/docs/#quotations-endpoint-retrieve-a-quotation"/>
+        /// </summary>
+        /// <param name="voucherList">A list of <seealso cref="VoucherListContent"/></param>
+        /// <returns>List of <seealso cref="LexDocumentResponse"/></returns>
         public async Task<List<LexDocumentResponse>> GetQuotationsAsync(List<VoucherListContent> voucherList)
         {
             List<Guid> ids = [.. voucherList.Select(id => id.Id)];
             return await GetQuotationsAsync(ids);
         }
 
+        /// <summary>
+        /// Gets a single quotation by its id
+        /// Docs: <seealso href="https://developers.lexoffice.io/docs/#quotations-endpoint-retrieve-a-quotation"/>
+        /// </summary>
+        /// <param name="id">The id of the quotation</param>
+        /// <returns><seealso cref="LexDocumentResponse"/></returns>
         public async Task<LexDocumentResponse?> GetQuotationAsync(Guid id)
         {
             IRestApiRequestRespone? result = null;

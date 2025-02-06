@@ -27,6 +27,16 @@ namespace AndreasReitberger.API.LexOffice
         #region Contacts
 
 #if NETFRAMEWORK
+        /// <summary>
+        /// Gets a list of all available contacts.
+        /// Docs: <see href="https://developers.lexoffice.io/docs/#contacts-endpoint-purpose"/>
+        /// </summary>
+        /// <param name="type">The type, either <c>Customer</c> or <c>Vendor</c></param>
+        /// <param name="page">The page to start with</param>
+        /// <param name="size">The amount of contacts for each page</param>
+        /// <param name="pages">The end page, take all pages with <c>-1</c></param>
+        /// <param name="cooldown">A wait between each query (might be needed to avoid rejections from the api server)</param>
+        /// <returns>List of <seealso cref="LexContact"/></returns>
         public async Task<List<LexContact>> GetContactsAsync(LexContactType type, int page = 0, int size = 25, int pages = -1, int cooldown = 0)
         {
             List<LexContact> result = [];
@@ -52,21 +62,39 @@ namespace AndreasReitberger.API.LexOffice
             }
             return result;
         }
-
+        
+        /// <summary>
+        /// Gets a single contact by its id.
+        /// Docs: <see href="https://developers.lexoffice.io/docs/#contacts-endpoint-retrieve-a-contact"/>
+        /// </summary>
+        /// <param name="id">The id of the contact</param>
+        /// <returns><seealso cref="LexContact"/></returns>
         public async Task<LexContact?> GetContactAsync(Guid id)
         {
             string? jsonString = await BaseApiCallAsync<string>($"contacts/{id}", Method.Get) ?? string.Empty;
             LexContact? contact = JsonConvert.DeserializeObject<LexContact>(jsonString);
             return contact;
         }
-
+        
+        /// <summary>
+        /// Adds a new contact to the lexoffice api. See also <seealso cref="LexContact"/>
+        /// Docs: <see href="https://developers.lexoffice.io/docs/#contacts-endpoint-create-a-contact"/>
+        /// </summary>
+        /// <param name="lexContact">The contact to be added as <c>LexContact</c></param>
+        /// <returns><seealso cref="LexResponseDefault"/></returns>
         public async Task<LexResponseDefault?> AddContactAsync(LexContact lexContact)
         {
             string? jsonString = await BaseApiCallAsync<string>($"contacts", Method.Post, JsonConvert.SerializeObject(lexContact, NewtonsoftJsonSerializerSettings)) ?? string.Empty;
             LexResponseDefault? response = JsonConvert.DeserializeObject<LexResponseDefault>(jsonString);
             return response;
         }
-
+        
+        /// <summary>
+        /// Updates an existing contact in the lexoffice api. See also <seealso cref="LexContact"/>
+        /// </summary>
+        /// <param name="contactId">The id of the contact</param>
+        /// <param name="lexContact">The updated contact as <seealso cref="LexContact"/></param>
+        /// <returns><seealso cref="LexResponseDefault"/></returns>
         public async Task<LexResponseDefault?> UpdateContactAsync(Guid contactId, LexContact lexContact)
         {
             string? jsonString = await BaseApiCallAsync<string>($"contacts/{contactId}", Method.Post, JsonConvert.SerializeObject(lexContact, NewtonsoftJsonSerializerSettings)) ?? string.Empty;
@@ -74,6 +102,16 @@ namespace AndreasReitberger.API.LexOffice
             return response;
         }
 #else
+        /// <summary>
+        /// Gets a list of all available contacts.
+        /// Docs: <see href="https://developers.lexoffice.io/docs/#contacts-endpoint-purpose"/>
+        /// </summary>
+        /// <param name="type">The type, either <c>Customer</c> or <c>Vendor</c></param>
+        /// <param name="page">The page to start with</param>
+        /// <param name="size">The amount of contacts for each page</param>
+        /// <param name="pages">The end page, take all pages with <c>-1</c></param>
+        /// <param name="cooldown">A wait between each query (might be needed to avoid rejections from the api server)</param>
+        /// <returns>List of <seealso cref="LexContact"/></returns>
         public async Task<List<LexContact>> GetContactsAsync(LexContactType type, int page = 0, int size = 25, int pages = -1, int cooldown = 0)
         {
             IRestApiRequestRespone? result = null;
@@ -121,6 +159,12 @@ namespace AndreasReitberger.API.LexOffice
             }
         }
 
+        /// <summary>
+        /// Gets a single contact by its id.
+        /// Docs: <see href="https://developers.lexoffice.io/docs/#contacts-endpoint-retrieve-a-contact"/>
+        /// </summary>
+        /// <param name="id">The id of the contact</param>
+        /// <returns><seealso cref="LexContact"/></returns>
         public async Task<LexContact?> GetContactAsync(Guid id)
         {
             IRestApiRequestRespone? result = null;
@@ -148,6 +192,12 @@ namespace AndreasReitberger.API.LexOffice
             }
         }
 
+        /// <summary>
+        /// Adds a new contact to the lexoffice api. See also <seealso cref="LexContact"/>
+        /// Docs: <see href="https://developers.lexoffice.io/docs/#contacts-endpoint-create-a-contact"/>
+        /// </summary>
+        /// <param name="lexContact">The contact to be added as <c>LexContact</c></param>
+        /// <returns><seealso cref="LexResponseDefault"/></returns>
         public async Task<LexResponseDefault?> AddContactAsync(LexContact lexContact)
         {
             IRestApiRequestRespone? result = null;
@@ -176,6 +226,12 @@ namespace AndreasReitberger.API.LexOffice
             }
         }
 
+        /// <summary>
+        /// Updates an existing contact in the lexoffice api. See also <seealso cref="LexContact"/>
+        /// </summary>
+        /// <param name="contactId">The id of the contact</param>
+        /// <param name="lexContact">The updated contact as <seealso cref="LexContact"/></param>
+        /// <returns><seealso cref="LexResponseDefault"/></returns>
         public async Task<LexResponseDefault?> UpdateContactAsync(Guid contactId, LexContact lexContact)
         {
             IRestApiRequestRespone? result = null;

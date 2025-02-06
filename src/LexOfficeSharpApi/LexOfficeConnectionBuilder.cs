@@ -18,21 +18,37 @@ namespace AndreasReitberger.API.LexOffice
             #endregion
 
             #region Methods
-
+            /// <summary>
+            /// Build the <seealso cref="LexOfficeClient"/> with the given parameters
+            /// </summary>
+            /// <returns><seealso cref="LexOfficeClient"/></returns>
             public LexOfficeClient Build()
             {
                 if (string.IsNullOrEmpty(_client.ApiTargetPath))
                     _client.ApiTargetPath = "https://api.lexoffice.io/";
                 return _client;
             }
-            public LexOfficeConnectionBuilder WithWebAddress(string webAddress = "https://api.lexoffice.io/")
+
+            /// <summary>
+            /// Set the web address for the rest api connection
+            /// </summary>
+            /// <param name="webAddress">The rest api target uri, mostly <c>https://api.lexoffice.io/</c></param>
+            /// <returns><seealso cref="LexOfficeConnectionBuilder"/></returns>
+            public LexOfficeConnectionBuilder WithWebAddress(string webAddress = "https://api.lexoffice.io/", string apiVersion = "v1")
             {
                 _client.ApiTargetPath = webAddress;
+                _client.ApiVersion = apiVersion;
                 return this;
             }
 #if NETFRAMEWORK
             public LexOfficeConnectionBuilder WithApiKey(string apiKey)
 #else
+            /// <summary>
+            /// Set the api key for the rest api connection
+            /// </summary>
+            /// <param name="apiKey">The api key</param>
+            /// <param name="tokenName">The token name, which is mostly <c>Authorization</c></param>
+            /// <returns><seealso cref="LexOfficeConnectionBuilder"/></returns>
             public LexOfficeConnectionBuilder WithApiKey(string apiKey, string tokenName = "Authorization")
 #endif
             {
@@ -58,7 +74,7 @@ namespace AndreasReitberger.API.LexOffice
             /// <param name="tokensPerPeriod">Maximum number of tokens to be restored in each replenishment</param>
             /// <param name="replenishmentPeriod">Enable auto replenishment</param>
             /// <param name="queueLimit">Size of the queue</param>
-            /// <returns><c>RestApiConnectionBuilder</c></returns>
+            /// <returns><seealso cref="LexOfficeConnectionBuilder"/></returns>
             public LexOfficeConnectionBuilder WithRateLimiter(bool autoReplenishment, int tokenLimit, int tokensPerPeriod, double replenishmentPeriod, int queueLimit = int.MaxValue)
             {
                 _client.Limiter = new TokenBucketRateLimiter(new()
@@ -78,7 +94,7 @@ namespace AndreasReitberger.API.LexOffice
             /// Set the timeout for the connection in ms (default is 10000 ms)
             /// </summary>
             /// <param name="timeout">The timeout in ms</param>
-            /// <returns><c>RestApiConnectionBuilder</c></returns>
+            /// <returns><seealso cref="LexOfficeConnectionBuilder"/></returns>
             public LexOfficeConnectionBuilder WithTimeout(int timeout = 10000)
             {
                 _client.DefaultTimeout = timeout;
