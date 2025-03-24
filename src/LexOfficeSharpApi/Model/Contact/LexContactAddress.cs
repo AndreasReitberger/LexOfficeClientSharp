@@ -6,6 +6,9 @@ namespace AndreasReitberger.API.LexOffice
     {
         #region Properties
         [ObservableProperty]
+        public partial string ContactId { get; set; } = string.Empty;
+
+        [ObservableProperty]
         public partial string Name { get; set; } = string.Empty;
 
         [ObservableProperty]
