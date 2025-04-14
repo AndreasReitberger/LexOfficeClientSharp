@@ -1,13 +1,12 @@
 ﻿#if !NETFRAMEWORK
 using AndreasReitberger.API.REST;
 using AndreasReitberger.API.REST.Interfaces;
-
+using System;
 #else
+using Newtonsoft.Json;
 using CommunityToolkit.Mvvm.ComponentModel;
 #endif
-using Newtonsoft.Json;
 using RestSharp;
-using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -59,7 +58,11 @@ namespace AndreasReitberger.API.LexOffice
                        cts: default
                        )
                     .ConfigureAwait(false);
-                resultObject = [.. GetObjectFromJson<List<LexQuotationPaymentConditions>>(result?.Result, NewtonsoftJsonSerializerSettings)];
+                if (result?.Result is not null &&
+                    GetObjectFromJson<List<LexQuotationPaymentConditions>>(result.Result, NewtonsoftJsonSerializerSettings) is List<LexQuotationPaymentConditions> list)
+                {
+                    resultObject = [.. list];
+                }
                 return resultObject;
             }
             catch (Exception exc)

@@ -59,8 +59,12 @@ namespace AndreasReitberger.API.LexOffice
                        urlSegments: null,
                        cts: default
                        )
-                    .ConfigureAwait(false);
-                resultObject = [.. GetObjectFromJson<List<LexCountry>>(result?.Result, NewtonsoftJsonSerializerSettings)];
+                    .ConfigureAwait(false); 
+                if (result?.Result is not null &&
+                    GetObjectFromJson<List<LexCountry>>(result.Result, NewtonsoftJsonSerializerSettings) is List<LexCountry> list)
+                {
+                    resultObject = [.. list];
+                }
                 return resultObject;
             }
             catch (Exception exc)
